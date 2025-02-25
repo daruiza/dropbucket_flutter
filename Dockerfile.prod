@@ -1,0 +1,40 @@
+FROM nginx:stable-alpine
+
+# Crear usuario www-data si no existe
+RUN addgroup -S www-data 2>/dev/null || true && \
+    adduser -S -G www-data -u 1001 www-data 2>/dev/null || true
+
+# Copiar archivos de configuración
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY build/web /usr/share/nginx/html
+
+# Establecer permisos
+RUN chown -R www-data:www-data /usr/share/nginx/html /var/cache/nginx /var/log/nginx /etc/nginx && \
+    chmod -R 755 /usr/share/nginx/html && \
+    touch /var/run/nginx.pid && \
+    chown www-data:www-data /var/run/nginx.pid
+
+# Variables de entorno
+ENV NGINX_WORKER_PROCESSES=auto
+
+# Cambiar a usuario no root
+USER www-data
+
+EXPOSE 8080
+
+CMD ["nginx", "-g", "daemon off;"]
+
+#Activación de las dependencias web para flutter
+#flutter packages pub global activate webdev
+
+#flutter build web --target lib/app/main.dart --no-tree-shake-icons --dart-define=FLUTTER_WEB_OPTIMIZATION=false
+#flutter build web --no-tree-shake-icons --release
+#docker build -f Dockerfile.prod -t daruiza/dropbucket_flutter:aws .
+#docker push daruiza/dropbucket_flutter:aws
+
+# Creación de volumen: dropbucket-asistir-postgres vinculado al efs
+#  docker volume create --driver local \
+#     --opt type=none \
+#     --opt device=/mnt/efs/fs1 \
+#     --opt o=bind \
+#     dropbucket-asistir-postgres

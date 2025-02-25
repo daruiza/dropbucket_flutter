@@ -1,0 +1,6 @@
+flutter doctor
+
+
+#windows deploy
+flutter build windows
+#build/windows/runner/Release/

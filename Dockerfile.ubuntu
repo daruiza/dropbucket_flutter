@@ -1,0 +1,55 @@
+# Install Operating system and dependencies
+FROM ubuntu:20.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update 
+RUN apt-get install -y curl git wget unzip libgconf-2-4 gdb libstdc++6 libglu1-mesa fonts-droid-fallback python3
+RUN apt-get clean
+
+ENV DEBIAN_FRONTEND=dialog
+ENV PUB_HOSTED_URL=https://pub.flutter-io.cn
+ENV FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
+
+# download Flutter SDK from Flutter Github repo
+RUN git clone https://github.com/flutter/flutter.git /usr/local/flutter
+
+# Set flutter environment path
+ENV PATH="/usr/local/flutter/bin:/usr/local/flutter/bin/cache/dart-sdk/bin:${PATH}"
+
+# Run flutter doctor
+RUN flutter doctor
+
+# Enable flutter web
+RUN flutter channel master
+RUN flutter upgrade
+RUN flutter config --enable-web
+
+# Copy files to container and build
+RUN mkdir /app/
+COPY . /app/
+WORKDIR /app/
+RUN flutter build web
+
+# Record the exposed port
+EXPOSE 9000
+
+# make server startup script executable and start the web server
+RUN ["chmod", "+x", "server.sh"]
+
+ENTRYPOINT [ "server.sh"]
+
+#Activación de las dependencias web para flutter
+#flutter packages pub global activate webdev
+
+#flutter build web --target lib/app/main.dart --no-tree-shake-icons --dart-define=FLUTTER_WEB_OPTIMIZATION=false
+#flutter build web --target lib/app/main.dart --no-tree-shake-icons --release
+#docker build -f Dockerfile.prod -t daruiza/dropbucket_flutter:aws .
+#docker push daruiza/dropbucket_flutter:aws
+
+# Creación de volumen: dropbucket-asistir-postgres vinculado al efs
+#  docker volume create --driver local \
+#     --opt type=none \
+#     --opt device=/mnt/efs/fs1 \
+#     --opt o=bind \
+#     dropbucket-asistir-postgres

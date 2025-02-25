@@ -1,0 +1,34 @@
+version: '3.8'
+
+# CON NGINX
+# services:
+#   web:
+#     build: .
+#     ports:
+#       - "8080:80"
+#     volumes:
+#       - ./build/web:/usr/share/nginx/html
+#     restart: unless-stopped
+
+#CON NODE
+# services:
+#   web:
+#     image: node:20-alpine3.20
+#     working_dir: /app
+#     ports:
+#       - "8080:8080"
+#     volumes:
+#       - ./build/web:/app
+#     command: >
+#       sh -c "npm install -g serve && serve -s . -l 8080"
+#     environment:
+#       - NODE_ENV=production
+#     restart: unless-stopped
+
+#CON IMAGEN DE DOCKER HUB
+services:
+  flutter:
+    container_name: dropbucket_flutter
+    image: daruiza/dropbucket_flutter:aws
+    ports:
+      - 8080:80
