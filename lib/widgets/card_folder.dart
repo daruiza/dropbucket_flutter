@@ -76,7 +76,9 @@ class _CardFolderState extends State<CardFolder>
           onExit: (_) => setState(() => _isHovering = false),
           cursor: SystemMouseCursors.click,
           child: GestureDetector(
-            onTap: onGo,
+            onTap: () {
+              onGo(context);
+            },
             onLongPressUp: _flipCard,
             // onSecondaryTap: _flipCard,
             child: Icon(
@@ -102,13 +104,15 @@ class _CardFolderState extends State<CardFolder>
     );
   }
 
-  Future<void> onGo() async {
+  Future<void> onGo(BuildContext context) async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     List<String> name = widget.folder.name.split('/');
     if (name.isEmpty) return;
     try {
       // context.loaderOverlay.show();
-      await authProvider.setUserPrefix(name.last);
+      if (context.mounted) {
+        await authProvider.setUserPrefix(context, name.last);
+      }
       await widget.fetchItemsList.call();
     } finally {
       // if (mounted) context.loaderOverlay.hide();

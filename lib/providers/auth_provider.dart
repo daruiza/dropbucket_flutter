@@ -17,17 +17,17 @@ class AuthProvider extends ChangeNotifier {
 
   set user(UserResponse? value) {
     _user = value;
-    notifyListeners();
+    //notifyListeners();
   }
 
   set token(String value) {
     _token = value;
-    notifyListeners();
+    //notifyListeners();
   }
 
   set isAuthenticated(bool value) {
     _isAuthenticated = value;
-    notifyListeners();
+    //notifyListeners();
   }
 
   // AuthProvider(this.context) {
@@ -61,7 +61,8 @@ class AuthProvider extends ChangeNotifier {
       } catch (e) {
         // TODO: enviar un mensaje de token expirado
       }
-    }    // notifyListeners();
+    }
+    notifyListeners();
   }
 
   // Método para manejar la redirección segura en caso de error 401
@@ -76,14 +77,23 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> setUserPrefix(prefix, [bool replace = false]) async {
-    final userJson = jsonDecode(await _storage.read(key: "user_data") ?? '');
-    userJson['user']['prefixcurrent'] =
-        replace ? prefix : '${userJson['user']['prefixcurrent']}$prefix/';
-    await _storage.delete(key: 'user_data');
-    await _storage.write(key: "user_data", value: jsonEncode(userJson));
-    user = UserResponse.fromJson(userJson);
-    notifyListeners();
+  Future<void> setUserPrefix(BuildContext context, prefix, [bool replace = false]) async {
+    final token = await _storage.read(key: 'token');
+    if(token != ''){
+      final userData = await _storage.read(key: "user_data") ?? '';
+      final userJson = jsonDecode(userData);
+      userJson['user']['prefixcurrent'] =
+          replace ? prefix : '${userJson['user']['prefixcurrent']}$prefix/';
+      await _storage.delete(key: 'user_data');
+      await _storage.write(key: "user_data", value: jsonEncode(userJson));
+      user = UserResponse.fromJson(userJson);
+      notifyListeners();
+    } else {
+      //emitimos error de autenticación
+      if (context.mounted) {
+        _redirectToLogin(context);
+      }
+    }
   }
 
   // Método para navegar al login utilizando el contexto

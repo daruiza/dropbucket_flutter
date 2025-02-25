@@ -116,7 +116,7 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
       // context.loaderOverlay.show();
 
       try {
-        await authProvider.setUserPrefix(result, true);
+        await authProvider.setUserPrefix(context, result, true);
         await fetchItemsList();
       } finally {
         // if (mounted) context.loaderOverlay.hide();

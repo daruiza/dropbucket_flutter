@@ -165,6 +165,7 @@ onGoPrefix(BuildContext context, prefix, Function fetchItemsList) async {
 
     if ('$resultado/' != currentPrefix && resultado != currentPrefix) {
       await authProvider.setUserPrefix(
+        context,
         resultado.isEmpty ? userprefix : '$userprefix$resultado/',
         true,
       );
