@@ -1,6 +1,7 @@
 import 'package:dropbucket_flutter/app_bar_menu.dart';
 import 'package:dropbucket_flutter/providers/providers.dart';
 import 'package:dropbucket_flutter/services/services.dart';
+import 'package:dropbucket_flutter/themes/indigo.dart';
 import 'package:dropbucket_flutter/widgets/breadcrumb.dart';
 import 'package:dropbucket_flutter/widgets/card_file.dart';
 import 'package:dropbucket_flutter/widgets/card_folder.dart';
@@ -20,9 +21,9 @@ class HomeScreen extends StatelessWidget {
       // future: null,
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         
-        // if (bucketService.isLoading) {          
-        //   return const Center(child: CircularProgressIndicator());
-        // }
+        if (bucketService.isLoading) {          
+          return const Center(child: CircularProgressIndicator());
+        }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -68,7 +69,11 @@ class HomeScreen extends StatelessWidget {
                           },
                         );
                       } else {
-                        return CardFile(file: files[index - folders.length]);
+                        return CardFile(
+                          file: files[index - folders.length],
+                          fetchItemsList: () {
+                            bucketService.itemsList();
+                          },);
                       }
                     },
                   ),
@@ -76,20 +81,22 @@ class HomeScreen extends StatelessWidget {
               ),
             ],
           ),
-          // floatingActionButton: Column(
-          //   mainAxisSize: MainAxisSize.min,
-          //   children: [
-          //     FloatingActionButton(
-          //       child: Icon(Icons.upload_file, color: IndigoTheme.texContrastColor),
-          //       onPressed: () => {},
-          //     ),
-          //     const SizedBox(height: 16), // Espacio entre los botones
-          //     FloatingActionButton(
-          //       child: Icon(Icons.create_new_folder, color: IndigoTheme.texContrastColor),
-          //       onPressed: () => {},
-          //     ),
-          //   ],
-          // ),
+          floatingActionButton: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              FloatingActionButton(
+                heroTag: 'upload_file_button', // Tag único
+                child: Icon(Icons.upload_file, color: IndigoTheme.texContrastColor),
+                onPressed: () => {},
+              ),
+              const SizedBox(height: 16), // Espacio entre los botones
+              FloatingActionButton(
+                heroTag: 'create_folder_button',
+                child: Icon(Icons.create_new_folder, color: IndigoTheme.texContrastColor),
+                onPressed: () => {},
+              ),
+            ],
+          ),
         );
       },
     );

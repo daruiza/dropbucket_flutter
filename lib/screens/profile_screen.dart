@@ -69,7 +69,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           );
         },
-      ),
+      ),      
     );
   }
 }
@@ -95,7 +95,7 @@ class _ProfileForm extends StatelessWidget {
           return const Center(child: Text('Error loading data.'));
         }
 
-        profileForm.photoExists.text = snapshot.data ? 'true' : 'false';        
+        profileForm.photoExists.text = snapshot.data ? 'true' : 'false';
 
         return Form(
           key: profileForm.profileFormKey,
@@ -173,17 +173,45 @@ class _ProfileForm extends StatelessWidget {
                       child: SizedBox(
                         width: maxWidth / 3 - 20,
                         child: MouseRegion(
-                          cursor: isEditing? SystemMouseCursors.click : SystemMouseCursors.basic,
+                          cursor:
+                              isEditing
+                                  ? SystemMouseCursors.click
+                                  : SystemMouseCursors.basic,
                           child: GestureDetector(
                             onTap:
                                 () =>
                                     isEditing ? _onUploadImage(context) : null,
                             child:
                                 profileForm.photoExists.text == 'true'
-                                    ? CircleAvatar(
-                                      maxRadius: 50,
-                                      backgroundImage: NetworkImage(
-                                        profileForm.photo.text,
+                                    ? Center(
+                                      child: Stack(
+                                        children: [
+                                          // CircleAvatar base
+                                          CircleAvatar(
+                                            maxRadius: 50,
+                                            backgroundImage: NetworkImage(
+                                              profileForm.photo.text,
+                                            ),
+                                          ),
+                                          if (!isEditing)
+                                            Positioned.fill(
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  // color: Color(0x80808080), // Gris medio, 50% opacidad
+                                                  // color: Color(0x60808080), // Gris medio, 38% opacidad
+                                                  // color: Color(0xA0808080), // Gris medio, 63% opacidad
+                                                  // color: Color(0x80A0A0A0), // Gris claro, 50% opacidad
+                                                  // color: Color(0x80606060), // Gris oscuro, 50% opacidad
+                                                  color: Color(
+                                                    0x80909090,
+                                                  ), // Gris plateado, 50% opacidad
+                                                  // color: Color(0x40808080), // Gris medio, 25% opacidad
+                                                  // color: Color(0xC0808080), // Gris medio, 75% opacidad
+                                                ),
+                                              ),
+                                            ),
+                                        ],
                                       ),
                                     )
                                     : Icon(

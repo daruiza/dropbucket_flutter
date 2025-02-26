@@ -15,7 +15,7 @@ class BucketService extends ChangeNotifier {
   final AuthProvider _authProvider;
 
   ApiResponse items = ApiResponse(files: [], folders: []);
-  bool _isLoading = true;
+  bool isLoading = false;
 
   // ApiResponse get items => _items;
   // set items(ApiResponse value) {
@@ -23,11 +23,11 @@ class BucketService extends ChangeNotifier {
   //   // notifyListeners();
   // }
 
-  bool get isLoading => _isLoading;
-  set isLoading(bool value) {
-    _isLoading = value;
-    notifyListeners();
-  }
+  // bool get isLoading => _isLoading;
+  // set isLoading(bool value) {
+  //   _isLoading = value;
+  //   // notifyListeners();
+  // }
 
   BucketService(BuildContext context)
     : _httpService = InterceptorService(context),
@@ -48,14 +48,13 @@ class BucketService extends ChangeNotifier {
   // }
 
   void itemsList() async {
-    try {
-      isLoading = true;
+    try {      
       items = await fetchItemsList();
     } catch (e) {
       // TODO: necesitamos impimir en caso de error
       rethrow;
     } finally {
-      isLoading = false;
+      notifyListeners();
     }
   }
 

@@ -10,7 +10,6 @@ COPY build/web /usr/share/nginx/html
 
 #flutter packages pub global activate webdev    
 #flutter build web --no-tree-shake-icons --release
-#flutter build web --no-tree-shake-icons --release
 #docker build -f Dockerfile -t daruiza/dropbucket_flutter:aws .
 #docker push daruiza/dropbucket_flutter:aws
 
