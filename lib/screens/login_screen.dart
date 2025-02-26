@@ -175,6 +175,15 @@ class _LoginForm extends StatelessWidget {
           'home',
           // arguments: {'welcome': true},
         );
+
+        // Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+        //   MaterialPageRoute(
+        //     builder: (BuildContext context) {
+        //       return const HomeScreen();
+        //     },
+        //   ),
+        //   (_) => false,
+        // );
       }
     } on Exception catch (e) {
       try {

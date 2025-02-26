@@ -52,18 +52,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
+          double maxWidth =
+              constraints.maxWidth > 600 ? 500 : constraints.maxWidth * 0.8;
           return Center(
             child: SingleChildScrollView(
               child: Container(
-                constraints: BoxConstraints(
-                  maxWidth:
-                      constraints.maxWidth > 600
-                          ? 500
-                          : constraints.maxWidth * 0.8,
-                ),
+                constraints: BoxConstraints(maxWidth: maxWidth),
                 child: ChangeNotifierProvider(
                   create: (_) => ProfileFormProvider(),
-                  child: _ProfileForm(isEditing: _isEditing),
+                  child: _ProfileForm(
+                    isEditing: _isEditing,
+                    maxWidth: maxWidth,
+                  ),
                 ),
               ),
             ),
@@ -76,7 +76,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
 class _ProfileForm extends StatelessWidget {
   final bool isEditing;
-  const _ProfileForm({required this.isEditing});
+  final double maxWidth;
+  const _ProfileForm({required this.isEditing, required this.maxWidth});
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +89,7 @@ class _ProfileForm extends StatelessWidget {
     return FutureBuilder(
       future: _photoExist(context),
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {          
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator(); // Indicador de carga
         } else if (snapshot.hasError) {
           return const Center(child: Text('Error loading data.'));
@@ -105,54 +106,102 @@ class _ProfileForm extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const SizedBox(height: 20),
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 2 * maxWidth / 3 - 20,
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            enabled: isEditing,
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            keyboardType: TextInputType.emailAddress,
+                            controller: profileForm.email,
+                            decoration: InputDecoration(
+                              labelText: 'Correo electrónico',
+                              floatingLabelStyle: TextStyle(
+                                color:
+                                    isEditing
+                                        ? IndigoTheme.primaryColor
+                                        : IndigoTheme.disableColor,
+                              ),
+                              prefixIcon: Icon(
+                                Icons.email,
+                                color:
+                                    isEditing
+                                        ? IndigoTheme.primaryColor
+                                        : IndigoTheme.disableColor,
+                              ),
+                            ),
+                            validator: (value) {
+                              if (Validators.required(value)) {
+                                return 'Este campo es requerido';
+                              }
+                              if (Validators.email(value)) {
+                                return 'El Email no es valido';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          TextFormField(
+                            enabled: isEditing,
+                            keyboardType: TextInputType.text,
+                            controller: profileForm.name,
+                            decoration: InputDecoration(
+                              labelText: 'Nombre de usuario',
+                              floatingLabelStyle: TextStyle(
+                                color:
+                                    isEditing
+                                        ? IndigoTheme.primaryColor
+                                        : IndigoTheme.disableColor,
+                              ),
+                              prefixIcon: Icon(
+                                Icons.person,
+                                color:
+                                    isEditing
+                                        ? IndigoTheme.primaryColor
+                                        : IndigoTheme.disableColor,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Center(
+                      child: SizedBox(
+                        width: maxWidth / 3 - 20,
+                        child: MouseRegion(
+                          cursor: isEditing? SystemMouseCursors.click : SystemMouseCursors.basic,
+                          child: GestureDetector(
+                            onTap:
+                                () =>
+                                    isEditing ? _onUploadImage(context) : null,
+                            child:
+                                profileForm.photoExists.text == 'true'
+                                    ? CircleAvatar(
+                                      maxRadius: 50,
+                                      backgroundImage: NetworkImage(
+                                        profileForm.photo.text,
+                                      ),
+                                    )
+                                    : Icon(
+                                      Icons.person,
+                                      size: 96,
+                                      color:
+                                          isEditing
+                                              ? IndigoTheme.primaryColor
+                                              : IndigoTheme.disableColor,
+                                    ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
                 // GestureDetector(),
-                const SizedBox(height: 20),
-                TextFormField(
-                  enabled: isEditing,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  keyboardType: TextInputType.emailAddress,
-                  controller: profileForm.email,
-                  decoration: InputDecoration(
-                    labelText: 'Correo electrónico',
-                    floatingLabelStyle: TextStyle(
-                      color:
-                          isEditing
-                              ? IndigoTheme.primaryColor
-                              : IndigoTheme.disableColor,
-                    ),
-                    prefixIcon: Icon(
-                      Icons.email,
-                      color:
-                          isEditing
-                              ? IndigoTheme.primaryColor
-                              : IndigoTheme.disableColor,
-                    ),
-                  ),
-                  validator: (value) {
-                    if (Validators.required(value)) {
-                      return 'Este campo es requerido';
-                    }
-                    if (Validators.email(value)) {
-                      return 'El Email no es valido';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 20),
-                TextFormField(
-                  enabled: isEditing,
-                  keyboardType: TextInputType.text,
-                  controller: profileForm.name,
-                  decoration: InputDecoration(
-                    labelText: 'Nombre de usuario',
-                    floatingLabelStyle: TextStyle(
-                      color:
-                          isEditing
-                              ? IndigoTheme.primaryColor
-                              : IndigoTheme.disableColor,
-                    ),
-                  ),
-                ),
                 const SizedBox(height: 20),
                 TextFormField(
                   enabled: isEditing,
@@ -196,6 +245,13 @@ class _ProfileForm extends StatelessWidget {
                               ? IndigoTheme.primaryColor
                               : IndigoTheme.disableColor,
                     ),
+                    prefixIcon: Icon(
+                      Icons.phone,
+                      color:
+                          isEditing
+                              ? IndigoTheme.primaryColor
+                              : IndigoTheme.disableColor,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -206,6 +262,13 @@ class _ProfileForm extends StatelessWidget {
                   decoration: InputDecoration(
                     labelText: 'Estilo/Tema de aplicación',
                     floatingLabelStyle: TextStyle(
+                      color:
+                          isEditing
+                              ? IndigoTheme.primaryColor
+                              : IndigoTheme.disableColor,
+                    ),
+                    prefixIcon: Icon(
+                      Icons.style,
                       color:
                           isEditing
                               ? IndigoTheme.primaryColor
@@ -237,7 +300,7 @@ class _ProfileForm extends StatelessWidget {
 
   Future<bool> _photoExist(BuildContext context) async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final bucketService = Provider.of<BucketService>(context, listen: false);    
+    final bucketService = Provider.of<BucketService>(context, listen: false);
     try {
       if (authProvider.user?.photo != null && authProvider.user?.photo != '') {
         final existFile = await bucketService.existFile(
@@ -258,6 +321,7 @@ class _ProfileForm extends StatelessWidget {
   }
 
   Future<void> _onUploadImage(BuildContext context) async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final bucketService = Provider.of<BucketService>(context, listen: false);
     final profileForm = Provider.of<ProfileFormProvider>(
       context,
@@ -311,9 +375,11 @@ class _ProfileForm extends StatelessWidget {
           if (json['url'].isNotEmpty) {
             profileForm.photo.text = json['url'];
             profileForm.photoExists.text = 'true';
-
             if (context.mounted) {
               await userPatch(context);
+              await authProvider.checkToken();
+              // Notifica y vuelve a recargar el build
+              profileForm.notifyListeners();
             }
 
             // Eliminar archivo anterior

@@ -1,34 +1,35 @@
 import 'dart:convert';
 
 import 'package:dropbucket_flutter/models/user_response.dart';
+import 'package:dropbucket_flutter/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthProvider extends ChangeNotifier {
   // BuildContext context;
   final _storage = FlutterSecureStorage();
-  UserResponse? _user;
-  String _token = '';
-  bool _isAuthenticated = false;
+  UserResponse? user;
+  String token = '';
+  bool isAuthenticated = false;
 
-  UserResponse? get user => _user;
-  String get token => _token;
-  bool get isAuthenticated => _isAuthenticated;
+  // UserResponse? get user => _user;
+  // String get token => _token;
+  // bool get isAuthenticated => _isAuthenticated;
 
-  set user(UserResponse? value) {
-    _user = value;
-    //notifyListeners();
-  }
+  // set user(UserResponse? value) {
+  //   _user = value;
+  //   //notifyListeners();
+  // }
 
-  set token(String value) {
-    _token = value;
-    //notifyListeners();
-  }
+  // set token(String value) {
+  //   _token = value;
+  //   //notifyListeners();
+  // }
 
-  set isAuthenticated(bool value) {
-    _isAuthenticated = value;
-    //notifyListeners();
-  }
+  // set isAuthenticated(bool value) {
+  //   _isAuthenticated = value;
+  //   //notifyListeners();
+  // }
 
   // AuthProvider(this.context) {
   AuthProvider() {
@@ -67,9 +68,9 @@ class AuthProvider extends ChangeNotifier {
 
   // Método para manejar la redirección segura en caso de error 401
   void handleUnauthorized(BuildContext context) async {
-    _token = '';
-    _user = null;
-    _isAuthenticated = false;
+    token = '';
+    user = null;
+    isAuthenticated = false;
     await _storage.delete(key: 'token');
     await _storage.delete(key: 'user_data');
     if (context.mounted) {
@@ -77,9 +78,14 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> setUserPrefix(BuildContext context, prefix, [bool replace = false]) async {
+  Future<void> setUserPrefix(
+    BuildContext context,
+    prefix, [
+    bool replace = false,
+    bool notify = true,
+  ]) async {
     final token = await _storage.read(key: 'token');
-    if(token != ''){
+    if (token != '') {
       final userData = await _storage.read(key: "user_data") ?? '';
       final userJson = jsonDecode(userData);
       userJson['user']['prefixcurrent'] =
@@ -87,7 +93,9 @@ class AuthProvider extends ChangeNotifier {
       await _storage.delete(key: 'user_data');
       await _storage.write(key: "user_data", value: jsonEncode(userJson));
       user = UserResponse.fromJson(userJson);
-      notifyListeners();
+      if (notify) {
+        notifyListeners();
+      }
     } else {
       //emitimos error de autenticación
       if (context.mounted) {
@@ -98,6 +106,15 @@ class AuthProvider extends ChangeNotifier {
 
   // Método para navegar al login utilizando el contexto
   void _redirectToLogin(BuildContext context) {
-    Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+    // esta forma falla
+    // Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+    Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (BuildContext context) {
+          return const LoginScreen();
+        },
+      ),
+      (_) => false,
+    );
   }
 }

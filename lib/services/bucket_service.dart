@@ -14,14 +14,14 @@ class BucketService extends ChangeNotifier {
   final InterceptorService _httpService;
   final AuthProvider _authProvider;
 
-  ApiResponse _items = ApiResponse(files: [], folders: []);
+  ApiResponse items = ApiResponse(files: [], folders: []);
   bool _isLoading = true;
 
-  ApiResponse get items => _items;
-  set items(ApiResponse value) {
-    _items = value;
-    notifyListeners();
-  }
+  // ApiResponse get items => _items;
+  // set items(ApiResponse value) {
+  //   _items = value;
+  //   // notifyListeners();
+  // }
 
   bool get isLoading => _isLoading;
   set isLoading(bool value) {
@@ -32,19 +32,20 @@ class BucketService extends ChangeNotifier {
   BucketService(BuildContext context)
     : _httpService = InterceptorService(context),
       _authProvider = Provider.of<AuthProvider>(context, listen: false) {
-    _initService();
+      
+    // _initService();
   }
 
-  void _initService() async {
-    try {
-      items = await fetchItemsList();
-    } catch (e) {
-      // TODO: necesitamos impimir en caso de error
-      rethrow;
-    } finally {
-      isLoading = false;
-    }
-  }
+  // void _initService() async {
+  //   try {
+  //     items = await fetchItemsList();
+  //   } catch (e) {
+  //     // TODO: necesitamos impimir en caso de error
+  //     rethrow;
+  //   } finally {
+  //     isLoading = false;
+  //   }
+  // }
 
   void itemsList() async {
     try {
@@ -56,6 +57,15 @@ class BucketService extends ChangeNotifier {
     } finally {
       isLoading = false;
     }
+  }
+
+  Future<void> itemsListFuture() async {
+    try {      
+      items = await fetchItemsList();
+    } catch (e) {
+      // TODO: necesitamos impimir en caso de error
+      rethrow;
+    } finally {}
   }
 
   Future<ApiResponse> fetchItemsList() async {

@@ -16,11 +16,18 @@ class HomeScreen extends StatelessWidget {
     final bucketService = Provider.of<BucketService>(context);
 
     return FutureBuilder(
-      // future: Provider.of<BucketService>(context, listen: false).fetchItemsList(),
-      future: null,
+      future: Provider.of<BucketService>(context, listen: false).itemsListFuture(),
+      // future: null,
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-        if (bucketService.isLoading) {
+        
+        // if (bucketService.isLoading) {          
+        //   return const Center(child: CircularProgressIndicator());
+        // }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return const Center(child: Text('Error loading data.'));
         }
         // Variables iniciales
         final files = bucketService.items.files;

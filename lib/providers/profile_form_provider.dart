@@ -4,6 +4,13 @@ import 'package:flutter/material.dart';
 class ProfileFormProvider extends ChangeNotifier {
   GlobalKey<FormState> profileFormKey = GlobalKey<FormState>();
 
+  @override
+  void notifyListeners() {
+    // TODO: implement notifyListeners
+    super.notifyListeners();
+  }
+  
+
   TextEditingController email = TextEditingController();
   TextEditingController name = TextEditingController();
   TextEditingController names = TextEditingController();
@@ -13,7 +20,7 @@ class ProfileFormProvider extends ChangeNotifier {
   TextEditingController prefix = TextEditingController();
   TextEditingController photo = TextEditingController();
 
-  TextEditingController photoExists = TextEditingController();  
+  TextEditingController photoExists = TextEditingController();
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -31,7 +38,7 @@ class ProfileFormProvider extends ChangeNotifier {
       phone.text = user.phone ?? '';
       theme.text = user.theme ?? '';
       prefix.text = user.prefix ?? '';
-      photo.text = user.photo ?? '';
+      photo.text = user.photo ?? '';      
     }
   }
 

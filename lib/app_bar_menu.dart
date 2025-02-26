@@ -52,9 +52,16 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
         if (authProvider.isAuthenticated && currentRoute != Routes.profile)
           IconButton(
             onPressed: () {
-              Navigator.pushNamed(context, Routes.profile);
+              Navigator.pushReplacementNamed(context, Routes.profile);
             },
             icon: Icon(Icons.person, color: IndigoTheme.texContrastColor),
+          ),
+        if (authProvider.isAuthenticated && currentRoute == Routes.profile)
+          IconButton(
+            onPressed: () {
+              Navigator.pushReplacementNamed(context, Routes.home);
+            },
+            icon: Icon(Icons.home, color: IndigoTheme.texContrastColor),
           ),
         if (authProvider.isAuthenticated)
           IconButton(
@@ -75,8 +82,8 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
     AuthProvider authProvider,
   ) async {
     await authService.logoutUser();
-    // Aqui si: logout
     await authProvider.checkToken();
+
     if (context.mounted) {
       MessageProvider.showSnackBarContext(
         context,
@@ -92,6 +99,28 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
         'login',
         // arguments: {'goodbay': true},
       );
+
+      // Esta forma falla
+      // Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+
+      // Navigator.pushAndRemoveUntil(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) {
+      //       return const LoginScreen();
+      //     },
+      //   ),
+      //   (Route<dynamic> route) => false,
+      // );
+
+      // Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+      //   MaterialPageRoute(
+      //     builder: (BuildContext context) {
+      //       return const LoginScreen();
+      //     },
+      //   ),
+      //   (_) => false,
+      // );
     }
   }
 

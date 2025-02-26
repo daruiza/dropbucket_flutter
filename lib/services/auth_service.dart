@@ -59,7 +59,7 @@ class AuthService extends ChangeNotifier {
 
   Future<void> logoutUser() async {
     await _storage.delete(key: 'token');
-    await _storage.delete(key: 'user_data');
+    await _storage.delete(key: 'user_data');    
     return;
   }
 
