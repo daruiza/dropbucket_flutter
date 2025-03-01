@@ -1,12 +1,14 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:dropbucket_flutter/app_bar_menu.dart';
 import 'package:dropbucket_flutter/providers/providers.dart';
 import 'package:dropbucket_flutter/services/services.dart';
-import 'package:dropbucket_flutter/themes/indigo.dart';
 import 'package:dropbucket_flutter/widgets/breadcrumb.dart';
 import 'package:dropbucket_flutter/widgets/card_file.dart';
 import 'package:dropbucket_flutter/widgets/card_folder.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:dropbucket_flutter/utils/file_handler.dart';
+import 'package:dropbucket_flutter/utils/folder_handler.dart';
+import 'package:dropbucket_flutter/themes/indigo.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -17,11 +19,11 @@ class HomeScreen extends StatelessWidget {
     final bucketService = Provider.of<BucketService>(context);
 
     return FutureBuilder(
-      future: Provider.of<BucketService>(context, listen: false).itemsListFuture(),
+      future:
+          Provider.of<BucketService>(context, listen: false).itemsListFuture(),
       // future: null,
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-        
-        if (bucketService.isLoading) {          
+        if (bucketService.isLoading) {
           return const Center(child: CircularProgressIndicator());
         }
 
@@ -62,18 +64,14 @@ class HomeScreen extends StatelessWidget {
                     itemCount: folders.length + files.length,
                     itemBuilder: (BuildContext context, int index) {
                       if (index < folders.length) {
-                        return CardFolder(
-                          folder: folders[index],
-                          fetchItemsList: () {
-                            bucketService.itemsList();
-                          },
-                        );
+                        return CardFolder(folder: folders[index]);
                       } else {
                         return CardFile(
                           file: files[index - folders.length],
                           fetchItemsList: () {
                             bucketService.itemsList();
-                          },);
+                          },
+                        );
                       }
                     },
                   ),
@@ -86,14 +84,20 @@ class HomeScreen extends StatelessWidget {
             children: [
               FloatingActionButton(
                 heroTag: 'upload_file_button', // Tag único
-                child: Icon(Icons.upload_file, color: IndigoTheme.texContrastColor),
-                onPressed: () => {},
+                child: Icon(
+                  Icons.upload_file,
+                  color: IndigoTheme.texContrastColor,
+                ),
+                onPressed: () => FileHandler.onUploadFiles(context),
               ),
               const SizedBox(height: 16), // Espacio entre los botones
               FloatingActionButton(
                 heroTag: 'create_folder_button',
-                child: Icon(Icons.create_new_folder, color: IndigoTheme.texContrastColor),
-                onPressed: () => {},
+                child: Icon(
+                  Icons.create_new_folder,
+                  color: IndigoTheme.texContrastColor,
+                ),
+                onPressed: () => FolderHandler.showNewFolderDialog(context),
               ),
             ],
           ),

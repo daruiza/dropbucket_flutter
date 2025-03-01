@@ -6,8 +6,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 class AuthService extends ChangeNotifier {
-  // final String _baseUrl = '44.195.26.209:3000';
-  final String _baseUrl = 'localhost:3000';
+  final String _baseUrl = '3.239.255.151:3000';
+  // final String _baseUrl = 'localhost:3000';
 
   final _storage = FlutterSecureStorage();
 

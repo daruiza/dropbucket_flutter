@@ -11,7 +11,8 @@ import 'package:dropbucket_flutter/models/user_patch.dart';
 
 // class UserService extends ChangeNotifier {
 class UserService {
-  final String _baseUrl = 'http://localhost:3000/user';
+  final String _baseUrl = 'http://3.239.255.151:3000/user';
+  // final String _baseUrl = 'http://localhost:3000/user';
   final InterceptorService _httpService;
   final AuthProvider _authProvider;
   final _storage = FlutterSecureStorage();

@@ -1,5 +1,7 @@
 import 'package:dropbucket_flutter/models/bucket_response.dart';
 import 'package:dropbucket_flutter/providers/auth_provider.dart';
+import 'package:dropbucket_flutter/services/bucket_service.dart';
+import 'package:dropbucket_flutter/utils/folder_handler.dart';
 import 'package:dropbucket_flutter/widgets/card_dialog_edit.dart';
 import 'package:dropbucket_flutter/widgets/dialog_input.dart';
 import 'package:provider/provider.dart';
@@ -9,17 +11,13 @@ import '../../../themes/indigo.dart';
 import 'package:flutter/material.dart';
 
 class CardFolder extends StatefulWidget {
-  final FolderItem folder;
-  final Function fetchItemsList;
-  final Function? onDelete;
+  final FolderItem folder;  
   final Function? onEditPrefix;
   final Function? onRequestUpload;
 
   const CardFolder({
     super.key,
-    required this.folder,
-    required this.fetchItemsList,
-    this.onDelete,
+    required this.folder,    
     this.onEditPrefix,
     this.onRequestUpload,
   });
@@ -106,6 +104,7 @@ class _CardFolderState extends State<CardFolder>
 
   Future<void> onGo(BuildContext context) async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final bucketService = Provider.of<BucketService>(context, listen: false);
     List<String> name = widget.folder.name.split('/');
     if (name.isEmpty) return;
     try {
@@ -113,7 +112,7 @@ class _CardFolderState extends State<CardFolder>
       if (context.mounted) {
         await authProvider.setUserPrefix(context, name.last);
       }
-      await widget.fetchItemsList.call();
+      bucketService.itemsList();
     } finally {
       // if (mounted) context.loaderOverlay.hide();
     }
@@ -197,10 +196,15 @@ class _CardFolderState extends State<CardFolder>
                 child: const Text('Cancel'),
               ),
               TextButton(
-                onPressed: () {
+                onPressed: () async {
                   _flipCard();
-                  widget.onDelete?.call();
-                  Navigator.pop(context, 'OK');
+                  await FolderHandler.onDeleteFolder(
+                    context,
+                    widget.folder.name,
+                  );
+                  if (context.mounted) {
+                    Navigator.pop(context, 'OK');
+                  }
                 },
                 child: const Text('OK'),
               ),

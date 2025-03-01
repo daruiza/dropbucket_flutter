@@ -9,8 +9,8 @@ import 'package:dropbucket_flutter/providers/auth_provider.dart';
 import 'package:dropbucket_flutter/services/interceptor_service.dart';
 
 class BucketService extends ChangeNotifier {
-  // final String _baseUrl = 'http://44.195.26.209:3000/bucket';
-  final String _baseUrl = 'http://localhost:3000/bucket';
+  final String _baseUrl = 'http://3.239.255.151:3000/bucket';
+  // final String _baseUrl = 'http://localhost:3000/bucket';
   final InterceptorService _httpService;
   final AuthProvider _authProvider;
 
@@ -32,7 +32,6 @@ class BucketService extends ChangeNotifier {
   BucketService(BuildContext context)
     : _httpService = InterceptorService(context),
       _authProvider = Provider.of<AuthProvider>(context, listen: false) {
-      
     // _initService();
   }
 
@@ -48,7 +47,7 @@ class BucketService extends ChangeNotifier {
   // }
 
   void itemsList() async {
-    try {      
+    try {
       items = await fetchItemsList();
     } catch (e) {
       // TODO: necesitamos impimir en caso de error
@@ -59,7 +58,7 @@ class BucketService extends ChangeNotifier {
   }
 
   Future<void> itemsListFuture() async {
-    try {      
+    try {
       items = await fetchItemsList();
     } catch (e) {
       // TODO: necesitamos impimir en caso de error
@@ -69,7 +68,7 @@ class BucketService extends ChangeNotifier {
 
   Future<ApiResponse> fetchItemsList() async {
     final url = '$_baseUrl/list';
-    try {      
+    try {
       final response = await _httpService.get(
         url,
         queryParams: {
@@ -89,7 +88,7 @@ class BucketService extends ChangeNotifier {
     }
   }
 
-  Future<Response> existFile(String prefix) async {    
+  Future<Response> existFile(String prefix) async {
     final url = '$_baseUrl/exists';
     try {
       final response = await _httpService.get(
@@ -110,7 +109,6 @@ class BucketService extends ChangeNotifier {
     required PlatformFile file,
     String? prefix,
   }) async {
-    
     final url = '$_baseUrl/upload';
     try {
       final response = await _httpService.uploadByteFile(
@@ -136,7 +134,6 @@ class BucketService extends ChangeNotifier {
     required List<PlatformFile> files,
     String? prefix,
   }) async {
-    
     final url = '$_baseUrl/upload-multiple';
     try {
       final response = await _httpService.uploadMultipleFiles(
@@ -161,7 +158,7 @@ class BucketService extends ChangeNotifier {
     String? fileName,
   }) async {
     final url = _baseUrl;
-    
+
     try {
       final response = await _httpService.delete(
         url,
@@ -169,6 +166,44 @@ class BucketService extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
+        return response;
+      } else {
+        throw Exception(response);
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Response> createFolder(String prefix) async {
+    final url = '$_baseUrl/create/prefix';
+    try {
+      final response = await _httpService.post(
+        url,
+        queryParams: {
+          'key': '${_authProvider.user?.prefixcurrent ?? ''}$prefix',
+        },
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return response;
+      } else {
+        throw Exception(response);
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Response> deleteFolder(String prefix) async {
+    final url = '$_baseUrl/delete/prefix';
+    try {
+      final response = await _httpService.delete(
+        url,
+        queryParams: {
+          'key': '${_authProvider.user?.prefixcurrent ?? ''}$prefix',
+        },
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
         return response;
       } else {
         throw Exception(response);
