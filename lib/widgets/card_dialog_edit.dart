@@ -76,7 +76,7 @@ Future<String?> showEditDialog(BuildContext context,
                             onEdit(textFieldController.text);
                           }
                         : null,
-                    child: const Text('OK'),
+                    child: const Text('Editar'),
                   )
                 ]);
           }));

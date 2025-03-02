@@ -1,23 +1,19 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../themes/indigo.dart';
 import 'package:dropbucket_flutter/models/bucket_response.dart';
 import 'package:dropbucket_flutter/providers/auth_provider.dart';
 import 'package:dropbucket_flutter/services/bucket_service.dart';
 import 'package:dropbucket_flutter/utils/folder_handler.dart';
-import 'package:dropbucket_flutter/widgets/card_dialog_edit.dart';
-import 'package:dropbucket_flutter/widgets/dialog_input.dart';
-import 'package:provider/provider.dart';
-
-import '../../../themes/indigo.dart';
-
-import 'package:flutter/material.dart';
 
 class CardFolder extends StatefulWidget {
-  final FolderItem folder;  
+  final FolderItem folder;
   final Function? onEditPrefix;
   final Function? onRequestUpload;
 
   const CardFolder({
     super.key,
-    required this.folder,    
+    required this.folder,
     this.onEditPrefix,
     this.onRequestUpload,
   });
@@ -102,22 +98,6 @@ class _CardFolderState extends State<CardFolder>
     );
   }
 
-  Future<void> onGo(BuildContext context) async {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final bucketService = Provider.of<BucketService>(context, listen: false);
-    List<String> name = widget.folder.name.split('/');
-    if (name.isEmpty) return;
-    try {
-      // context.loaderOverlay.show();
-      if (context.mounted) {
-        await authProvider.setUserPrefix(context, name.last);
-      }
-      bucketService.itemsList();
-    } finally {
-      // if (mounted) context.loaderOverlay.hide();
-    }
-  }
-
   Widget _buildBack() {
     List<String> name = widget.folder.name.split('/');
     return Column(
@@ -134,100 +114,54 @@ class _CardFolderState extends State<CardFolder>
               icon: const Icon(Icons.arrow_back, size: 20.0),
               onPressed: _flipCard, // Regresa al frente
             ),
-            if (widget.onEditPrefix != null)
-              IconButton(
-                iconSize: 20.0,
-                padding: EdgeInsets.all(0.0),
-                constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
-                icon: const Icon(Icons.edit, size: 20.0),
-                onPressed:
-                    () => showEditDialog(
-                      context,
-                      flipCard: _flipCard,
-                      name: name,
-                      onEditObject: (rename) {
-                        widget.onEditPrefix?.call(rename);
-                      },
-                    ), // Regresa al frente
-              ),
+
+            IconButton(
+              iconSize: 20.0,
+              padding: EdgeInsets.all(0.0),
+              constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+              icon: const Icon(Icons.edit, size: 20.0),
+              onPressed:
+                  () => FolderHandler.showEditFolderDialog(
+                    context,
+                    flipCard: _flipCard,
+                    folder: widget.folder,
+                    name: name,
+                  ), // Regresa al frente
+            ),
           ],
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            if (widget.onRequestUpload != null)
-              IconButton(
-                iconSize: 20.0,
-                padding: EdgeInsets.all(0.0),
-                constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
-                icon: const Icon(Icons.upload, size: 20.0),
-                onPressed:
-                    () => showRequestFilesDialog(name), // Regresa al frente
-              ),
+            IconButton(
+              iconSize: 20.0,
+              padding: EdgeInsets.all(0.0),
+              constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+              icon: const Icon(Icons.upload, size: 20.0),
+              onPressed:
+                  () => FolderHandler.showRequestFilesDialog(
+                    context,
+                    name,
+                    _flipCard,
+                    widget.folder,
+                  ), // Regresa al frente
+            ),
             IconButton(
               iconSize: 20.0,
               padding: EdgeInsets.all(0.0),
               constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
               icon: const Icon(Icons.delete, size: 20.0),
-              onPressed: () => showDeleteDialog(name), // Regresa al frente
+              onPressed:
+                  () => FolderHandler.showDeleteDialog(
+                    context,
+                    name,
+                    _flipCard,
+                  ), // Regresa al frente
             ),
           ],
         ),
       ],
     );
-  }
-
-  Future<String?> showDeleteDialog(List<String> name) {
-    return showDialog<String>(
-      context: context,
-      builder:
-          (BuildContext context) => AlertDialog(
-            title: const Text('Confirmación', style: TextStyle(fontSize: 17.0)),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('¿Seguro que desea borrar el directorio?'),
-                Text(name.last),
-              ],
-            ),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.pop(context, 'Cancel'),
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () async {
-                  _flipCard();
-                  await FolderHandler.onDeleteFolder(
-                    context,
-                    widget.folder.name,
-                  );
-                  if (context.mounted) {
-                    Navigator.pop(context, 'OK');
-                  }
-                },
-                child: const Text('OK'),
-              ),
-            ],
-          ),
-    );
-  }
-
-  Future<String?> showRequestFilesDialog(List<String> name) {
-    return showDialog(
-      context: context,
-      builder:
-          (BuildContext context) => DialogInput(
-            title: 'Solicitud de archivos para ${name.last}',
-            label: 'Mensaje de solicitud',
-          ),
-    ).then((option) {
-      _flipCard();
-      if (option['option'] == 'done') {
-        widget.onRequestUpload?.call(option['value'] ?? '');
-      }
-      return null;
-    });
   }
 
   @override
@@ -261,5 +195,21 @@ class _CardFolderState extends State<CardFolder>
         ),
       ),
     );
+  }
+
+  Future<void> onGo(BuildContext context) async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final bucketService = Provider.of<BucketService>(context, listen: false);
+    List<String> name = widget.folder.name.split('/');
+    if (name.isEmpty) return;
+    try {
+      // context.loaderOverlay.show();
+      if (context.mounted) {
+        await authProvider.setUserPrefix(context, name.last);
+      }
+      bucketService.itemsList();
+    } finally {
+      // if (mounted) context.loaderOverlay.hide();
+    }
   }
 }
