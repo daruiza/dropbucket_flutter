@@ -40,6 +40,7 @@ class MyApp extends StatelessWidget {
       title: 'DropBucket',
       theme: IndigoTheme.lightTheme,
       initialRoute: Routes.initialRoute,
+      onGenerateRoute: Routes.onGenerateRoute,
       routes: Routes.getRoutes(context),
     );
   }

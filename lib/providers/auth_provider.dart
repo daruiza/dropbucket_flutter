@@ -36,6 +36,11 @@ class AuthProvider extends ChangeNotifier {
     checkToken();
   }
 
+  Future<bool> chieckIsAutenticate() async {
+    final token = await _storage.read(key: 'token');
+    return token != null && token != '';
+  }
+
   checkToken() async {
     final token = await _storage.read(key: 'token');
     this.token = '';
