@@ -142,7 +142,7 @@ class FolderHandler {
                     TextField(
                       controller: textFieldController,
                       decoration: InputDecoration(
-                        hintText: "Nombre de archivo",
+                        hintText: "Nombre de carpeta",
                         errorText:
                             textFieldController.text.isEmpty
                                 ? null

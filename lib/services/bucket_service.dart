@@ -173,13 +173,33 @@ class BucketService extends ChangeNotifier {
     }
   }
 
+  Future<Response> renameFile({
+    required String name,
+    required String rename,
+  }) async {
+    final url = '$_baseUrl/renamefile';
+    try {
+      final response = await _httpService.get(
+        url,
+        queryParams: {'oldkey': name, 'newkey': rename},
+      );
+
+      if (response.statusCode == 200) {
+        return response;
+      } else {
+        throw Exception(response);
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<Response> deleteFile(
     fileItem, {
     required FileItem file,
     String? fileName,
   }) async {
     final url = _baseUrl;
-
     try {
       final response = await _httpService.delete(
         url,

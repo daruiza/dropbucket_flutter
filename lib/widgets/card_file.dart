@@ -1,10 +1,10 @@
+import 'package:dropbucket_flutter/utils/file_handler.dart';
 import 'package:flutter/material.dart';
 
 import 'package:dropbucket_flutter/widgets/card_dialog_edit.dart';
 import 'package:dropbucket_flutter/models/bucket_response.dart';
 import 'package:dropbucket_flutter/themes/indigo.dart';
 import 'package:file_icon/file_icon.dart';
-
 
 class CardFile extends StatefulWidget {
   final FileItem file;
@@ -44,10 +44,10 @@ class _CardFileState extends State<CardFile>
       duration: Duration(milliseconds: 500),
       vsync: this,
     );
-    _animation = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
-    ));
+    _animation = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -80,16 +80,18 @@ class _CardFileState extends State<CardFile>
                 if (!isFront) _flipCard(); // Permite regresar al frente
               },
               child: Transform(
-                transform:
-                    Matrix4.rotationY(_animation.value * 3.141592653589793),
+                transform: Matrix4.rotationY(
+                  _animation.value * 3.141592653589793,
+                ),
                 alignment: Alignment.center,
-                child: isFront
-                    ? _buildFront()
-                    : Transform(
-                        transform: Matrix4.rotationY(3.141592653589793),
-                        alignment: Alignment.center,
-                        child: _buildBack(),
-                      ),
+                child:
+                    isFront
+                        ? _buildFront()
+                        : Transform(
+                          transform: Matrix4.rotationY(3.141592653589793),
+                          alignment: Alignment.center,
+                          child: _buildBack(),
+                        ),
               ),
             );
           },
@@ -123,7 +125,7 @@ class _CardFileState extends State<CardFile>
             maxLines: 1,
             style: TextStyle(fontSize: 10.0),
           ),
-        )
+        ),
       ],
     );
   }
@@ -141,32 +143,34 @@ class _CardFileState extends State<CardFile>
               color: IndigoTheme.primaryColor,
               iconSize: 20.0,
               padding: EdgeInsets.all(0.0),
-              constraints: BoxConstraints(
-                minWidth: 32.0,
-                minHeight: 32.0,
-              ),
+              constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
               icon: const Icon(Icons.arrow_back, size: 20.0),
               onPressed: _flipCard, // Regresa al frente
             ),
-            if (widget.onEditFile != null)
-              IconButton(
-                  color: IndigoTheme.primaryColor,
-                  iconSize: 20.0,
-                  padding: EdgeInsets.all(0.0),
-                  constraints: BoxConstraints(
-                    minWidth: 32.0,
-                    minHeight: 32.0,
+
+            IconButton(
+              color: IndigoTheme.primaryColor,
+              iconSize: 20.0,
+              padding: EdgeInsets.all(0.0),
+              constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+              icon: const Icon(Icons.edit, size: 20.0),
+              onPressed:
+                  () => FileHandler.showEditFileDialog(
+                    context,
+                    flipCard: _flipCard,
+                    file: widget.file,
+                    name: name,
                   ),
-                  icon: const Icon(Icons.edit, size: 20.0),
-                  onPressed: () => showEditDialog(
-                        context,
-                        flipCard: _flipCard,
-                        name: name,
-                        onEditObject: (rename) {
-                          widget.onEditFile?.call(rename);
-                        },
-                      ) // Regresa al frente
-                  ),
+
+              // () => showEditDialog(
+              //   context,
+              //   flipCard: _flipCard,
+              //   name: name,
+              //   onEditObject: (rename) {
+              //     widget.onEditFile?.call(rename);
+              //   },
+              // ), // Regresa al frente
+            ),
           ],
         ),
         Row(
@@ -174,30 +178,31 @@ class _CardFileState extends State<CardFile>
           children: [
             if (widget.onShared != null)
               IconButton(
-                  color: IndigoTheme.primaryColor,
-                  iconSize: 20.0,
-                  padding: EdgeInsets.all(0.0),
-                  constraints: BoxConstraints(
-                    minWidth: 32.0,
-                    minHeight: 32.0,
-                  ),
-                  icon: const Icon(Icons.share, size: 20.0),
-                  onPressed: () {
-                    _flipCard(); // Regresa al frente
-                    widget.onShared?.call();
-                  }),
-            if (widget.onDelete != null)
-              IconButton(
                 color: IndigoTheme.primaryColor,
                 iconSize: 20.0,
                 padding: EdgeInsets.all(0.0),
-                constraints: BoxConstraints(
-                  minWidth: 32.0,
-                  minHeight: 32.0,
-                ),
-                icon: const Icon(Icons.delete, size: 20.0),
-                onPressed: () => showDeleteDialog(name), // Regresa al frente
+                constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+                icon: const Icon(Icons.share, size: 20.0),
+                onPressed: () {
+                  _flipCard(); // Regresa al frente
+                  widget.onShared?.call();
+                },
               ),
+
+            IconButton(
+              color: IndigoTheme.primaryColor,
+              iconSize: 20.0,
+              padding: EdgeInsets.all(0.0),
+              constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+              icon: const Icon(Icons.delete, size: 20.0),
+              onPressed:
+                  () => FileHandler.showDeleteDialog(
+                    context,
+                    widget.file,
+                    name,
+                    _flipCard,
+                  ), // Regresa al frente
+            ),
           ],
         ),
         Row(
@@ -205,51 +210,19 @@ class _CardFileState extends State<CardFile>
           children: [
             if (widget.onDownload != null)
               IconButton(
-                  color: IndigoTheme.primaryColor,
-                  iconSize: 20.0,
-                  padding: EdgeInsets.all(0.0),
-                  constraints: BoxConstraints(
-                    minWidth: 32.0,
-                    minHeight: 32.0,
-                  ),
-                  icon: const Icon(Icons.download, size: 20.0),
-                  onPressed: () {
-                    _flipCard();
-                    widget.onDownload?.call();
-                  }),
+                color: IndigoTheme.primaryColor,
+                iconSize: 20.0,
+                padding: EdgeInsets.all(0.0),
+                constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+                icon: const Icon(Icons.download, size: 20.0),
+                onPressed: () {
+                  _flipCard();
+                  widget.onDownload?.call();
+                },
+              ),
           ],
         ),
       ],
-    );
-  }
-
-  Future<String?> showDeleteDialog(List<String> name) {
-    return showDialog<String>(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: const Text(
-          'Confirmación',
-          style: TextStyle(fontSize: 17.0),
-        ),
-        content: Column(mainAxisSize: MainAxisSize.min, children: [
-          const Text('¿Seguro que desea borrar el archivo?'),
-          Text(name.last),
-        ]),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.pop(context, 'Cancel'),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              _flipCard();
-              widget.onDelete?.call();
-              Navigator.pop(context, 'OK');
-            },
-            child: const Text('OK'),
-          ),
-        ],
-      ),
     );
   }
 }

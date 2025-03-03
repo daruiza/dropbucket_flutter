@@ -8,15 +8,8 @@ import 'package:dropbucket_flutter/utils/folder_handler.dart';
 
 class CardFolder extends StatefulWidget {
   final FolderItem folder;
-  final Function? onEditPrefix;
-  final Function? onRequestUpload;
 
-  const CardFolder({
-    super.key,
-    required this.folder,
-    this.onEditPrefix,
-    this.onRequestUpload,
-  });
+  const CardFolder({super.key, required this.folder});
 
   @override
   State<CardFolder> createState() => _CardFolderState();
