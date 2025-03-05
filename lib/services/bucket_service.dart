@@ -9,7 +9,8 @@ import 'package:dropbucket_flutter/providers/auth_provider.dart';
 import 'package:dropbucket_flutter/services/interceptor_service.dart';
 
 class BucketService extends ChangeNotifier {
-  final String _baseUrl = 'http://3.239.255.151:3000/bucket';
+  final String _baseUrl = 'http://temposolutions.online:3000/bucket';
+  // final String _baseUrl = 'http://3.239.255.151:3000/bucket';
   // final String _baseUrl = 'http://localhost:3000/bucket';
   final InterceptorService _httpService;
   final AuthProvider _authProvider;
@@ -182,6 +183,42 @@ class BucketService extends ChangeNotifier {
       final response = await _httpService.get(
         url,
         queryParams: {'oldkey': name, 'newkey': rename},
+      );
+
+      if (response.statusCode == 200) {
+        return response;
+      } else {
+        throw Exception(response);
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Response> downloadFile({required FileItem file}) async {
+    final url = '$_baseUrl/object';
+    try {
+      final response = await _httpService.get(
+        url,
+        queryParams: {'key': file.name},
+      );
+
+      if (response.statusCode == 200) {
+        return response;
+      } else {
+        throw Exception(response);
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Response> sharedFile({required FileItem file}) async {
+    final url = '$_baseUrl/url';
+    try {
+      final response = await _httpService.get(
+        url,
+        queryParams: {'key': file.name},
       );
 
       if (response.statusCode == 200) {

@@ -1,7 +1,6 @@
 import 'package:dropbucket_flutter/utils/file_handler.dart';
 import 'package:flutter/material.dart';
 
-import 'package:dropbucket_flutter/widgets/card_dialog_edit.dart';
 import 'package:dropbucket_flutter/models/bucket_response.dart';
 import 'package:dropbucket_flutter/themes/indigo.dart';
 import 'package:file_icon/file_icon.dart';
@@ -10,20 +9,14 @@ class CardFile extends StatefulWidget {
   final FileItem file;
   final Function fetchItemsList;
   final Function? onGo;
-  final Function? onDelete;
   final Function? onDownload;
-  final Function? onShared;
-  final Function? onEditFile;
 
   const CardFile({
     super.key,
     required this.file,
     required this.fetchItemsList,
     this.onGo,
-    this.onDelete,
     this.onDownload,
-    this.onShared,
-    this.onEditFile,
   });
 
   @override
@@ -113,7 +106,7 @@ class _CardFileState extends State<CardFile>
           child: GestureDetector(
             onTap: () => widget.onGo?.call(),
             onLongPressUp: _flipCard,
-            // onSecondaryTap: _flipCard,
+            onSecondaryTap: _flipCard,
             child: FileIcon('.${widget.file.extension}', size: 65),
           ),
         ),
@@ -161,33 +154,26 @@ class _CardFileState extends State<CardFile>
                     file: widget.file,
                     name: name,
                   ),
-
-              // () => showEditDialog(
-              //   context,
-              //   flipCard: _flipCard,
-              //   name: name,
-              //   onEditObject: (rename) {
-              //     widget.onEditFile?.call(rename);
-              //   },
-              // ), // Regresa al frente
             ),
           ],
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            if (widget.onShared != null)
-              IconButton(
-                color: IndigoTheme.primaryColor,
-                iconSize: 20.0,
-                padding: EdgeInsets.all(0.0),
-                constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
-                icon: const Icon(Icons.share, size: 20.0),
-                onPressed: () {
-                  _flipCard(); // Regresa al frente
-                  widget.onShared?.call();
-                },
-              ),
+            IconButton(
+              color: IndigoTheme.primaryColor,
+              iconSize: 20.0,
+              padding: EdgeInsets.all(0.0),
+              constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+              icon: const Icon(Icons.share, size: 20.0),
+              onPressed: () {
+                FileHandler.onShared(
+                  context: context,
+                  file: widget.file,
+                  flipCard: _flipCard,
+                );
+              },
+            ),
 
             IconButton(
               color: IndigoTheme.primaryColor,
@@ -208,18 +194,19 @@ class _CardFileState extends State<CardFile>
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            if (widget.onDownload != null)
-              IconButton(
-                color: IndigoTheme.primaryColor,
-                iconSize: 20.0,
-                padding: EdgeInsets.all(0.0),
-                constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
-                icon: const Icon(Icons.download, size: 20.0),
-                onPressed: () {
-                  _flipCard();
-                  widget.onDownload?.call();
-                },
-              ),
+            IconButton(
+              color: IndigoTheme.primaryColor,
+              iconSize: 20.0,
+              padding: EdgeInsets.all(0.0),
+              constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+              icon: const Icon(Icons.download, size: 20.0),
+              onPressed:
+                  () => FileHandler.onDownloadFile(
+                    context: context,
+                    file: widget.file,
+                    flipCard: _flipCard,
+                  ),
+            ),
           ],
         ),
       ],

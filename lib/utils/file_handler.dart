@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:dropbucket_flutter/utils/message.dart';
 import 'package:dropbucket_flutter/enums/http_status_code.dart';
 import 'package:dropbucket_flutter/services/bucket_service.dart';
 import 'package:dropbucket_flutter/models/bucket_response.dart';
 import 'package:dropbucket_flutter/providers/message_provider.dart';
+import 'package:flutter/foundation.dart';
+import 'package:path_provider/path_provider.dart';
+// import 'package:web/web.dart' as web;
+// import 'package:js/js_util.dart' as js_util;
 
 class FileHandler {
+  // UPLOAD FILE
   static Future<void> onUploadFiles(BuildContext context) async {
     final bucketService = Provider.of<BucketService>(context, listen: false);
     final result = await FilePicker.platform.pickFiles(
@@ -46,7 +55,7 @@ class FileHandler {
     }
   }
 
-  // FOLDER FILE NAME
+  // FOLDER FILE RENAME
   static Future<String?> showEditFileDialog(
     BuildContext context, {
     required Function flipCard,
@@ -143,14 +152,24 @@ class FileHandler {
     String rename,
   ) async {
     final bucketService = Provider.of<BucketService>(context, listen: false);
+
+    // context.loaderOverlay.show();
+    // Validamos la extención en el nombre
+    // 1, si ya la tiene
+    // 1.1 - verificar que sea la misma
+    // 1.2 - no colocarla nuevamente
+    // 2. si no la tiene, colocarla
     final String oldname = file.name;
-    String directory = oldname.substring(0, oldname.lastIndexOf('/') + 1);
+    String directory =
+        oldname.contains('/')
+            ? '${oldname.substring(0, oldname.lastIndexOf('/') + 1)}/'
+            : oldname.substring(0, oldname.lastIndexOf('/') + 1);
+    final String extension = oldname.split('.').last;
 
     try {
-      // context.loaderOverlay.show();
       await bucketService.renameFile(
         name: oldname,
-        rename: '$directory$rename',
+        rename: '$directory$rename.$extension',
       );
 
       if (context.mounted) {
@@ -177,6 +196,121 @@ class FileHandler {
     }
   }
 
+  // SHARE FILE
+  static onShared({
+    required BuildContext context,
+    required FileItem file,
+    required Function flipCard,
+  }) async {
+    List<String> name = file.name.split('/');
+    final bucketService = Provider.of<BucketService>(context, listen: false);
+    try {
+      final response = await bucketService.sharedFile(file: file);
+      await Clipboard.setData(
+        ClipboardData(text: jsonDecode(response.body)['url'] ?? ''),
+      );
+      flipCard();
+      if (context.mounted) {
+        MessageProvider.showSnackBarContext(
+          context,
+          Message(
+            message: 'Copiado con exito',
+            statusCode: HttpStatusColor.success200.code,
+            messages: ['Archivo: $name!'],
+          ),
+        );
+      }
+    } catch (e) {
+      // context.loaderOverlay.hide();
+      if (context.mounted) {
+        MessageProvider.showSnackBarContext(
+          context,
+          Message.fromJson({"error": e.toString(), "statusCode": 400}),
+        );
+      }
+    }
+  }
+
+  // DOWNLOAD FILE
+  static onDownloadFile({
+    required BuildContext context,
+    required FileItem file,
+    required Function flipCard,
+  }) async {
+    List<String> name = file.name.split('/');
+    final bucketService = Provider.of<BucketService>(context, listen: false);
+    try {
+      final response = await bucketService.downloadFile(file: file);
+      if (!kIsWeb) {
+            Directory directory;
+            if (Platform.isAndroid || Platform.isIOS) {
+              directory = await getApplicationDocumentsDirectory();
+            } else {
+              directory =
+                  await getDownloadsDirectory() ?? await getTemporaryDirectory();
+            }
+            final filePath = '${directory.path}/${name.last}';
+            final responseFile = File(filePath);
+            await responseFile.writeAsBytes(response.bodyBytes);
+            // TODO: si funciona, pero se neceista que guarde las repetidas_0x
+      } else {
+        // await downloadFile(response.bodyBytes, name.last);
+      }
+      flipCard();
+      if (context.mounted) {
+        MessageProvider.showSnackBarContext(
+          context,
+          Message(
+            message: 'Descarga exitosa!',
+            statusCode: HttpStatusColor.success200.code,
+            messages: ['Archivo: $name!'],
+          ),
+        );
+      }
+    } catch (e) {
+      // context.loaderOverlay.hide();
+      if (context.mounted) {
+        MessageProvider.showSnackBarContext(
+          context,
+          Message.fromJson({"error": e.toString(), "statusCode": 400}),
+        );
+      }
+    }
+  }
+
+  // static Future<void> downloadFile(Uint8List bytes, String fileName) async {
+  //   try {
+  //     // Convertimos los bytes a un Blob usando la nueva API de web
+  //     final blob = web.Blob(
+  //       js_util.jsify([bytes]),
+  //     ); // .toJS convierte los bytes a formato JavaScript
+
+  //     // Creamos la URL del blob usando la nueva API
+  //     final url = web.URL.createObjectURL(blob);
+
+  //     // Creamos un elemento <a> programáticamente
+  //     final anchor = web.document.createElement('a') as web.HTMLAnchorElement;
+
+  //     // Configuramos las propiedades del elemento
+  //     anchor.href = url;
+  //     anchor.download = fileName;
+  //     anchor.style.display = 'none'; // Ocultamos el elemento
+
+  //     // Añadimos el elemento al DOM
+  //     web.document.body?.appendChild(anchor);
+
+  //     // Simulamos el clic
+  //     anchor.click();
+
+  //     // Limpiamos: removemos el elemento y revocamos la URL
+  //     web.document.body?.removeChild(anchor);
+  //     web.URL.revokeObjectURL(url);
+  //   } catch (e) {
+  //     rethrow;
+  //   }
+  // }
+
+  // DELETE FILE
   static Future<String?> showDeleteDialog(
     BuildContext context,
     FileItem file,

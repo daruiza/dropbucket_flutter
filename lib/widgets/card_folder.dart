@@ -52,6 +52,39 @@ class _CardFolderState extends State<CardFolder>
     });
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: AnimatedBuilder(
+          animation: _animation,
+          builder: (context, child) {
+            final isFront = _animation.value < 0.5;
+            return GestureDetector(
+              onLongPressUp: () {
+                if (!isFront) _flipCard(); // Permite regresar al frente
+              },
+              child: Transform(
+                transform: Matrix4.rotationY(
+                  _animation.value * 3.141592653589793,
+                ),
+                alignment: Alignment.center,
+                child:
+                    isFront
+                        ? _buildFront()
+                        : Transform(
+                          transform: Matrix4.rotationY(3.141592653589793),
+                          alignment: Alignment.center,
+                          child: _buildBack(),
+                        ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
   Widget _buildFront() {
     List<String> name = widget.folder.name.split('/');
     return Column(
@@ -67,7 +100,7 @@ class _CardFolderState extends State<CardFolder>
               onGo(context);
             },
             onLongPressUp: _flipCard,
-            // onSecondaryTap: _flipCard,
+            onSecondaryTap: _flipCard,
             child: Icon(
               Icons.folder,
               size: 80,
@@ -154,39 +187,6 @@ class _CardFolderState extends State<CardFolder>
           ],
         ),
       ],
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: AnimatedBuilder(
-          animation: _animation,
-          builder: (context, child) {
-            final isFront = _animation.value < 0.5;
-            return GestureDetector(
-              onLongPressUp: () {
-                if (!isFront) _flipCard(); // Permite regresar al frente
-              },
-              child: Transform(
-                transform: Matrix4.rotationY(
-                  _animation.value * 3.141592653589793,
-                ),
-                alignment: Alignment.center,
-                child:
-                    isFront
-                        ? _buildFront()
-                        : Transform(
-                          transform: Matrix4.rotationY(3.141592653589793),
-                          alignment: Alignment.center,
-                          child: _buildBack(),
-                        ),
-              ),
-            );
-          },
-        ),
-      ),
     );
   }
 

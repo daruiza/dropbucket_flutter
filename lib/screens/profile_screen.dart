@@ -69,7 +69,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           );
         },
-      ),      
+      ),
     );
   }
 }
@@ -404,10 +404,22 @@ class _ProfileForm extends StatelessWidget {
             profileForm.photo.text = json['url'];
             profileForm.photoExists.text = 'true';
             if (context.mounted) {
-              await userPatch(context);
-              await authProvider.checkToken();
-              // Notifica y vuelve a recargar el build
-              profileForm.notifyListeners();
+              try {
+                await userPatch(context);
+                await authProvider.checkToken();
+                // Notifica y vuelve a recargar el build
+                profileForm.notifyListeners();
+              } on Exception catch (e) {
+                if (context.mounted) {
+                  MessageProvider.showSnackBarContext(
+                    context,
+                    Message.fromJson({
+                      "error": e.toString(),
+                      "statusCode": 400,
+                    }),
+                  );
+                }
+              }
             }
 
             // Eliminar archivo anterior

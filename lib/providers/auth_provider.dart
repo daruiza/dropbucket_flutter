@@ -66,6 +66,7 @@ class AuthProvider extends ChangeNotifier {
         }
       } catch (e) {
         // TODO: enviar un mensaje de token expirado
+        rethrow;
       }
     }
     notifyListeners();
