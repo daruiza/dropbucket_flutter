@@ -43,7 +43,7 @@ class FolderHandler {
                           textFieldController.text.isEmpty
                               ? null
                               : RegExp(
-                                r'^[a-zA-Z0-9]+$',
+                                r'^[a-zA-Z0-9_-]+$',
                               ).hasMatch(textFieldController.text)
                               ? null
                               : 'Solo letras y números',
@@ -112,7 +112,8 @@ class FolderHandler {
 
       // Validar que el texto contenga solo letras y números
       final isValid = RegExp(
-        r'^[a-zA-Z0-9][-_a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ\s]{0,63}(?<![-_. ])\.?[a-zA-Z0-9]{0,8}$',
+        r'^[a-zA-Z0-9_-]+$',
+        // r'^[a-zA-Z0-9][-_a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ\s]{0,63}(?<![-_. ])\.?[a-zA-Z0-9]{0,8}$',
       ).hasMatch(input);
       // Actualizar el estado local
       isButtonEnabled = isValid && input.isNotEmpty;
@@ -147,7 +148,8 @@ class FolderHandler {
                             textFieldController.text.isEmpty
                                 ? null
                                 : RegExp(
-                                  r'^[a-zA-Z0-9][-_a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ\s]{0,63}(?<![-_. ])\.?[a-zA-Z0-9]{0,8}$',
+                                   r'^[a-zA-Z0-9_-]+$',
+                                  // r'^[a-zA-Z0-9][-_a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ\s]{0,63}(?<![-_. ])\.?[a-zA-Z0-9]{0,8}$',
                                 ).hasMatch(textFieldController.text)
                                 ? null
                                 : 'Solo letras y números',
@@ -287,7 +289,7 @@ class FolderHandler {
                     Navigator.pop(context, 'OK');
                   }
                 },
-                child: const Text('OK'),
+                child: const Text('Eliminar'),
               ),
             ],
           ),

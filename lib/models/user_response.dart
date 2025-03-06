@@ -33,32 +33,38 @@ class UserResponse {
   });
 
   factory UserResponse.fromJson(Map<String, dynamic> json) {
-    List<Option> userOptions = [];
-    if (json['user']?['rol']?['optionrols'] != null) {
-      userOptions = (json['user']['rol']['optionrols'] as List)
-          .map((optionRol) => optionRol['option'] as Map<String, dynamic>)
-          .map((optionJson) => Option.fromJson(optionJson))
-          .toList();
-    }
+    try {
+      List<Option> userOptions = [];
+      if (json['user']?['rol']?['optionrols'] != null) {
+        userOptions =
+            (json['user']['rol']['optionrols'] as List)
+                .map((optionRol) => optionRol['option'] as Map<String, dynamic>)
+                .map((optionJson) => Option.fromJson(optionJson))
+                .toList();
+      }
 
-    return UserResponse(
-      id: json['user']['id'],
-      email: json['user']['email'],
-      name: json['user']['name'],
-      names: json['user']['names'],
-      lastnames: json['user']['lastnames'],
-      phone: json['user']['phone'],
-      theme: json['user']['theme'],
-      prefix: json['user']['prefix'],
-      prefixcurrent: json['user']['prefixcurrent'] ?? json['user']['prefix'],
-      photo: json['user']['photo'],
-      rolId: json['user']['rolId'],
-      rol: json['user']?['rol'] != null
-          ? Rol.fromJson(json['user']?['rol'])
-          : Rol(id: 0, name: '', description: ''),
-      options: userOptions,
-      token: json['token'] ?? '',
-    );
+      return UserResponse(
+        id: json['user']['id'] ?? 1,
+        email: json['user']['email'] ?? '',
+        name: json['user']['name'] ?? '',
+        names: json['user']['names'] ?? '',
+        lastnames: json['user']['lastnames'] ?? '',
+        phone: json['user']['phone'] ?? '',
+        theme: json['user']['theme'] ?? '',
+        prefix: json['user']['prefix'] ?? '',
+        prefixcurrent: json['user']['prefixcurrent'] ?? json['user']['prefix'],
+        photo: json['user']['photo'] ?? '',
+        rolId: json['user']['rolId'] ?? 1,
+        rol:
+            json['user']?['rol'] != null
+                ? Rol.fromJson(json['user']['rol'])
+                : Rol(id: 1, name: '', description: ''),
+        options: userOptions,
+        token: json['token'] ?? '',
+      );
+    } catch (_) {
+      rethrow;
+    }
   }
 
   static List<UserResponse> fromJsonList(dynamic json) {
@@ -79,7 +85,7 @@ class UserResponse {
       'photo': photo,
       'rolId': rolId,
       'rol': rol.toJson(),
-      'options': options.map((Option el) => el.toJson()).toList()
+      'options': options.map((Option el) => el.toJson()).toList(),
     };
   }
 }
@@ -88,17 +94,13 @@ class Rol {
   final int id;
   final String name;
   final String description;
-  Rol({
-    required this.id,
-    required this.name,
-    required this.description,
-  });
+  Rol({required this.id, required this.name, required this.description});
 
   factory Rol.fromJson(Map<String, dynamic> json) {
     return Rol(
-      id: json['id'],
-      name: json['name'],
-      description: json['description'],
+      id: json['id'] ?? 1,
+      name: json['name'] ?? '',
+      description: json['description'] ?? '',
     );
   }
 
@@ -107,11 +109,7 @@ class Rol {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'description': description,
-    };
+    return {'id': id, 'name': name, 'description': description};
   }
 }
 
@@ -152,25 +150,17 @@ class Option {
   final String name;
   final String? description;
 
-  const Option({
-    required this.id,
-    required this.name,
-    this.description,
-  });
+  const Option({required this.id, required this.name, this.description});
 
   factory Option.fromJson(Map<String, dynamic> json) {
     return Option(
-      id: json['id'],
-      name: json['name'],
+      id: json['id'] ?? 1,
+      name: json['name'] ?? '',
       description: json['description'],
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'description': description,
-    };
+    return {'id': id, 'name': name, 'description': description};
   }
 }

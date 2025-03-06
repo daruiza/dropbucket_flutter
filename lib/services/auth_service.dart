@@ -6,7 +6,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 class AuthService extends ChangeNotifier {
-  final String _baseUrl = 'http://temposolutions.online:3000';
+  final String _baseUrl = 'temposolutions.online:3000';
   // final String _baseUrl = '3.239.255.151:3000';
   // final String _baseUrl = 'localhost:3000';
 
@@ -35,8 +35,8 @@ class AuthService extends ChangeNotifier {
         final data = jsonDecode(response.body);
 
         // Agregar / al prefix y al prefix
-        if (data['user']['prefix'] != '' &&
-            data['user']['prefix'] != null &&
+        if (data['user']['prefix'] != null &&
+            data['user']['prefix'] != '' &&
             !data['user']['prefix'].endsWith('/')) {
           data['user']['prefix'] += '/';
         }
@@ -60,7 +60,7 @@ class AuthService extends ChangeNotifier {
 
   Future<void> logoutUser() async {
     await _storage.delete(key: 'token');
-    await _storage.delete(key: 'user_data');    
+    await _storage.delete(key: 'user_data');
     return;
   }
 

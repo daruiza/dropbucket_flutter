@@ -41,7 +41,7 @@ class HomeScreen extends StatelessWidget {
         return Scaffold(
           appBar: AppBarMenu(
             // TODO: colocar el Breadcrumb aqui en el medio
-            title: Text(authProvider.user?.name ?? 'Home'),
+            title: 'Home',
             actions: [],
           ),
           body: Column(

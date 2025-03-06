@@ -187,11 +187,19 @@ class _LoginForm extends StatelessWidget {
       }
     } on Exception catch (e) {
       try {
-        final message = Message.fromString(e.toString());
-        // MessageProvider.showSnackBar(message);
         if (context.mounted) {
-          MessageProvider.showSnackBarContext(context, message);
+          MessageProvider.showSnackBarContext(
+            context,
+            Message.fromJson({"error": e.toString(), "statusCode": 400}),
+          );
         }
+
+        // FORMA ANTIGUA DE MOSTRAR LOS MENSAJES.
+        // final message = Message.fromString(e.toString());
+        // // MessageProvider.showSnackBar(message);
+        // if (context.mounted) {
+        //   MessageProvider.showSnackBarContext(context, message);
+        // }
       } catch (e) {
         if (context.mounted) {
           MessageProvider.showSnackBarContext(

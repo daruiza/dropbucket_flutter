@@ -12,15 +12,21 @@ class Message {
   });
 
   factory Message.fromJson(Map<String, dynamic> json) {
-    return Message(
-      messages:
-          json['messages'] != null
-              ? jsonDecode(json['messages'])
-              : [json['message'] ?? json['error']],
-      message:
-          json['error'] ?? json['message'], // Mapeado de 'error' a 'message'
-      statusCode: json['statusCode'],
-    );
+    try {
+      return Message(
+        messages:
+            json['messages'] != null
+                ? jsonDecode(json['messages'])
+                : [json['message'] ?? json['error']],
+        message:
+            json['error'] ?? json['message'], // Mapeado de 'error' a 'message'
+        statusCode: json['statusCode'],
+      );
+    } catch (e) {
+      throw FormatException(
+        'Error al parsear el string JSON, al mostrar el error, fromJson: $e',
+      );
+    }
   }
 
   factory Message.fromString(String jsonString) {
@@ -33,7 +39,9 @@ class Message {
       final Map<String, dynamic> json = jsonDecode(stringData);
       return Message.fromJson(json);
     } catch (e) {
-      throw FormatException('Error al parsear el string JSON: $e');
+      throw FormatException(
+        'Error al parsear el string JSON, al mostrar el error fromString: $e',
+      );
     }
   }
 

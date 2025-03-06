@@ -39,7 +39,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       appBar: AppBarMenu(
         // TODO: colocar el Breadcrumb aqui en el medio
-        title: Text(authProvider.user?.name ?? 'Profile'),
+        title: 'Profile',
         actions: [
           Transform.scale(
             scale: 0.7,

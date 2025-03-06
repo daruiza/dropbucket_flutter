@@ -36,6 +36,11 @@ class Routes {
             child: const ProfileScreen(),
             onUnauthorized: () => const LoginScreen(),
           ),
+      Routes.users:
+          (context) => AuthMiddleware(
+            child: const UsersScreen(),
+            onUnauthorized: () => const LoginScreen(),
+          ),
       Routes.login:
           (context) => AuthMiddleware(
             child: const LoginScreen(),

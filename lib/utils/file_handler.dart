@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
@@ -10,8 +9,11 @@ import 'package:dropbucket_flutter/enums/http_status_code.dart';
 import 'package:dropbucket_flutter/services/bucket_service.dart';
 import 'package:dropbucket_flutter/models/bucket_response.dart';
 import 'package:dropbucket_flutter/providers/message_provider.dart';
-import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:universal_html/html.dart' as html;
+import 'dart:io' show Platform, Directory, File;
+
 // import 'package:web/web.dart' as web;
 // import 'package:js/js_util.dart' as js_util;
 
@@ -241,20 +243,21 @@ class FileHandler {
     final bucketService = Provider.of<BucketService>(context, listen: false);
     try {
       final response = await bucketService.downloadFile(file: file);
+      Directory directory;
       if (!kIsWeb) {
-            Directory directory;
-            if (Platform.isAndroid || Platform.isIOS) {
-              directory = await getApplicationDocumentsDirectory();
-            } else {
-              directory =
-                  await getDownloadsDirectory() ?? await getTemporaryDirectory();
-            }
-            final filePath = '${directory.path}/${name.last}';
-            final responseFile = File(filePath);
-            await responseFile.writeAsBytes(response.bodyBytes);
-            // TODO: si funciona, pero se neceista que guarde las repetidas_0x
-      } else {
-        // await downloadFile(response.bodyBytes, name.last);
+        if (Platform.isAndroid || Platform.isIOS) {
+          directory = await getApplicationDocumentsDirectory();
+        } else {
+          directory =
+              await getDownloadsDirectory() ?? await getTemporaryDirectory();
+        }
+        final filePath = '${directory.path}/${name.last}';
+        final responseFile = File(filePath);
+        await responseFile.writeAsBytes(response.bodyBytes);
+        // TODO: si funciona, pero se neceista que guarde las repetidas_0x
+      }
+      if (kIsWeb) {
+        await downloadFile(response.bodyBytes, name.last);
       }
       flipCard();
       if (context.mounted) {
@@ -278,37 +281,21 @@ class FileHandler {
     }
   }
 
-  // static Future<void> downloadFile(Uint8List bytes, String fileName) async {
-  //   try {
-  //     // Convertimos los bytes a un Blob usando la nueva API de web
-  //     final blob = web.Blob(
-  //       js_util.jsify([bytes]),
-  //     ); // .toJS convierte los bytes a formato JavaScript
+  static Future<void> downloadFile(List<int> bytes, String fileName) async {
+    // Lógica de descarga para web
+    try {
+      final blob = html.Blob([bytes]);
+      final url = html.Url.createObjectUrl(blob);
 
-  //     // Creamos la URL del blob usando la nueva API
-  //     final url = web.URL.createObjectURL(blob);
+      html.AnchorElement(href: url)
+        ..setAttribute('download', fileName)
+        ..click();
 
-  //     // Creamos un elemento <a> programáticamente
-  //     final anchor = web.document.createElement('a') as web.HTMLAnchorElement;
-
-  //     // Configuramos las propiedades del elemento
-  //     anchor.href = url;
-  //     anchor.download = fileName;
-  //     anchor.style.display = 'none'; // Ocultamos el elemento
-
-  //     // Añadimos el elemento al DOM
-  //     web.document.body?.appendChild(anchor);
-
-  //     // Simulamos el clic
-  //     anchor.click();
-
-  //     // Limpiamos: removemos el elemento y revocamos la URL
-  //     web.document.body?.removeChild(anchor);
-  //     web.URL.revokeObjectURL(url);
-  //   } catch (e) {
-  //     rethrow;
-  //   }
-  // }
+      html.Url.revokeObjectUrl(url);
+    } catch (e) {
+      rethrow;
+    }
+  }
 
   // DELETE FILE
   static Future<String?> showDeleteDialog(

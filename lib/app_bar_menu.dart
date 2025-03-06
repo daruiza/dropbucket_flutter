@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
-  final Widget title;
+  final String title;
   final List<Widget>? actions;
   final Widget? leading;
   final bool automaticallyImplyLeading;
@@ -33,11 +33,10 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
 
     final prefix = authProvider.user?.prefix ?? '';
     final prefixcurrent = authProvider.user?.prefixcurrent ?? '';
-
     final String currentRoute = ModalRoute.of(context)?.settings.name ?? '';
 
     return AppBar(
-      title: Text(authProvider.user?.name ?? ''),
+      title: Text(authProvider.user?.name ?? title),
       actions: [
         // FolderReturn
         if (prefixcurrent.length > prefix.length && currentRoute == Routes.home)
@@ -49,19 +48,29 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
                 }),
           ),
         ...actions ?? [],
+        if (authProvider.isAuthenticated &&
+            (currentRoute == Routes.profile || currentRoute == Routes.users))
+          IconButton(
+            onPressed: () {
+              Navigator.pushReplacementNamed(context, Routes.home);
+            },
+            icon: Icon(Icons.home, color: IndigoTheme.texContrastColor),
+          ),
+        if (currentRoute != Routes.users)
+          IconButton(
+            icon: Icon(
+              Icons.workspaces_rounded,
+              color: IndigoTheme.texContrastColor,
+            ),
+            onPressed:
+                () => Navigator.pushReplacementNamed(context, Routes.users),
+          ),
         if (authProvider.isAuthenticated && currentRoute != Routes.profile)
           IconButton(
             onPressed: () {
               Navigator.pushReplacementNamed(context, Routes.profile);
             },
             icon: Icon(Icons.person, color: IndigoTheme.texContrastColor),
-          ),
-        if (authProvider.isAuthenticated && currentRoute == Routes.profile)
-          IconButton(
-            onPressed: () {
-              Navigator.pushReplacementNamed(context, Routes.home);
-            },
-            icon: Icon(Icons.home, color: IndigoTheme.texContrastColor),
           ),
         if (authProvider.isAuthenticated)
           IconButton(
@@ -99,28 +108,6 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
         'login',
         // arguments: {'goodbay': true},
       );
-
-      // Esta forma falla
-      // Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
-
-      // Navigator.pushAndRemoveUntil(
-      //   context,
-      //   MaterialPageRoute(
-      //     builder: (context) {
-      //       return const LoginScreen();
-      //     },
-      //   ),
-      //   (Route<dynamic> route) => false,
-      // );
-
-      // Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-      //   MaterialPageRoute(
-      //     builder: (BuildContext context) {
-      //       return const LoginScreen();
-      //     },
-      //   ),
-      //   (_) => false,
-      // );
     }
   }
 

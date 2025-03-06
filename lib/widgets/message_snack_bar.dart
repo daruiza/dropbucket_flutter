@@ -10,9 +10,7 @@ class MessageSnackBar extends SnackBar {
     required Message? message,
     super.duration,
   }) : super(
-         backgroundColor: HttpStatusColor.getColor(
-           message?.statusCode ?? 500,
-         ),
+         backgroundColor: HttpStatusColor.getColor(message?.statusCode ?? 500),
          content: Builder(
            builder: (context) {
              return SizedBox(
@@ -27,9 +25,7 @@ class MessageSnackBar extends SnackBar {
                        Row(
                          children: [
                            Icon(
-                             HttpStatusIcon.getIcon(
-                               message?.statusCode ?? 500,
-                             ),
+                             HttpStatusIcon.getIcon(message?.statusCode ?? 500),
                              color: Colors.white,
                            ),
                            const SizedBox(width: 8),
