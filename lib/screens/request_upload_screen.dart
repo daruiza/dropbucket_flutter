@@ -43,6 +43,7 @@ class RequestUploadScreen extends StatelessWidget {
 
     final result = await FilePicker.platform.pickFiles(
       allowMultiple: true, // Habilitamos la selección múltiple
+       withData: true, //Fuerza la carga de los datos en memoria
     );
     if (result != null && result.files.isNotEmpty) {
       // Mostrar el indicador de carga

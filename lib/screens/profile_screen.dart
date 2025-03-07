@@ -359,6 +359,7 @@ class _ProfileForm extends StatelessWidget {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
+      withData: true, //Fuerza la carga de los datos en memoria
     );
 
     if (result != null) {

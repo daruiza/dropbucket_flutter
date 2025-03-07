@@ -1,9 +1,10 @@
-import 'dart:convert';
-
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:provider/provider.dart';
+
+import 'dart:convert';
+import 'package:http/http.dart';
+import 'package:desktop_drop/desktop_drop.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:dropbucket_flutter/models/bucket_response.dart';
 import 'package:dropbucket_flutter/providers/auth_provider.dart';
 import 'package:dropbucket_flutter/services/interceptor_service.dart';
@@ -138,6 +139,29 @@ class BucketService extends ChangeNotifier {
     final url = '$_baseUrl/upload-multiple';
     try {
       final response = await _httpService.uploadMultipleFiles(
+        url,
+        files: files,
+        fields: {'prefix': prefix ?? _authProvider.user?.prefixcurrent ?? ''},
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return response;
+      } else {
+        throw Exception(response);
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Response> storeBlobFiles({
+    required List<DropItem> files,
+    String? prefix,
+  }) async {
+    final url = '$_baseUrl/upload-multiple';
+    try {      
+
+      final response = await _httpService.uploadFiles(
         url,
         files: files,
         fields: {'prefix': prefix ?? _authProvider.user?.prefixcurrent ?? ''},

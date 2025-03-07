@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dropbucket_flutter/app_bar_menu.dart';
-import 'package:dropbucket_flutter/providers/providers.dart';
 import 'package:dropbucket_flutter/services/services.dart';
 import 'package:dropbucket_flutter/widgets/breadcrumb.dart';
 import 'package:dropbucket_flutter/widgets/card_file.dart';
@@ -9,19 +8,18 @@ import 'package:dropbucket_flutter/widgets/card_folder.dart';
 import 'package:dropbucket_flutter/utils/file_handler.dart';
 import 'package:dropbucket_flutter/utils/folder_handler.dart';
 import 'package:dropbucket_flutter/themes/indigo.dart';
+import 'package:desktop_drop/desktop_drop.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final bucketService = Provider.of<BucketService>(context);
 
     return FutureBuilder(
       future:
           Provider.of<BucketService>(context, listen: false).itemsListFuture(),
-      // future: null,
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         if (bucketService.isLoading) {
           return const Center(child: CircularProgressIndicator());
@@ -44,38 +42,46 @@ class HomeScreen extends StatelessWidget {
             title: 'Home',
             actions: [],
           ),
-          body: Column(
+          body: Stack(
             children: [
-              Breadcrumb(
-                fetchItemsList: () {
-                  bucketService.itemsList();
-                },
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: GridView.builder(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: crossAxisCount,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
-                      mainAxisExtent: 120,
-                    ),
-                    itemCount: folders.length + files.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      if (index < folders.length) {
-                        return CardFolder(folder: folders[index]);
-                      } else {
-                        return CardFile(
-                          file: files[index - folders.length],
-                          fetchItemsList: () {
-                            bucketService.itemsList();
-                          },
-                        );
-                      }
+              Column(
+                children: [
+                  Breadcrumb(
+                    fetchItemsList: () {
+                      bucketService.itemsList();
                     },
                   ),
-                ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: buildDropzone(
+                        context: context,
+                        child: GridView.builder(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: crossAxisCount,
+                                crossAxisSpacing: 10,
+                                mainAxisSpacing: 10,
+                                mainAxisExtent: 120,
+                              ),
+                          itemCount: folders.length + files.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            if (index < folders.length) {
+                              return CardFolder(folder: folders[index]);
+                            } else {
+                              return CardFile(
+                                file: files[index - folders.length],
+                                fetchItemsList: () {
+                                  bucketService.itemsList();
+                                },
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -103,6 +109,37 @@ class HomeScreen extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  Widget buildDropzone({required BuildContext context, required Widget child}) {
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: DropTarget(
+            onDragDone: (DropDoneDetails detail) {
+              List<DropItem> files = detail.files;
+              // print('onDragDone');
+              // print(files.length);
+              // files.forEach((DropItem file) {
+              //   print(file.name);
+              //   print(file.path);
+              //   print(file.readAsBytes());
+              // });
+
+              FileHandler.onUploadBlobFiles(context, files: files);
+            },
+            onDragEntered: (detail) {
+              print('onDragEntered');
+            },
+            onDragExited: (detail) {
+              print('Goodbay');
+            },
+            child: child,
+          ),
+        ),
+        // child,
+      ],
     );
   }
 }

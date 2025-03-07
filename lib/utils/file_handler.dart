@@ -10,6 +10,7 @@ import 'package:dropbucket_flutter/services/bucket_service.dart';
 import 'package:dropbucket_flutter/models/bucket_response.dart';
 import 'package:dropbucket_flutter/providers/message_provider.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:universal_html/html.dart' as html;
 import 'dart:io' show Platform, Directory, File;
@@ -23,6 +24,7 @@ class FileHandler {
     final bucketService = Provider.of<BucketService>(context, listen: false);
     final result = await FilePicker.platform.pickFiles(
       allowMultiple: true, // Habilitamos la selección múltiple
+      withData: true, //Fuerza la carga de los datos en memoria
     );
     if (result != null && result.files.isNotEmpty) {
       // Mostrar el indicador de carga
@@ -54,6 +56,43 @@ class FileHandler {
         // Aseguramos que el indicador de carga se oculte
         // context.loaderOverlay.hide();
       }
+    }
+  }
+
+  // UPLOAD FILE
+  static Future<void> onUploadBlobFiles(
+    BuildContext context, {
+    required List<DropItem> files,
+  }) async {
+    final bucketService = Provider.of<BucketService>(context, listen: false);
+
+    // Mostrar el indicador de carga
+    // context.loaderOverlay.show();
+    try {
+      await bucketService.storeBlobFiles(files: files);
+      if (context.mounted) {
+        MessageProvider.showSnackBarContext(
+          context,
+          Message(
+            message: 'Carga Existoa',
+            statusCode: HttpStatusColor.success200.code,
+            messages: ['Los archivos se cargaron exitosamente!'],
+          ),
+        );
+      }
+
+      bucketService.itemsList();
+    } on Exception catch (e) {
+      // Manejo de errores
+      if (context.mounted) {
+        MessageProvider.showSnackBarContext(
+          context,
+          Message.fromJson({"error": e.toString(), "statusCode": 400}),
+        );
+      }
+    } finally {
+      // Aseguramos que el indicador de carga se oculte
+      // context.loaderOverlay.hide();
     }
   }
 

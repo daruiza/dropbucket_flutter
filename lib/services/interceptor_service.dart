@@ -1,11 +1,13 @@
 import 'dart:convert';
 
+import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:dropbucket_flutter/providers/auth_provider.dart';
+import 'package:http/http.dart' as http;
+import 'dart:io' show File;
 
 class InterceptorService {
   final BuildContext context;
@@ -198,6 +200,62 @@ class InterceptorService {
     }
   }
 
+  Future<http.Response> uploadFiles(
+    String path, {
+    required List<DropItem> files,
+    Map<String, String>? fields,
+    Map<String, String>? queryParams,
+  }) async {
+    try {
+      final uri = Uri.parse(path).replace(queryParameters: queryParams);
+
+      if (_authProvider.token == '') {
+        throw Exception('No authentication token found');
+      }
+      final request = http.MultipartRequest('POST', uri);
+      request.headers.addAll({
+        'Authorization': 'Bearer ${_authProvider.token}',
+      });
+
+      // Agregar campos adicionales si existen
+      if (fields != null) {
+        request.fields.addAll(fields);
+      }
+
+      for (var file in files) {
+        final fileExt = file.name.split('.').last;
+        final mimeType = getMimeType(fileExt).split('/');
+        final bytes = await file.readAsBytes();
+        http.MultipartFile multipartFile;
+        multipartFile = http.MultipartFile.fromBytes(
+          'files', // Este es el nombre esperado por el backend
+          bytes,
+          filename: file.name,
+          contentType: MediaType(mimeType[0], mimeType[1]),
+        );
+
+        request.files.add(multipartFile);
+      }
+
+      // Enviar la petición
+      final streamedResponse = await request.send();
+
+      // Convertir StreamedResponse a Response
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 401) {
+        if (context.mounted) {
+          _authProvider.handleUnauthorized(context);
+        }
+        throw Exception(response.body);
+      }
+
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<http.Response> uploadByteFile(
     String path, {
     required List<int> fileByte,
@@ -283,12 +341,29 @@ class InterceptorService {
       for (var file in files) {
         final fileExt = file.name.split('.').last;
         final mimeType = getMimeType(fileExt).split('/');
-        final multipartFile = http.MultipartFile.fromBytes(
-          'files', // Este es el nombre esperado por el backend
-          file.bytes!,
-          filename: file.name,
-          contentType: MediaType(mimeType[0], mimeType[1]),
-        );
+
+        http.MultipartFile multipartFile;
+        // Verificar si tenemos bytes o necesitamos leer desde el archivo
+        if (file.bytes != null) {
+          multipartFile = http.MultipartFile.fromBytes(
+            'files', // Este es el nombre esperado por el backend
+            file.bytes!,
+            filename: file.name,
+            contentType: MediaType(mimeType[0], mimeType[1]),
+          );
+        } else if (file.path != null) {
+          // Leer desde el archivo (funcionará en desktop)
+          // final fileStream = File(file.path!).openRead();
+          multipartFile = await http.MultipartFile.fromPath(
+            'files',
+            file.path!,
+            contentType: MediaType(mimeType[0], mimeType[1]),
+          );
+        } else {
+          throw Exception(
+            'No se pueden obtener los datos del archivo ${file.name}',
+          );
+        }
         request.files.add(multipartFile);
       }
 
