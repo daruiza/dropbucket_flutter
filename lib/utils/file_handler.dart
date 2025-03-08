@@ -98,8 +98,7 @@ class FileHandler {
 
   // FOLDER FILE RENAME
   static Future<String?> showEditFileDialog(
-    BuildContext context, {
-    required Function flipCard,
+    BuildContext context, {    
     required FileItem file,
     required List<String> name,
   }) {
@@ -124,12 +123,11 @@ class FileHandler {
       isButtonEnabled = isValid && input.isNotEmpty;
     }
 
-    onEdit(FileItem file, String rename) async {
+    onEdit(BuildContext context, FileItem file, String rename) async {
       await onEditPrefix(context, file, rename);
       if (context.mounted) {
-        Navigator.pop(context, 'rename');
-      }
-      flipCard();
+        Navigator.pop(context, 'done');        
+      }      
     }
 
     return showDialog<String>(
@@ -175,7 +173,7 @@ class FileHandler {
                     onPressed:
                         isButtonEnabled
                             ? () {
-                              onEdit(file, textFieldController.text);
+                              onEdit(context, file, textFieldController.text);
                             }
                             : null,
                     child: const Text('Editar'),
@@ -192,47 +190,49 @@ class FileHandler {
     FileItem file,
     String rename,
   ) async {
-    final bucketService = Provider.of<BucketService>(context, listen: false);
+    if (context.mounted) {
+      final bucketService = Provider.of<BucketService>(context, listen: false);
+      // context.loaderOverlay.show();
+      // Validamos la extención en el nombre
+      // 1, si ya la tiene
+      // 1.1 - verificar que sea la misma
+      // 1.2 - no colocarla nuevamente
+      // 2. si no la tiene, colocarla
+      final String oldname = file.name;
+      String directory =
+          oldname.contains('/')
+              ? oldname.substring(0, oldname.lastIndexOf('/') + 1)
+              : oldname.substring(0, oldname.lastIndexOf('/') + 1);
+      final String extension = oldname.split('.').last;
 
-    // context.loaderOverlay.show();
-    // Validamos la extención en el nombre
-    // 1, si ya la tiene
-    // 1.1 - verificar que sea la misma
-    // 1.2 - no colocarla nuevamente
-    // 2. si no la tiene, colocarla
-    final String oldname = file.name;
-    String directory =
-        oldname.contains('/')
-            ? '${oldname.substring(0, oldname.lastIndexOf('/') + 1)}/'
-            : oldname.substring(0, oldname.lastIndexOf('/') + 1);
-    final String extension = oldname.split('.').last;
-
-    try {
-      await bucketService.renameFile(
-        name: oldname,
-        rename: '$directory$rename.$extension',
-      );
-
-      if (context.mounted) {
-        MessageProvider.showSnackBarContext(
-          context,
-          Message(
-            message: 'Archivo editado correctamente',
-            statusCode: HttpStatusColor.success200.code,
-            messages: ['Archivo editado correctamente: $oldname!'],
-          ),
+      try {
+        await bucketService.renameFile(
+          name: oldname,
+          rename: '$directory$rename.$extension',
         );
-      }
-      bucketService.itemsList();
-      // await fileState.loadFileList(context);
-      // context.loaderOverlay.hide();
-    } catch (e) {
-      // context.loaderOverlay.hide();
-      if (context.mounted) {
-        MessageProvider.showSnackBarContext(
-          context,
-          Message.fromJson({"error": e.toString(), "statusCode": 400}),
-        );
+
+        if (context.mounted) {
+          MessageProvider.showSnackBarContext(
+            context,
+            Message(
+              message: 'Archivo editado correctamente',
+              statusCode: HttpStatusColor.success200.code,
+              messages: ['Archivo editado correctamente: $oldname!'],
+            ),
+          );
+          bucketService.itemsList();
+        }
+        // await fileState.loadFileList(context);
+        // context.loaderOverlay.hide();
+      } catch (e) {
+        // context.loaderOverlay.hide();
+        
+        if (context.mounted) {
+          MessageProvider.showSnackBarContext(
+            context,
+            Message.fromJson({"error": e.toString(), "statusCode": 400}),
+          );
+        }
       }
     }
   }

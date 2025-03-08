@@ -7,17 +7,10 @@ import 'package:file_icon/file_icon.dart';
 
 class CardFile extends StatefulWidget {
   final FileItem file;
-  final Function fetchItemsList;
   final Function? onGo;
   final Function? onDownload;
 
-  const CardFile({
-    super.key,
-    required this.file,
-    required this.fetchItemsList,
-    this.onGo,
-    this.onDownload,
-  });
+  const CardFile({super.key, required this.file, this.onGo, this.onDownload});
 
   @override
   State<CardFile> createState() => _CardFileState();
@@ -149,11 +142,13 @@ class _CardFileState extends State<CardFile>
               icon: const Icon(Icons.edit, size: 20.0),
               onPressed:
                   () => FileHandler.showEditFileDialog(
-                    context,
-                    flipCard: _flipCard,
+                    context,                    
                     file: widget.file,
                     name: name,
-                  ),
+                  ).then((_) {
+                    // No necesita el FlipCard, hay un refresh
+                    // _flipCard();
+                  }),
             ),
           ],
         ),

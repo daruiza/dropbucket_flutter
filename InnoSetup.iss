@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "DropBucket"
-#define MyAppVersion "1.0.0"
+#define MyAppVersion "1.0.1"
 #define MyAppPublisher "AsistirEnSalud"
 #define MyAppURL "https://asistirensalud.com/lander"
 #define MyAppExeName "dropbucket_flutter.exe"

@@ -20,7 +20,7 @@ class FolderHandler {
         var isButtonEnabled = false;
 
         void validateInput(String input) {
-          final isValid = RegExp(r'^[a-zA-Z0-9]+$').hasMatch(input);
+          final isValid = RegExp(r'^[a-zA-Z0-9_-\s]+$',).hasMatch(input);
           isButtonEnabled = isValid && input.isNotEmpty;
         }
 
@@ -43,7 +43,7 @@ class FolderHandler {
                           textFieldController.text.isEmpty
                               ? null
                               : RegExp(
-                                r'^[a-zA-Z0-9_-]+$',
+                                r'^[a-zA-Z0-9_-\s]+$',
                               ).hasMatch(textFieldController.text)
                               ? null
                               : 'Solo letras y números',
@@ -112,7 +112,7 @@ class FolderHandler {
 
       // Validar que el texto contenga solo letras y números
       final isValid = RegExp(
-        r'^[a-zA-Z0-9_-]+$',
+        r'^[a-zA-Z0-9_-\s]+$',
         // r'^[a-zA-Z0-9][-_a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ\s]{0,63}(?<![-_. ])\.?[a-zA-Z0-9]{0,8}$',
       ).hasMatch(input);
       // Actualizar el estado local
@@ -148,7 +148,7 @@ class FolderHandler {
                             textFieldController.text.isEmpty
                                 ? null
                                 : RegExp(
-                                   r'^[a-zA-Z0-9_-]+$',
+                                   r'^[a-zA-Z0-9_-\s]+$',
                                   // r'^[a-zA-Z0-9][-_a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ\s]{0,63}(?<![-_. ])\.?[a-zA-Z0-9]{0,8}$',
                                 ).hasMatch(textFieldController.text)
                                 ? null
@@ -171,7 +171,7 @@ class FolderHandler {
                     onPressed:
                         isButtonEnabled
                             ? () {
-                              onEdit(folder, textFieldController.text);
+                              onEdit(folder, textFieldController.text.trim());
                             }
                             : null,
                     child: const Text('Editar'),

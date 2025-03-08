@@ -71,9 +71,6 @@ class HomeScreen extends StatelessWidget {
                             } else {
                               return CardFile(
                                 file: files[index - folders.length],
-                                fetchItemsList: () {
-                                  bucketService.itemsList();
-                                },
                               );
                             }
                           },
@@ -119,14 +116,6 @@ class HomeScreen extends StatelessWidget {
           child: DropTarget(
             onDragDone: (DropDoneDetails detail) {
               List<DropItem> files = detail.files;
-              // print('onDragDone');
-              // print(files.length);
-              // files.forEach((DropItem file) {
-              //   print(file.name);
-              //   print(file.path);
-              //   print(file.readAsBytes());
-              // });
-
               FileHandler.onUploadBlobFiles(context, files: files);
             },
             onDragEntered: (detail) {
