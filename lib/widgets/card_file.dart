@@ -142,7 +142,7 @@ class _CardFileState extends State<CardFile>
               icon: const Icon(Icons.edit, size: 20.0),
               onPressed:
                   () => FileHandler.showEditFileDialog(
-                    context,                    
+                    context,
                     file: widget.file,
                     name: name,
                   ).then((_) {
@@ -180,7 +180,7 @@ class _CardFileState extends State<CardFile>
                   () => FileHandler.showDeleteDialog(
                     context,
                     widget.file,
-                    name,                    
+                    name,
                   ).then((_) {
                     // No necesita el FlipCard, hay un refresh
                     // _flipCard();

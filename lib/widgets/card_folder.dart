@@ -149,10 +149,12 @@ class _CardFolderState extends State<CardFolder>
               onPressed:
                   () => FolderHandler.showEditFolderDialog(
                     context,
-                    flipCard: _flipCard,
                     folder: widget.folder,
                     name: name,
-                  ), // Regresa al frente
+                  ).then((_) {
+                    // No necesita el FlipCard, hay un refresh
+                    // _flipCard();
+                  }), // Regresa al frente
             ),
           ],
         ),
@@ -178,11 +180,29 @@ class _CardFolderState extends State<CardFolder>
               constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
               icon: const Icon(Icons.delete, size: 20.0),
               onPressed:
-                  () => FolderHandler.showDeleteDialog(
-                    context,
-                    name,
-                    _flipCard,
-                  ), // Regresa al frente
+                  () => FolderHandler.showDeleteDialog(context, name).then((_) {
+                    // No necesita el FlipCard, hay un refresh
+                    // _flipCard();
+                  }), // Regresa al frente
+            ),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            IconButton(
+              color: IndigoTheme.primaryColor,
+              iconSize: 20.0,
+              padding: EdgeInsets.all(0.0),
+              constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+              icon: const Icon(Icons.share, size: 20.0),
+              onPressed: () {
+                FolderHandler.onShared(
+                  context: context,
+                  folder: widget.folder,
+                  flipCard: _flipCard,
+                );
+              },
             ),
           ],
         ),

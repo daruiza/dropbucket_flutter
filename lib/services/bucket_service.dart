@@ -256,6 +256,24 @@ class BucketService extends ChangeNotifier {
     }
   }
 
+  Future<Response> sharedPrefix({required FolderItem folder}) async {
+    final url = '$_baseUrl/url';
+    try {
+      final response = await _httpService.get(
+        url,
+        queryParams: {'key': folder.name},
+      );
+
+      if (response.statusCode == 200) {
+        return response;
+      } else {
+        throw Exception(response);
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<Response> deleteFile(
     fileItem, {
     required FileItem file,

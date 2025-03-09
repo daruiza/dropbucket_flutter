@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
@@ -20,7 +22,7 @@ class FolderHandler {
         var isButtonEnabled = false;
 
         void validateInput(String input) {
-          final isValid = RegExp(r'^[a-zA-Z0-9_-\s]+$',).hasMatch(input);
+          final isValid = RegExp(r'^[a-zA-Z0-9_-\s]+$').hasMatch(input);
           isButtonEnabled = isValid && input.isNotEmpty;
         }
 
@@ -93,7 +95,6 @@ class FolderHandler {
   // FOLDER EDIT NAME
   static Future<String?> showEditFolderDialog(
     BuildContext context, {
-    required Function flipCard,
     required FolderItem folder,
     required List<String> name,
   }) {
@@ -124,7 +125,6 @@ class FolderHandler {
       if (context.mounted) {
         Navigator.pop(context, 'rename');
       }
-      flipCard();
     }
 
     return showDialog<String>(
@@ -148,7 +148,7 @@ class FolderHandler {
                             textFieldController.text.isEmpty
                                 ? null
                                 : RegExp(
-                                   r'^[a-zA-Z0-9_-\s]+$',
+                                  r'^[a-zA-Z0-9_-\s]+$',
                                   // r'^[a-zA-Z0-9][-_a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ\s]{0,63}(?<![-_. ])\.?[a-zA-Z0-9]{0,8}$',
                                 ).hasMatch(textFieldController.text)
                                 ? null
@@ -262,7 +262,6 @@ class FolderHandler {
   static Future<String?> showDeleteDialog(
     BuildContext context,
     List<String> name,
-    Function flipCard,
   ) {
     return showDialog<String>(
       context: context,
@@ -283,7 +282,6 @@ class FolderHandler {
               ),
               TextButton(
                 onPressed: () async {
-                  flipCard();
                   await onDeleteFolder(context, name.last);
                   if (context.mounted) {
                     Navigator.pop(context, 'OK');
@@ -373,6 +371,40 @@ class FolderHandler {
           messages: ['Url copiado: $uri!'],
         ),
       );
+    }
+  }
+
+  static void onShared({
+    required BuildContext context,
+    required FolderItem folder,
+    required Function flipCard,
+  }) async {
+    List<String> name = folder.name.split('/');
+    final bucketService = Provider.of<BucketService>(context, listen: false);
+    try {
+      final response = await bucketService.sharedPrefix(folder: folder);
+      await Clipboard.setData(
+        ClipboardData(text: jsonDecode(response.body)['url'] ?? ''),
+      );
+      flipCard();
+      if (context.mounted) {
+        MessageProvider.showSnackBarContext(
+          context,
+          Message(
+            message: 'Copiado con exito',
+            statusCode: HttpStatusColor.success200.code,
+            messages: ['Archivo: $name!'],
+          ),
+        );
+      }
+    } catch (e) {
+      // context.loaderOverlay.hide();
+      if (context.mounted) {
+        MessageProvider.showSnackBarContext(
+          context,
+          Message.fromJson({"error": e.toString(), "statusCode": 400}),
+        );
+      }
     }
   }
 }

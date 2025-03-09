@@ -238,7 +238,7 @@ class FileHandler {
   }
 
   // SHARE FILE
-  static onShared({
+  static void onShared({
     required BuildContext context,
     required FileItem file,
     required Function flipCard,
