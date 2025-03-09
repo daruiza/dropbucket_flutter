@@ -180,9 +180,11 @@ class _CardFileState extends State<CardFile>
                   () => FileHandler.showDeleteDialog(
                     context,
                     widget.file,
-                    name,
-                    _flipCard,
-                  ), // Regresa al frente
+                    name,                    
+                  ).then((_) {
+                    // No necesita el FlipCard, hay un refresh
+                    // _flipCard();
+                  }), // Regresa al frente
             ),
           ],
         ),

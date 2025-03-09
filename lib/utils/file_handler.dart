@@ -340,8 +340,7 @@ class FileHandler {
   static Future<String?> showDeleteDialog(
     BuildContext context,
     FileItem file,
-    List<String> name,
-    Function flipCard,
+    List<String> name    
   ) {
     return showDialog<String>(
       context: context,
@@ -361,8 +360,7 @@ class FileHandler {
                 child: const Text('Cancel'),
               ),
               TextButton(
-                onPressed: () {
-                  flipCard();
+                onPressed: () {                  
                   onDeleteFile(context, file);
                   Navigator.pop(context, 'OK');
                 },

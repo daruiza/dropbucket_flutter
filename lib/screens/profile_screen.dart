@@ -34,8 +34,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-
     return Scaffold(
       appBar: AppBarMenu(
         // TODO: colocar el Breadcrumb aqui en el medio

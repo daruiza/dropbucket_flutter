@@ -12,6 +12,7 @@ COPY build/web /usr/share/nginx/html
 #flutter build web --web-renderer=html
 #flutter build web --no-tree-shake-icons --release
 #docker build -f Dockerfile -t daruiza/dropbucket_flutter:aws .
+#docker push daruiza/dropbucket_flutter:aws
 
 #PARA WINDOWS
 #flutter config --enable-windows-desktop
