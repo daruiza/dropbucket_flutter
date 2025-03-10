@@ -47,7 +47,6 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
                   bucketService.itemsList();
                 }),
           ),
-        ...actions ?? [],
         if (authProvider.isAuthenticated &&
             (currentRoute == Routes.profile || currentRoute == Routes.users))
           IconButton(
@@ -56,6 +55,7 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
             },
             icon: Icon(Icons.home, color: IndigoTheme.texContrastColor),
           ),
+        ...actions ?? [],
         if (currentRoute != Routes.users)
           IconButton(
             icon: Icon(

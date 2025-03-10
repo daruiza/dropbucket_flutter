@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:dropbucket_flutter/providers/auth_provider.dart';
 import 'package:dropbucket_flutter/services/interceptor_service.dart';
 import 'package:dropbucket_flutter/models/user_response.dart';
@@ -10,7 +10,7 @@ import 'package:dropbucket_flutter/models/user_create.dart';
 import 'package:dropbucket_flutter/models/user_patch.dart';
 
 // class UserService extends ChangeNotifier {
-class UserService {
+class UserService extends ChangeNotifier {
   // final String _baseUrl = 'nestjs:3000/user';
   final String _baseUrl = 'http://3.239.255.151:3000/user';
   // final String _baseUrl = 'http://temposolutions.online:3000/user';
@@ -19,11 +19,23 @@ class UserService {
   final AuthProvider _authProvider;
   final _storage = FlutterSecureStorage();
 
+  List<UserResponse> items = [];
+
   UserService(BuildContext context)
     : _httpService = InterceptorService(context),
       _authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-  Future<UserResponse> user() async {    
+  Future<void> itemsListFuture() async {
+    try {
+      items = await users();
+    } catch (e) {
+      // TODO: necesitamos impimir en caso de error
+      rethrow;
+    } finally {}
+  }
+
+
+  Future<UserResponse> user() async {
     final user = _authProvider.user;
     final url = '$_baseUrl/${user?.id}';
     try {
@@ -39,7 +51,7 @@ class UserService {
     }
   }
 
-  Future<UserCreate> userPost(UserCreate userData) async {    
+  Future<UserCreate> userPost(UserCreate userData) async {
     final url = _baseUrl;
     try {
       final response = await _httpService.post(url, body: userData);
@@ -54,7 +66,7 @@ class UserService {
     }
   }
 
-  Future<UserResponse> userPatch(UserResponse userResponse) async {    
+  Future<UserResponse> userPatch(UserResponse userResponse) async {
     final url = '$_baseUrl/${userResponse.id}';
     try {
       final response = await _httpService.patch(url, body: userResponse);
@@ -78,10 +90,7 @@ class UserService {
         // UserResponse user = UserResponse.fromJson(jsonUser);
 
         // actualizamos user con la la información de userData
-        await _storage.write(
-          key: "user_data",
-          value: jsonEncode(jsonUser),
-        ); 
+        await _storage.write(key: "user_data", value: jsonEncode(jsonUser));
 
         return UserResponse.fromJson({'user': data});
       } else {
@@ -92,7 +101,7 @@ class UserService {
     }
   }
 
-  Future<UserResponse> userPatchPassword(UserPatch userData) async {   
+  Future<UserResponse> userPatchPassword(UserPatch userData) async {
     final url = '$_baseUrl/${userData.id}';
     try {
       final response = await _httpService.patch(url, body: userData);
@@ -107,7 +116,7 @@ class UserService {
     }
   }
 
-  Future<bool> deleteUser(UserResponse user) async {   
+  Future<bool> deleteUser(UserResponse user) async {
     final url = '$_baseUrl/${user.id}';
     try {
       final response = await _httpService.delete(url);
@@ -121,7 +130,7 @@ class UserService {
     }
   }
 
-  Future<List<UserResponse>> users() async {   
+  Future<List<UserResponse>> users() async {
     final url = _baseUrl;
     try {
       final response = await _httpService.get(url);

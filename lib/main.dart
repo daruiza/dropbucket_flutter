@@ -23,6 +23,7 @@ class AppState extends StatelessWidget {
         ),
         ChangeNotifierProvider(create: (_) => AuthService()),
         ChangeNotifierProvider(create: (context) => BucketService(context)),
+        ChangeNotifierProvider(create: (context) => UserService(context)),
       ],
       child: MyApp(),
     );
