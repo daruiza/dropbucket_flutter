@@ -7,8 +7,8 @@ import 'package:http/http.dart' as http;
 
 class AuthService extends ChangeNotifier {
 
-  // final String _baseUrl = 'nestjs:3000';
-  final String _baseUrl = 'http://3.239.255.151:3000';
+  final String _baseUrl = 'nestjs:3031';
+  // final String _baseUrl = 'http://3.239.255.151:3031';
   // final String _baseUrl = 'http://temposolutions.online:3000';
   // final String _baseUrl = 'http://localhost:3000';
 

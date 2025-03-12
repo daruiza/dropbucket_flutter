@@ -11,8 +11,8 @@ import 'package:dropbucket_flutter/models/user_patch.dart';
 
 // class UserService extends ChangeNotifier {
 class UserService extends ChangeNotifier {
-  // final String _baseUrl = 'nestjs:3000/user';
-  final String _baseUrl = 'http://3.239.255.151:3000/user';
+  final String _baseUrl = 'nestjs:3031/user';
+  // final String _baseUrl = 'http://3.239.255.151:3031/user';
   // final String _baseUrl = 'http://temposolutions.online:3000/user';
   // final String _baseUrl = 'http://localhost:3000/user';
   final InterceptorService _httpService;

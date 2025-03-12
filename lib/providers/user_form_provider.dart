@@ -1,8 +1,8 @@
 import 'package:dropbucket_flutter/models/user_response.dart';
 import 'package:flutter/material.dart';
 
-class ProfileFormProvider extends ChangeNotifier {
-  GlobalKey<FormState> profileFormKey = GlobalKey<FormState>();
+class UserFormProvider extends ChangeNotifier {
+  GlobalKey<FormState> userFormKey = GlobalKey<FormState>();
 
   @override
   void notifyListeners() {
@@ -10,7 +10,11 @@ class ProfileFormProvider extends ChangeNotifier {
   }
 
   TextEditingController email = TextEditingController();
+  TextEditingController password = TextEditingController();
+  ValueNotifier<Rol?> rol = ValueNotifier<Rol?>(null);  
+  TextEditingController rolId = TextEditingController();
   TextEditingController name = TextEditingController();
+  TextEditingController textRol = TextEditingController();
   TextEditingController names = TextEditingController();
   TextEditingController lastnames = TextEditingController();
   TextEditingController phone = TextEditingController();
@@ -27,9 +31,12 @@ class ProfileFormProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setUserProfile(UserResponse? user) {
+  void setUser(UserResponse? user, String? password) {
+    if(password != null) this.password.text = password;
     if (user != null) {
       email.text = user.email;
+      rol.value = user.rol;
+      rolId.text = user.rolId.toString();
       name.text = user.name;
       names.text = user.names ?? '';
       lastnames.text = user.lastnames ?? '';
@@ -41,6 +48,6 @@ class ProfileFormProvider extends ChangeNotifier {
   }
 
   bool isValidForm() {
-    return profileFormKey.currentState?.validate() ?? false;
+    return userFormKey.currentState?.validate() ?? false;
   }
 }

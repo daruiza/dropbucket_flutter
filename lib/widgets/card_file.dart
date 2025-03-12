@@ -7,10 +7,8 @@ import 'package:file_icon/file_icon.dart';
 
 class CardFile extends StatefulWidget {
   final FileItem file;
-  final Function? onGo;
-  final Function? onDownload;
 
-  const CardFile({super.key, required this.file, this.onGo, this.onDownload});
+  const CardFile({super.key, required this.file});
 
   @override
   State<CardFile> createState() => _CardFileState();
@@ -97,7 +95,7 @@ class _CardFileState extends State<CardFile>
           onExit: (_) => setState(() => _isHovering = false),
           cursor: SystemMouseCursors.click,
           child: GestureDetector(
-            onTap: () => widget.onGo?.call(),
+            onTap: null,
             onLongPressUp: _flipCard,
             onSecondaryTap: _flipCard,
             child: FileIcon('.${widget.file.extension}', size: 65),

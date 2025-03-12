@@ -1,11 +1,11 @@
-import 'package:dropbucket_flutter/widgets/card_user.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../services/user_service.dart';
-
 import 'package:dropbucket_flutter/app_bar_menu.dart';
 import 'package:dropbucket_flutter/themes/indigo.dart';
+import 'package:dropbucket_flutter/utils/user_handler.dart';
+import 'package:dropbucket_flutter/widgets/card_user.dart';
 
 class UsersScreen extends StatelessWidget {
   const UsersScreen({super.key});
@@ -31,13 +31,13 @@ class UsersScreen extends StatelessWidget {
           appBar: AppBarMenu(
             title: 'Usuarios',
             actions: [
-              IconButton(
-                icon: Icon(
-                  Icons.person_add,
-                  color: IndigoTheme.texContrastColor,
-                ),
-                onPressed: onUserCreate,
-              ),
+              // IconButton(
+              //   icon: Icon(
+              //     Icons.person_add,
+              //     color: IndigoTheme.texContrastColor,
+              //   ),
+              //   onPressed: onUserCreate,
+              // ),
             ],
           ),
           body: Column(
@@ -59,6 +59,19 @@ class UsersScreen extends StatelessWidget {
                     },
                   ),
                 ),
+              ),
+            ],
+          ),
+          floatingActionButton: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              FloatingActionButton(
+                heroTag: 'handler_user_button', // Tag único
+                child: Icon(
+                  Icons.person_add,
+                  color: IndigoTheme.texContrastColor,
+                ),                
+                onPressed: () => UserHandler.createUser(context),
               ),
             ],
           ),
