@@ -23,7 +23,7 @@ class LoginScreen extends StatelessWidget {
         _showGoodbyeMessageIfNeeded(context, args);
       }
     });
-
+    
     return Scaffold(
       body: LayoutBuilder(
         builder: (context, constraints) {
@@ -70,9 +70,8 @@ class LoginScreen extends StatelessWidget {
 class _LoginForm extends StatelessWidget {
   // const _LoginForm({super.key});
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) {    
     final loginForm = Provider.of<LoginFormProvider>(context);
-
     return Form(
       key: loginForm.loginFormKey,
       child: Column(

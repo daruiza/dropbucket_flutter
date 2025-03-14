@@ -1,10 +1,11 @@
-import 'package:dropbucket_flutter/themes/indigo.dart';
+import 'package:dropbucket_flutter/utils/user_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'dart:convert';
 import 'package:dropbucket_flutter/models/user_response.dart';
 import 'package:dropbucket_flutter/services/bucket_service.dart';
+import 'package:dropbucket_flutter/themes/indigo.dart';
 
 class CardUser extends StatefulWidget {
   final UserResponse user;
@@ -113,7 +114,10 @@ class _CardUserState extends State<CardUser>
             onTap: null,
             onLongPressUp: _flipCard,
             onSecondaryTap: _flipCard,
-            child:
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
                 _imageDonload
                     ? Stack(
                       children: [
@@ -135,7 +139,20 @@ class _CardUserState extends State<CardUser>
                           ),
                       ],
                     )
-                    : Text('NO_buildFront'),
+                    : SizedBox(
+                      width: 72,
+                      child: FittedBox(
+                        fit: BoxFit.contain,
+                        child: Icon(
+                          Icons.person,
+                          color: IndigoTheme.primaryColor,
+                        ),
+                      ),
+                    ),
+
+                Center(child: Text(widget.user.name)),
+              ],
+            ),
           ),
         ),
       ],
@@ -171,6 +188,7 @@ class _CardUserState extends State<CardUser>
               icon: const Icon(Icons.edit, size: 20.0),
               onPressed: () {
                 // _editCard();
+                UserHandler.editUser(context, widget.user);
               },
             ),
             IconButton(

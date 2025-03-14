@@ -47,6 +47,11 @@ ENTRYPOINT [ "server.sh"]
 #docker build -f Dockerfile.prod -t daruiza/dropbucket_flutter:aws .
 #docker push daruiza/dropbucket_flutter:aws
 
+#obtención del certificado SSL
+#docker exec -it dropbucket_flutter certbot --nginx -d tu-dominio.com -d www.tu-dominio.com
+#cada 3 meses renovar el cerificado
+#docker exec -it dropbucket_flutter certbot renew
+
 # Creación de volumen: dropbucket-asistir-postgres vinculado al efs
 #  docker volume create --driver local \
 #     --opt type=none \

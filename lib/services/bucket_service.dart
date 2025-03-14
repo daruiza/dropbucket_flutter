@@ -10,9 +10,9 @@ import 'package:dropbucket_flutter/providers/auth_provider.dart';
 import 'package:dropbucket_flutter/services/interceptor_service.dart';
 
 class BucketService extends ChangeNotifier {
-  final String _baseUrl = 'nestjs:3031/bucket';
+  // final String _baseUrl = 'nestjs:3031/bucket';
   // final String _baseUrl = 'http://3.239.255.151:3031/bucket';
-  // final String _baseUrl = 'http://temposolutions.online:3000/bucket';
+  final String _baseUrl = 'http://asistirensalud.online:3031/bucket';
   // final String _baseUrl = 'http://localhost:3000/bucket';
   final InterceptorService _httpService;
   final AuthProvider _authProvider;

@@ -4,18 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:dropbucket_flutter/models/user_response.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 
 class AuthService extends ChangeNotifier {
-
-  final String _baseUrl = 'nestjs:3031';
+  // final String _baseUrl = 'nestjs:3031';
   // final String _baseUrl = 'http://3.239.255.151:3031';
-  // final String _baseUrl = 'http://temposolutions.online:3000';
-  // final String _baseUrl = 'http://localhost:3000';
+  final String _baseUrl = 'http://asistirensalud.online:3031';
+  // final String _baseUrl = 'http://localhost:3031';
 
   final _storage = FlutterSecureStorage();
 
   Future<void> loginUser(String email, String password) async {
-    final url = Uri.parse('$_baseUrl/auth/login', );
+    final url = Uri.parse('$_baseUrl/auth/login');
     final headers = {
       "Content-Type": "application/json",
       "Accept": "application/json",
@@ -27,7 +27,7 @@ class AuthService extends ChangeNotifier {
     };
 
     try {
-      final response = await http.post(
+      final Response response = await http.post(
         url,
         headers: headers,
         body: jsonEncode(authData),
@@ -44,6 +44,7 @@ class AuthService extends ChangeNotifier {
         }
 
         data['user']['prefixcurrent'] = data['user']['prefix'] ?? '';
+
         final userResponse = UserResponse.fromJson(data);
 
         await _storage.write(key: 'token', value: userResponse.token);

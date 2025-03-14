@@ -8,6 +8,8 @@ import 'package:dropbucket_flutter/models/user_response.dart';
 import 'package:dropbucket_flutter/providers/auth_provider.dart';
 import 'package:dropbucket_flutter/services/bucket_service.dart';
 import 'package:dropbucket_flutter/providers/user_form_provider.dart';
+import 'package:dropbucket_flutter/utils/validators.dart';
+import 'package:dropbucket_flutter/themes/indigo.dart';
 
 class UserDialogScreen extends StatelessWidget {
   final UserResponse? user;
@@ -21,7 +23,7 @@ class UserDialogScreen extends StatelessWidget {
         builder: (BuildContext context, BoxConstraints constraints) {
           double maxWidth =
               constraints.maxWidth > 600
-                  ? constraints.maxWidth * 0.6
+                  ? constraints.maxWidth * 0.5
                   : constraints.maxWidth * 0.8;
           return SingleChildScrollView(
             child: Container(
@@ -47,6 +49,9 @@ class _UserForm extends StatelessWidget {
   Widget build(BuildContext context) {
     // final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final userForm = Provider.of<UserFormProvider>(context);
+
+    userForm.setUser(user, null);
+
     return FutureBuilder(
       future: _photoExist(context),
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
@@ -61,14 +66,93 @@ class _UserForm extends StatelessWidget {
         return Form(
           key: userForm.userFormKey,
           child: Padding(
-            padding: const EdgeInsets.only(right: 20.0, left: 20.0),
+            padding: const EdgeInsets.all(20.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                const SizedBox(height: 20),
-                Row()
-              ]
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 2 * maxWidth / 3 - 20,
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            keyboardType: TextInputType.emailAddress,
+                            controller: userForm.email,
+                            decoration: InputDecoration(
+                              labelText: 'Correo electrónico',
+                              floatingLabelStyle: TextStyle(),
+                              prefixIcon: Icon(
+                                Icons.email,
+                                color: IndigoTheme.primaryColor,
+                              ),
+                            ),
+                            validator: (value) {
+                              if (Validators.required(value)) {
+                                return 'Este campo es requerido';
+                              }
+                              if (Validators.email(value)) {
+                                return 'El Email no es valido';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 10),
+                          TextFormField(
+                            keyboardType: TextInputType.text,
+                            controller: userForm.name,
+                            decoration: InputDecoration(
+                              labelText: 'Nombre de usuario',
+                              floatingLabelStyle: TextStyle(),
+                              prefixIcon: Icon(
+                                Icons.person,
+                                color: IndigoTheme.primaryColor,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Center(
+                      child: SizedBox(
+                        width: maxWidth / 3 - 20,
+                        child: MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: GestureDetector(
+                            onTap:
+                                () => {
+                                  // isEditing ? _onUploadImage(context) : null,
+                                },
+                            child:
+                                userForm.photoExists.text == 'true'
+                                    ? Center(
+                                      child: Stack(
+                                        children: [
+                                          // CircleAvatar base
+                                          CircleAvatar(
+                                            maxRadius: 50,
+                                            backgroundImage: NetworkImage(
+                                              userForm.photo.text,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                    : Icon(
+                                      Icons.person,
+                                      size: 96,
+                                      color: IndigoTheme.primaryColor,
+                                    ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         );

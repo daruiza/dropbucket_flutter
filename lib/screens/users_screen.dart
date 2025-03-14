@@ -78,7 +78,5 @@ class UsersScreen extends StatelessWidget {
         );
       },
     );
-  }
-
-  void onUserCreate() {}
+  }  
 }
