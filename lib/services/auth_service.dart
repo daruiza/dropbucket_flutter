@@ -9,7 +9,8 @@ import 'package:http/http.dart';
 class AuthService extends ChangeNotifier {
   // final String _baseUrl = 'nestjs:3031';
   // final String _baseUrl = 'http://3.239.255.151:3031';
-  final String _baseUrl = 'http://asistirensalud.online:3031';
+  // final String _baseUrl = 'http://asistirensalud.online:3031';
+  final String _baseUrl = 'https://dropbucketbk.asistirensalud.online';
   // final String _baseUrl = 'http://localhost:3031';
 
   final _storage = FlutterSecureStorage();

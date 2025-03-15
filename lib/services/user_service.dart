@@ -13,7 +13,8 @@ import 'package:dropbucket_flutter/models/user_patch.dart';
 class UserService extends ChangeNotifier {
   // final String _baseUrl = 'nestjs:3031/user';
   // final String _baseUrl = 'http://3.239.255.151:3031/user';
-  final String _baseUrl = 'http://asistirensalud.online:3031/user';
+  // final String _baseUrl = 'http://asistirensalud.online:3031/user';
+  final String _baseUrl = 'https://dropbucketbk.asistirensalud.online/user';
   // final String _baseUrl = 'http://localhost:3000/user';
   final InterceptorService _httpService;
   final AuthProvider _authProvider;
@@ -33,7 +34,6 @@ class UserService extends ChangeNotifier {
       rethrow;
     } finally {}
   }
-
 
   Future<UserResponse> user() async {
     final user = _authProvider.user;

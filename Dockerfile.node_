@@ -4,5 +4,5 @@ RUN npm -y -g install serve
 WORKDIR /app
 COPY ./build/web .
 
-EXPOSE 8080
+EXPOSE 8031
 CMD [ "serve", "web" ]

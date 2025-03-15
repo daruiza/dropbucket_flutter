@@ -1,7 +1,7 @@
 FROM nginx:stable-alpine
 
 # Instalar Certbot para obtener certificados SSL
-RUN apk add --no-cache certbot certbot-nginx
+# RUN apk add --no-cache certbot certbot-nginx
 
 # Copiar la configuración personalizada de nginx si es necesaria
 COPY nginx.conf /etc/nginx/conf.d/default.conf
@@ -10,10 +10,11 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY build/web /usr/share/nginx/html
 
 # Script de entrada para generar certificados al iniciar
-COPY /asistirensalud.online/fullchain.pem /etc/letsencrypt/live/www.asistirensalud.online/fullchain.pem
-COPY /asistirensalud.online/private.key /etc/letsencrypt/live/www.asistirensalud.online/privkey.pem
+# COPY /asistirensalud.online/fullchain.pem /etc/letsencrypt/live/www.asistirensalud.online/fullchain.pem
+# COPY /asistirensalud.online/private.key /etc/letsencrypt/live/www.asistirensalud.online/privkey.pem
+
 # EXPOSE 80 443
-EXPOSE 80 443
+EXPOSE 8031
 # CMD ["/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
 
@@ -36,6 +37,6 @@ CMD ["nginx", "-g", "daemon off;"]
 #cada 3 meses
 #docker exec -it dropbucket_flutter certbot renew
 
-# Convianción de archivos apra el certificado
+# Combianción de archivos para el certificado
 #cat certificate.crt ca_bundle.crt > fullchain.pem
 
