@@ -66,6 +66,16 @@ class IndigoTheme {
         ),
       ),
     ),
+    // dropdownMenuTheme: DropdownMenuThemeData(
+    //   inputDecorationTheme:InputDecorationTheme(
+    //     labelStyle: TextStyle(
+    //       fontWeight: FontWeight.normal
+    //     )
+    //   ),
+    //   textStyle: TextStyle(
+    //     fontWeight: FontWeight.normal
+    //   )
+    // ),
     textButtonTheme: TextButtonThemeData(style: TextButton.styleFrom()),
 
     dialogTheme: DialogTheme(

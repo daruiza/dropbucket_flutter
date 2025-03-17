@@ -11,7 +11,7 @@ class UserFormProvider extends ChangeNotifier {
 
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
-  ValueNotifier<Rol?> rol = ValueNotifier<Rol?>(null);  
+  ValueNotifier<Rol?> rol = ValueNotifier<Rol?>(null);
   TextEditingController rolId = TextEditingController();
   TextEditingController name = TextEditingController();
   TextEditingController textRol = TextEditingController();
@@ -31,8 +31,8 @@ class UserFormProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setUser(UserResponse? user, String? password) {
-    if(password != null) this.password.text = password;
+  void setUser({UserResponse? user, String? password, List<Rol>? rols}) {
+    if (password != null) this.password.text = password;
     if (user != null) {
       email.text = user.email;
       rol.value = user.rol;
@@ -44,6 +44,10 @@ class UserFormProvider extends ChangeNotifier {
       theme.text = user.theme ?? '';
       prefix.text = user.prefix ?? '';
       photo.text = user.photo ?? '';
+      // Asignación de Rol
+      if (rols != null) {
+        rol.value = rols.where((rol) => rol.id == user.rol.id).first;
+      }
     }
   }
 

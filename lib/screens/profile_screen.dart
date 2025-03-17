@@ -163,6 +163,18 @@ class _ProfileForm extends StatelessWidget {
                                         : IndigoTheme.disableColor,
                               ),
                             ),
+                            validator: (value) {
+                              if (Validators.required(value)) {
+                                return 'Este campo es requerido';
+                              }
+                              if (value != null && value.length <= 3) {
+                                return 'El campo debe ser mayor a 3';
+                              }
+                              if (value != null && value.length >= 16) {
+                                return 'El campo debe ser menor a 16';
+                              }
+                              return null;
+                            }
                           ),
                         ],
                       ),
