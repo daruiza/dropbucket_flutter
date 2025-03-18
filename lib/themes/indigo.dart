@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class IndigoTheme {
   static final primaryColor = Colors.indigo[400];
+  static final primaryLowColor = Colors.indigo[100];
   static final primaryFullColor = Colors.indigo[800];
   static final disableColor = Colors.grey[400];
   static final texContrastColor = Colors.blueGrey[100];

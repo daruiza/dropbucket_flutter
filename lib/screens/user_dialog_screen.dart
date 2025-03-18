@@ -1,3 +1,4 @@
+import 'package:dropbucket_flutter/providers/state_bool.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';
@@ -75,219 +76,383 @@ class _UserForm extends StatelessWidget {
           key: userForm.userFormKey,
           child: Padding(
             padding: const EdgeInsets.all(20.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 2 * maxWidth / 3 - 20,
-                      child: Column(
+            child: ChangeNotifierProvider(
+              create: (_) => StateBoolProvider(),
+              child: Builder(
+                builder: (context) {
+                  final handlePassword = Provider.of<StateBoolProvider>(
+                    context,
+                  );
+                  final handlePrefix = Provider.of<StateBoolProvider>(context);
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           SizedBox(
-                            width: maxWidth / 1 - 20,
-                            child: TextFormField(
-                              autovalidateMode:
-                                  AutovalidateMode.onUserInteraction,
-                              keyboardType: TextInputType.emailAddress,
-                              controller: userForm.email,
-                              decoration: InputDecoration(
-                                labelText: 'Correo electrónico',
-                                floatingLabelStyle: TextStyle(),
-                                prefixIcon: Icon(
-                                  Icons.email,
-                                  color: IndigoTheme.primaryColor,
+                            width: 2 * maxWidth / 3 - 20,
+                            child: Column(
+                              children: [
+                                SizedBox(
+                                  width: maxWidth / 1 - 20,
+                                  child: TextFormField(
+                                    autovalidateMode:
+                                        AutovalidateMode.onUserInteraction,
+                                    keyboardType: TextInputType.emailAddress,
+                                    controller: userForm.email,
+                                    decoration: InputDecoration(
+                                      labelText: 'Correo electrónico',
+                                      floatingLabelStyle: TextStyle(),
+                                      prefixIcon: Icon(
+                                        Icons.email,
+                                        color: IndigoTheme.primaryColor,
+                                      ),
+                                    ),
+                                    validator: (value) {
+                                      if (Validators.required(value)) {
+                                        return 'Este campo es requerido';
+                                      }
+                                      if (Validators.email(value)) {
+                                        return 'El Email no es valido';
+                                      }
+                                      return null;
+                                    },
+                                  ),
                                 ),
-                              ),
-                              validator: (value) {
-                                if (Validators.required(value)) {
-                                  return 'Este campo es requerido';
-                                }
-                                if (Validators.email(value)) {
-                                  return 'El Email no es valido';
-                                }
-                                return null;
-                              },
+                                const SizedBox(height: 10),
+                                SizedBox(
+                                  width: maxWidth / 1 - 20,
+                                  child: TextFormField(
+                                    autovalidateMode:
+                                        AutovalidateMode.onUserInteraction,
+                                    keyboardType: TextInputType.text,
+                                    controller: userForm.name,
+                                    decoration: InputDecoration(
+                                      labelText: 'Nombre de usuario',
+                                      floatingLabelStyle: TextStyle(),
+                                      prefixIcon: Icon(
+                                        Icons.person,
+                                        color: IndigoTheme.primaryColor,
+                                      ),
+                                    ),
+                                    // onChanged: (value) {
+                                    //   userForm.userFormKey.currentState
+                                    //       ?.validate();
+                                    // },
+                                    validator: (value) {
+                                      if (Validators.required(value)) {
+                                        return 'Este campo es requerido';
+                                      }
+                                      if (value != null && value.length <= 3) {
+                                        return 'El campo debe ser mayor a 3';
+                                      }
+                                      if (value != null && value.length >= 16) {
+                                        return 'El campo debe ser menor a 16';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          const SizedBox(height: 10),
-                          SizedBox(
-                            width: maxWidth / 1 - 20,
-                            child: TextFormField(
-                              keyboardType: TextInputType.text,
-                              controller: userForm.name,
-                              decoration: InputDecoration(
-                                labelText: 'Nombre de usuario',
-                                floatingLabelStyle: TextStyle(),
-                                prefixIcon: Icon(
-                                  Icons.person,
-                                  color: IndigoTheme.primaryColor,
+                          Center(
+                            child: SizedBox(
+                              width: maxWidth / 3 - 20,
+                              child: MouseRegion(
+                                cursor: SystemMouseCursors.click,
+                                child: GestureDetector(
+                                  onTap: () => _onUploadImage(context),
+                                  child:
+                                      userForm.photoExists.text == 'true'
+                                          ? Center(
+                                            child: Stack(
+                                              children: [
+                                                // CircleAvatar base
+                                                CircleAvatar(
+                                                  maxRadius: 50,
+                                                  backgroundImage: NetworkImage(
+                                                    userForm.photo.text,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          )
+                                          : Icon(
+                                            Icons.person,
+                                            size: 96,
+                                            color: IndigoTheme.primaryColor,
+                                          ),
                                 ),
                               ),
-                              validator: (value) {
-                                if (Validators.required(value)) {
-                                  return 'Este campo es requerido';
-                                }
-                                if (value != null && value.length <= 3) {
-                                  return 'El campo debe ser mayor a 3';
-                                }
-                                if (value != null && value.length >= 16) {
-                                  return 'El campo debe ser menor a 16';
-                                }
-                                return null;
-                              },
                             ),
                           ),
                         ],
                       ),
-                    ),
-                    Center(
-                      child: SizedBox(
-                        width: maxWidth / 3 - 20,
-                        child: MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          child: GestureDetector(
-                            onTap: () => _onUploadImage(context),
-                            child:
-                                userForm.photoExists.text == 'true'
-                                    ? Center(
-                                      child: Stack(
-                                        children: [
-                                          // CircleAvatar base
-                                          CircleAvatar(
-                                            maxRadius: 50,
-                                            backgroundImage: NetworkImage(
-                                              userForm.photo.text,
+                      const SizedBox(height: 20),
+                      SizedBox(
+                        width: maxWidth / 1 - 20,
+                        child: TextFormField(
+                          keyboardType: TextInputType.text,
+                          controller: userForm.names,
+                          decoration: InputDecoration(
+                            labelText: 'Nombres',
+                            floatingLabelStyle: TextStyle(
+                              color: IndigoTheme.primaryColor,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        width: maxWidth / 1 - 20,
+                        child: TextFormField(
+                          keyboardType: TextInputType.text,
+                          controller: userForm.lastnames,
+                          decoration: InputDecoration(
+                            labelText: 'Apellidos',
+                            floatingLabelStyle: TextStyle(
+                              color: IndigoTheme.primaryColor,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              keyboardType: TextInputType.text,
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              controller: userForm.phone,
+                              decoration: InputDecoration(
+                                labelText: 'Teléfono',
+                                floatingLabelStyle: TextStyle(
+                                  color: IndigoTheme.primaryColor,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: TextFormField(
+                              keyboardType: TextInputType.text,
+                              controller: userForm.theme,
+                              decoration: InputDecoration(
+                                labelText: 'Tema',
+                                floatingLabelStyle: TextStyle(
+                                  color: IndigoTheme.primaryColor,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: DropdownButtonFormField<Rol>(
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              decoration: InputDecoration(labelText: 'Rol'),
+                              items:
+                                  rols
+                                      ?.map(
+                                        (rol) => DropdownMenuItem(
+                                          value: rol,
+                                          child: Text(
+                                            rol.name,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.normal,
                                             ),
                                           ),
-                                        ],
-                                      ),
-                                    )
-                                    : Icon(
-                                      Icons.person,
-                                      size: 96,
-                                      color: IndigoTheme.primaryColor,
-                                    ),
+                                        ),
+                                      )
+                                      .toList(),
+                              onChanged: (value) {
+                                userForm.rolId.text = '${value?.id}';
+                                userForm.rol.value = value;
+                                // userForm.userFormKey.currentState?.validate();
+                              },
+                              value: userForm.rol.value,
+                              validator: (value) {
+                                if (value == null) {
+                                  return 'Este campo es requerido';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: TextFormField(
+                              enabled:
+                                  user == null
+                                      ? true
+                                      : handlePassword.stateBool,
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              controller: userForm.password,
+                              keyboardType: TextInputType.text,
+                              decoration: const InputDecoration(
+                                labelText: 'Password',
+                              ),
+                              validator:
+                                  !handlePassword.stateBool
+                                      ? (value) {
+                                        if (Validators.required(value) ) {
+                                          return 'Este campo es requerido';
+                                        }
+                                        if (Validators.pattern(
+                                              value,
+                                              r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_#])[A-Za-z\d@$!%*?&_#]{6,}$',
+                                            ) ) {
+                                          return 'No es la estructura esperada';
+                                        }
+
+                                        return null;
+                                      }
+                                      : null,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      // Si el usuario es superadministrador no cambia el prefix
+                      if (user?.rolId != Role.superadministrador.id)
+                        SizedBox(
+                          width: maxWidth / 1 - 20,
+                          child: TextFormField(
+                            controller: userForm.prefix,
+                            keyboardType: TextInputType.text,
+                            decoration: const InputDecoration(
+                              labelText: 'Prefix',
+                            ),
+                            validator: (value) {
+                              if (Validators.required(value)) {
+                                return 'Este campo es requerido';
+                              }
+
+                              if (handlePrefix.stateBool) {
+                                return 'El prefix no existe';
+                              }
+                              return null;
+                            },
                           ),
                         ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: maxWidth / 1 - 20,
-                  child: TextFormField(
-                    keyboardType: TextInputType.text,
-                    controller: userForm.names,
-                    decoration: InputDecoration(
-                      labelText: 'Nombres',
-                      floatingLabelStyle: TextStyle(
-                        color: IndigoTheme.primaryColor,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  width: maxWidth / 1 - 20,
-                  child: TextFormField(
-                    keyboardType: TextInputType.text,
-                    controller: userForm.lastnames,
-                    decoration: InputDecoration(
-                      labelText: 'Apellidos',
-                      floatingLabelStyle: TextStyle(
-                        color: IndigoTheme.primaryColor,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        keyboardType: TextInputType.text,
-                        controller: userForm.phone,
-                        decoration: InputDecoration(
-                          labelText: 'Teléfono',
-                          floatingLabelStyle: TextStyle(
-                            color: IndigoTheme.primaryColor,
+
+                      const SizedBox(height: 20),
+
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: TextButton(
+                              style: TextButton.styleFrom(
+                                minimumSize: Size(maxWidth / 2 - 8, 46),
+                                padding: EdgeInsets.only(
+                                  top: 10,
+                                  bottom: 10,
+                                  right: 30,
+                                  left: 30,
+                                ),
+                                foregroundColor: IndigoTheme.primaryColor,
+                                backgroundColor: IndigoTheme.primaryLowColor,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.only(
+                                    bottomRight: Radius.circular(10),
+                                    topLeft: Radius.circular(10),
+                                  ),
+                                ),
+                              ),
+                              onPressed: () {
+                                // Navigator.pop(context, {'option': 'close'});
+                                Navigator.of(
+                                  context,
+                                  rootNavigator: true,
+                                ).pop({'option': 'close'});
+                              },
+                              child: const Text('Cerrar'),
+                            ),
                           ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: TextFormField(
-                        keyboardType: TextInputType.text,
-                        controller: userForm.theme,
-                        decoration: InputDecoration(
-                          labelText: 'Tema',
-                          floatingLabelStyle: TextStyle(
-                            color: IndigoTheme.primaryColor,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: DropdownButtonFormField<Rol>(
-                        decoration: InputDecoration(labelText: 'Rol'),
-                        items:
-                            rols
-                                ?.map(
-                                  (rol) => DropdownMenuItem(
-                                    value: rol,
-                                    child: Text(
-                                      rol.name,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.normal,
-                                      ),
+                          const SizedBox(width: 10),
+                          if (user != null)
+                            Expanded(
+                              child: TextButton(
+                                style: TextButton.styleFrom(
+                                  minimumSize: Size(maxWidth / 2 - 8, 46),
+                                  padding: EdgeInsets.only(
+                                    top: 10,
+                                    bottom: 10,
+                                    right: 30,
+                                    left: 30,
+                                  ),
+                                  foregroundColor: IndigoTheme.primaryColor,
+                                  backgroundColor: IndigoTheme.primaryLowColor,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.only(
+                                      bottomRight: Radius.circular(10),
+                                      topLeft: Radius.circular(10),
                                     ),
                                   ),
-                                )
-                                .toList(),
-                        onChanged: (value) {
-                          userForm.rolId.text = '${value?.id}';
-                          userForm.rol.value = value;
-                        },
-                        value: userForm.rol.value,
-                        validator: (value) {
-                          if (value == null) {
-                            return 'Este campo es requerido';
-                          }
-                          return null;
-                        },
+                                ),
+                                onPressed: () {
+                                  final stateBool =
+                                      Provider.of<StateBoolProvider>(
+                                        context,
+                                        listen: false,
+                                      );
+                                  stateBool.stateBool = !stateBool.stateBool;
+                                  if (!stateBool.stateBool) {
+                                    userForm.password.text = '';
+                                    userForm.userFormKey.currentState
+                                        ?.validate();
+                                  }
+                                },
+                                child: const Text('Editar Contraseña'),
+                              ),
+                            ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: TextButton(
+                              style: TextButton.styleFrom(
+                                minimumSize: Size(maxWidth / 2 - 8, 46),
+                                padding: EdgeInsets.only(
+                                  top: 10,
+                                  bottom: 10,
+                                  right: 30,
+                                  left: 30,
+                                ),
+                                foregroundColor: IndigoTheme.texContrastColor,
+                                backgroundColor: IndigoTheme.primaryColor,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.only(
+                                    bottomRight: Radius.circular(10),
+                                    topLeft: Radius.circular(10),
+                                  ),
+                                ),
+                              ),
+                              onPressed:
+                                  () => _handleStore(context, handlePrefix),
+                              child: Text(user != null ? 'Editar' : 'Crear'),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                // Si el usuario es superadministrador no cambia el prefix
-                if (user?.rolId != Role.superadministrador.id)
-                  SizedBox(
-                    width: maxWidth / 1 - 20,
-                    child: TextFormField(
-                      controller: userForm.prefix,
-                      keyboardType: TextInputType.text,
-                      decoration: const InputDecoration(labelText: 'Prefix'),
-                    ),
-                  ),
-
-                const SizedBox(height: 16),
-              ],
+                    ],
+                  );
+                },
+              ),
             ),
           ),
         );
@@ -421,6 +586,55 @@ class _UserForm extends StatelessWidget {
           );
         }
         // context.loaderOverlay.hide();
+      }
+    }
+  }
+
+  Future<void> _handleStore(
+    BuildContext context,
+    StateBoolProvider handlePrefix,
+  ) async {
+    final bucketService = Provider.of<BucketService>(context, listen: false);
+    final userForm = Provider.of<UserFormProvider>(context, listen: false);
+
+    if (userForm.userFormKey.currentState != null) {
+      bool valid = userForm.userFormKey.currentState?.validate() ?? false;
+      if (!valid) {
+        return;
+      }
+    }
+
+    userForm.prefix.text =
+        user?.rolId != Role.superadministrador.id ? userForm.prefix.text : '';
+    // Validamos si el prefix diligenciado existe,
+    if (userForm.prefix.text != '') {
+      try {
+        final existPrefix = await bucketService.existPrefix(
+          userForm.prefix.text,
+        );
+        final data = jsonDecode(existPrefix.body);
+        print('data $data');
+        handlePrefix.stateBool = !data['exist'];
+        if (data['exist'] == false) {
+          if (context.mounted) {
+            MessageProvider.showSnackBarContext(
+              context,
+              Message(
+                messages: ['El directorio no existe!'],
+                message: 'Error',
+                statusCode: HttpStatusColor.notFound404.code,
+              ),
+            );
+          }
+          return;
+        }
+      } on Exception catch (e) {
+        if (context.mounted) {
+          MessageProvider.showSnackBarContext(
+            context,
+            Message.fromJson({"error": e.toString(), "statusCode": 400}),
+          );
+        }
       }
     }
   }

@@ -161,14 +161,30 @@ class BucketService extends ChangeNotifier {
     String? prefix,
   }) async {
     final url = '$_baseUrl/upload-multiple';
-    try {      
-
+    try {
       final response = await _httpService.uploadFiles(
         url,
         files: files,
         fields: {'prefix': prefix ?? _authProvider.user?.prefixcurrent ?? ''},
       );
 
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return response;
+      } else {
+        throw Exception(response);
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Response> existPrefix(String prefix) async {
+    final url = '$_baseUrl/prefix-exists';
+    try {
+      final response = await _httpService.get(
+        url,
+        queryParams: {'prefix': prefix},
+      );
       if (response.statusCode == 200 || response.statusCode == 201) {
         return response;
       } else {
