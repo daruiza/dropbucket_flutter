@@ -35,6 +35,17 @@ class UserService extends ChangeNotifier {
     } finally {}
   }
 
+  void itemsList() async {
+    try {
+      items = await users();
+    } catch (e) {
+      // TODO: necesitamos impimir en caso de error
+      rethrow;
+    } finally {
+      notifyListeners();
+    }
+  }
+
   Future<UserResponse> user() async {
     final user = _authProvider.user;
     final url = '$_baseUrl/${user?.id}';

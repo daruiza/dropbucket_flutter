@@ -1,3 +1,4 @@
+import 'package:dropbucket_flutter/enums/role_enum.dart';
 import 'package:dropbucket_flutter/utils/user_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -198,7 +199,10 @@ class _CardUserState extends State<CardUser>
               constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
               icon: const Icon(Icons.delete, size: 20.0),
               // onPressed: () => showDeleteDialog(),
-              onPressed: null,
+              onPressed:
+                  widget.user.rolId != Role.superadministrador.id
+                      ? () => UserHandler.showDeleteDialog(context, widget.user)
+                      : null,
             ),
           ],
         ),

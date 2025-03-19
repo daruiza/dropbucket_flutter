@@ -1,4 +1,3 @@
-import 'package:dropbucket_flutter/providers/state_bool.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';
@@ -10,8 +9,12 @@ import 'package:dropbucket_flutter/services/bucket_service.dart';
 import 'package:dropbucket_flutter/services/rol_service.dart';
 import 'package:dropbucket_flutter/models/bucket_response.dart';
 import 'package:dropbucket_flutter/providers/user_form_provider.dart';
+import 'package:dropbucket_flutter/providers/state_bool.dart';
 import 'package:dropbucket_flutter/utils/validators.dart';
 import 'package:dropbucket_flutter/enums/http_status_code.dart';
+import 'package:dropbucket_flutter/services/user_service.dart';
+import 'package:dropbucket_flutter/models/user_create.dart';
+import 'package:dropbucket_flutter/models/user_patch.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:dropbucket_flutter/themes/indigo.dart';
 import 'package:dropbucket_flutter/enums/role_enum.dart';
@@ -298,7 +301,7 @@ class _UserForm extends StatelessWidget {
                               enabled:
                                   user == null
                                       ? true
-                                      : handlePassword.stateBool,
+                                      : handlePassword.stateBool == true,
                               autovalidateMode:
                                   AutovalidateMode.onUserInteraction,
                               controller: userForm.password,
@@ -306,16 +309,16 @@ class _UserForm extends StatelessWidget {
                               decoration: const InputDecoration(
                                 labelText: 'Password',
                               ),
-                              validator:
-                                  !handlePassword.stateBool
+                              validator:                                  
+                                  handlePassword.stateBool == true
                                       ? (value) {
-                                        if (Validators.required(value) ) {
+                                        if (Validators.required(value)) {
                                           return 'Este campo es requerido';
                                         }
                                         if (Validators.pattern(
-                                              value,
-                                              r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_#])[A-Za-z\d@$!%*?&_#]{6,}$',
-                                            ) ) {
+                                          value,
+                                          r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_#])[A-Za-z\d@$!%*?&_#]{6,}$',
+                                        )) {
                                           return 'No es la estructura esperada';
                                         }
 
@@ -332,6 +335,8 @@ class _UserForm extends StatelessWidget {
                         SizedBox(
                           width: maxWidth / 1 - 20,
                           child: TextFormField(
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
                             controller: userForm.prefix,
                             keyboardType: TextInputType.text,
                             decoration: const InputDecoration(
@@ -443,7 +448,11 @@ class _UserForm extends StatelessWidget {
                                 ),
                               ),
                               onPressed:
-                                  () => _handleStore(context, handlePrefix),
+                                  () => _handleStore(
+                                    context,
+                                    handlePrefix,
+                                    handlePassword,
+                                  ),
                               child: Text(user != null ? 'Editar' : 'Crear'),
                             ),
                           ),
@@ -593,8 +602,10 @@ class _UserForm extends StatelessWidget {
   Future<void> _handleStore(
     BuildContext context,
     StateBoolProvider handlePrefix,
+    StateBoolProvider handlePassword,
   ) async {
     final bucketService = Provider.of<BucketService>(context, listen: false);
+    final userService = Provider.of<UserService>(context, listen: false);
     final userForm = Provider.of<UserFormProvider>(context, listen: false);
 
     if (userForm.userFormKey.currentState != null) {
@@ -613,7 +624,6 @@ class _UserForm extends StatelessWidget {
           userForm.prefix.text,
         );
         final data = jsonDecode(existPrefix.body);
-        print('data $data');
         handlePrefix.stateBool = !data['exist'];
         if (data['exist'] == false) {
           if (context.mounted) {
@@ -628,6 +638,25 @@ class _UserForm extends StatelessWidget {
           }
           return;
         }
+        if (context.mounted) {
+          if (user == null) {
+            userPost(context);
+          } else {
+            userPatch(context, handlePassword);
+          }
+          MessageProvider.showSnackBarContext(
+            context,
+            Message(
+              messages: [
+                'Usuario ${user == null ? 'creado' : 'Editado'} correctamente!',
+              ],
+              message: 'Carga exitosa',
+              statusCode: HttpStatusColor.success200.code,
+            ),
+          );
+          Navigator.of(context, rootNavigator: true).pop({'option': 'store'});
+          userService.itemsList();
+        }
       } on Exception catch (e) {
         if (context.mounted) {
           MessageProvider.showSnackBarContext(
@@ -636,6 +665,95 @@ class _UserForm extends StatelessWidget {
           );
         }
       }
+    }
+  }
+
+  Future<void> userPost(BuildContext context) async {
+    final userService = UserService(context);
+    final userForm = Provider.of<UserFormProvider>(context, listen: false);
+    try {
+      final userCreate = UserCreate(
+        email: userForm.email.text,
+        name: userForm.name.text,
+        password: userForm.password.text,
+        names: userForm.name.text,
+        lastnames: userForm.lastnames.text,
+        phone: userForm.phone.text,
+        theme: userForm.theme.text,
+        prefix: userForm.prefix.text,
+        photo: userForm.photo.text,
+        rolId: userForm.rol.value?.id ?? 1,
+      );
+
+      userService.userPost(userCreate);
+    } on Exception catch (e) {
+      if (context.mounted) {
+        MessageProvider.showSnackBarContext(
+          context,
+          Message.fromJson({"error": e.toString(), "statusCode": 400}),
+        );
+      }
+      // context.loaderOverlay.hide();
+    }
+  }
+
+  Future<void> userPatch(
+    BuildContext context,
+    StateBoolProvider handlePassword,
+  ) async {
+    final userService = UserService(context);
+    final userForm = Provider.of<UserFormProvider>(context, listen: false);
+    try {
+      if (handlePassword.stateBool) {
+        final userPatch = UserPatch(
+          id: user?.id ?? 0,
+          email: userForm.email.text,
+          name: userForm.name.text,
+          password: userForm.password.text,
+          names: userForm.names.text,
+          lastnames: userForm.lastnames.text,
+          phone: userForm.phone.text,
+          theme: userForm.theme.text,
+          prefix: userForm.prefix.text,
+          photo: userForm.photo.text,
+          rolId: userForm.rol.value?.id ?? 1,
+          rol:
+              userForm.rol.value ??
+              Rol(id: 5, name: 'espectador', description: 'espectador'),
+          options: user?.options ?? [],
+          token: user?.token ?? '',
+        );
+
+        userService.userPatchPassword(userPatch);
+      } else {
+        final userCreate = UserResponse(
+          id: user?.id ?? 0,
+          email: userForm.email.text,
+          name: userForm.name.text,
+          names: userForm.names.text,
+          lastnames: userForm.lastnames.text,
+          phone: userForm.phone.text,
+          theme: userForm.theme.text,
+          prefix: userForm.prefix.text,
+          photo: userForm.photo.text,
+          rolId: userForm.rol.value?.id ?? 1,
+          rol:
+              userForm.rol.value ??
+              Rol(id: 5, name: 'espectador', description: 'espectador'),
+          options: user?.options ?? [],
+          token: user?.token ?? '',
+        );
+
+        userService.userPatch(userCreate);
+      }
+    } on Exception catch (e) {
+      if (context.mounted) {
+        MessageProvider.showSnackBarContext(
+          context,
+          Message.fromJson({"error": e.toString(), "statusCode": 400}),
+        );
+      }
+      // context.loaderOverlay.hide();
     }
   }
 }
