@@ -424,13 +424,11 @@ class _UserFormState extends State<_UserForm> {
                                 ),
                               ),
                               onPressed: () {
-                                print('handlePrefix: $handlePrefix');
                                 toggleHandlePassword(!handlePassword);
                                 if (handlePassword) {
                                   userForm.password.text = '';
                                 }
                                 userForm.userFormKey.currentState?.validate();
-                                print('handlePrefix: $handlePrefix');
                               },
                               child: const Text('Editar Contraseña'),
                             ),
@@ -574,11 +572,18 @@ class _UserFormState extends State<_UserForm> {
 
           if (json['url'].isNotEmpty) {
             userForm.photo.text = json['url'];
+
+            if (widget.user?.id != null) {
+              // Guaramos el usuario con su imagen
+              if (context.mounted) {
+                await userPatch(context);
+              }
+            }
             userForm.notifyListeners();
           }
 
           // Eliminar archivo anterior
-          if (oldFileName != '') {
+          if (oldFileName != '' && oldFileName != file.name) {
             await bucketService.deleteFile(
               null,
               file: FileItem(
@@ -645,19 +650,21 @@ class _UserFormState extends State<_UserForm> {
           } else {
             await userPatch(context);
           }
-          MessageProvider.showSnackBarContext(
-            context,
-            Message(
-              messages: [
-                'Usuario ${widget.user == null ? 'creado' : 'Editado'} correctamente!',
-              ],
-              message:
-                  '${widget.user == null ? 'Creación' : 'Edición'} exitosa',
-              statusCode: HttpStatusColor.success200.code,
-            ),
-          );
+          if (context.mounted) {
+            MessageProvider.showSnackBarContext(
+              context,
+              Message(
+                messages: [
+                  'Usuario ${widget.user == null ? 'creado' : 'Editado'} correctamente!',
+                ],
+                message:
+                    '${widget.user == null ? 'Creación' : 'Edición'} exitosa',
+                statusCode: HttpStatusColor.success200.code,
+              ),
+            );
+            Navigator.pop(context, {'option': 'store'});
+          }
           // Navigator.of(context, rootNavigator: true).pop({'option': 'store'});
-          Navigator.pop(context, {'option': 'store'});
           userService.itemsList();
         }
       } on Exception catch (e) {
