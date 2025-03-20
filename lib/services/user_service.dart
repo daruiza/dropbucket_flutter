@@ -96,6 +96,36 @@ class UserService extends ChangeNotifier {
         jsonUser['user']['phone'] = userResponse.phone;
         jsonUser['user']['theme'] = userResponse.theme;
         jsonUser['user']['prefix'] = userResponse.prefix;
+        jsonUser['user']['photo'] = userResponse.photo;       
+
+        return UserResponse.fromJson({'user': data});
+      } else {
+        throw Exception(response);
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<UserResponse> userPatchProfile(UserResponse userResponse) async {
+    final url = '$_baseUrl/${userResponse.id}';
+    try {
+      final response = await _httpService.patch(url, body: userResponse);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+
+        // Actualizamos la data del store
+        final userData = await _storage.read(key: 'user_data');
+        Map<String, dynamic> jsonUser = jsonDecode(userData ?? '');
+
+        // actualizamos user con la la información de userData
+        jsonUser['user']['email'] = userResponse.email;
+        jsonUser['user']['name'] = userResponse.name;
+        jsonUser['user']['names'] = userResponse.names;
+        jsonUser['user']['lastnames'] = userResponse.lastnames;
+        jsonUser['user']['phone'] = userResponse.phone;
+        jsonUser['user']['theme'] = userResponse.theme;
+        jsonUser['user']['prefix'] = userResponse.prefix;
         jsonUser['user']['photo'] = userResponse.photo;
 
         // UserResponse user = UserResponse.fromJson(jsonUser);

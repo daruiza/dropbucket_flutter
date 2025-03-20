@@ -1,28 +1,28 @@
-import 'package:dropbucket_flutter/enums/http_status_code.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dropbucket_flutter/models/user_response.dart';
 import 'package:dropbucket_flutter/services/user_service.dart';
 import 'package:dropbucket_flutter/screens/user_dialog_screen.dart';
+import 'package:dropbucket_flutter/enums/http_status_code.dart';
+import 'package:dropbucket_flutter/services/bucket_service.dart';
 import 'package:dropbucket_flutter/utils/message.dart';
 import 'package:dropbucket_flutter/providers/message_provider.dart';
+import 'package:dropbucket_flutter/models/bucket_response.dart';
 
 class UserHandler {
   static Future<void> createUser(BuildContext context) async {
-    showDialog(
+    return await showDialog(
       context: context,
       builder: (BuildContext context) => UserDialogScreen(user: null),
-    ).then((value) {
-      print('UserDialogScreen Closse');
-    });
+    );
   }
 
   static Future<void> editUser(BuildContext context, UserResponse user) async {
-    showDialog(
+    await showDialog(
       context: context,
       builder: (BuildContext context) => UserDialogScreen(user: user),
     ).then((value) {
-      print('UserDialogScreen Closse');
+      return value;
     });
   }
 
@@ -66,8 +66,25 @@ class UserHandler {
     UserResponse user,
   ) async {
     final userService = Provider.of<UserService>(context, listen: false);
+    final bucketService = Provider.of<BucketService>(context, listen: false);
+    final oldFileName = user.photo != null ? user.photo?.split('/').last : '';
     try {
       await userService.deleteUser(user);
+
+      // Eliminar archivo, en caso de existir
+      if (oldFileName != '') {
+        await bucketService.deleteFile(
+          null,
+          file: FileItem(
+            name: 'users/$oldFileName',
+            extension: '',
+            lastModified: DateTime.now(),
+            size: 0,
+          ),
+          fileName: 'users/$oldFileName',
+        );
+      }
+
       if (context.mounted) {
         MessageProvider.showSnackBarContext(
           context,

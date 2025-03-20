@@ -516,7 +516,7 @@ class _ProfileForm extends StatelessWidget {
       listen: false,
     );
     // Validamos que los campos no estén vacíos
-    await userService.userPatch(
+    await userService.userPatchProfile(
       UserResponse(
         id: authProvider.user?.id ?? 1,
         email: profileForm.email.text,

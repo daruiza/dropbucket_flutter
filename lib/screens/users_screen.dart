@@ -70,13 +70,16 @@ class UsersScreen extends StatelessWidget {
                 child: Icon(
                   Icons.person_add,
                   color: IndigoTheme.texContrastColor,
-                ),                
-                onPressed: () => UserHandler.createUser(context),
+                ),
+                onPressed:
+                    () => UserHandler.createUser(context).then((value) {
+                      // print('Close createUser');
+                    }),
               ),
             ],
           ),
         );
       },
     );
-  }  
+  }
 }
