@@ -23,7 +23,7 @@ class LoginScreen extends StatelessWidget {
         _showGoodbyeMessageIfNeeded(context, args);
       }
     });
-    
+
     return Scaffold(
       body: LayoutBuilder(
         builder: (context, constraints) {
@@ -70,7 +70,7 @@ class LoginScreen extends StatelessWidget {
 class _LoginForm extends StatelessWidget {
   // const _LoginForm({super.key});
   @override
-  Widget build(BuildContext context) {    
+  Widget build(BuildContext context) {
     final loginForm = Provider.of<LoginFormProvider>(context);
     return Form(
       key: loginForm.loginFormKey,
@@ -160,6 +160,8 @@ class _LoginForm extends StatelessWidget {
       // Luego de hacer login, bien asignar variables
       await authProvider.checkToken();
 
+      String uri = Uri.base.toString();      
+
       if (context.mounted) {
         MessageProvider.showSnackBarContext(
           context,
@@ -169,11 +171,22 @@ class _LoginForm extends StatelessWidget {
             messages: [],
           ),
         );
+
+        if (
+          !uri.contains('login') && 
+          !uri.contains('home') && 
+          uri.contains('/#')
+          ) {          
+          Navigator.pushReplacementNamed(context, uri.split('/#').last);
+          return;          
+        }
+
         Navigator.pushReplacementNamed(
           context,
           'home',
           // arguments: {'welcome': true},
         );
+        return;
 
         // Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
         //   MaterialPageRoute(

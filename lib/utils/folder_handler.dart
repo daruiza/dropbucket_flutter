@@ -11,6 +11,7 @@ import 'package:dropbucket_flutter/providers/message_provider.dart';
 import 'package:dropbucket_flutter/utils/message.dart';
 import 'package:dropbucket_flutter/services/bucket_service.dart';
 import 'package:dropbucket_flutter/models/bucket_response.dart';
+import 'package:dropbucket_flutter/constants.dart';
 
 class FolderHandler {
   // NEW FOLDER
@@ -359,7 +360,7 @@ class FolderHandler {
   ) async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     String uri =
-        '${Uri.base.origin}/#request_upload_uri/${RequestUploadQuery.simpleEncryptValue('{"prefix":"${folder.name}","message":"$message","user":"${authProvider.user?.name}"}')}';
+        '${Constants.apiBaseUrl}/#request_upload_uri/${RequestUploadQuery.simpleEncryptValue('{"prefix":"${folder.name}","message":"$message","user":"${authProvider.user?.name}"}')}';
     await Clipboard.setData(ClipboardData(text: uri));
 
     if (context.mounted) {

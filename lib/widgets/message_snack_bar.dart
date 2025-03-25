@@ -22,15 +22,22 @@ class MessageSnackBar extends SnackBar {
                    Row(
                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                      children: [
-                       Row(
-                         children: [
-                           Icon(
-                             HttpStatusIcon.getIcon(message?.statusCode ?? 500),
-                             color: Colors.white,
-                           ),
-                           const SizedBox(width: 8),
-                           Text(message?.message ?? 'Error'),
-                         ],
+                       Expanded(
+                         child: Row(
+                           children: [
+                             Icon(
+                               HttpStatusIcon.getIcon(message?.statusCode ?? 500),
+                               color: Colors.white,
+                             ),
+                             const SizedBox(width: 8),
+                             Expanded(
+                               child: Text(
+                                 message?.message ?? 'Error',
+                                 overflow: TextOverflow.ellipsis,
+                               ),
+                             ),
+                           ],
+                         ),
                        ),
                        TextButton(
                          onPressed: () {
@@ -44,10 +51,27 @@ class MessageSnackBar extends SnackBar {
                      ],
                    ),
                    if (message?.messages != null)
-                     ...message?.messages.map(
-                           (message) => Text(message.toString()),
-                         ) ??
-                         [],
+                    SingleChildScrollView(
+                       child: Column(
+                         crossAxisAlignment: CrossAxisAlignment.start,
+                         children:
+                             message!.messages
+                                 .map(
+                                   (msg) => Padding(
+                                     padding: const EdgeInsets.only(top: 4.0),
+                                     child: Text(msg.toString()),
+                                   ),
+                                 )
+                                 .toList(),
+                       ),
+                     ),
+                    //  ...message?.messages.map(
+                    //        (msg) => Text(
+                    //          msg.toString(),
+                    //          overflow: TextOverflow.ellipsis,
+                    //        ),
+                    //      ) ??
+                    //      [],
                  ],
                ),
              );

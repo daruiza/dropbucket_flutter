@@ -8,14 +8,15 @@ import 'package:dropbucket_flutter/services/interceptor_service.dart';
 import 'package:dropbucket_flutter/models/user_response.dart';
 import 'package:dropbucket_flutter/models/user_create.dart';
 import 'package:dropbucket_flutter/models/user_patch.dart';
+import 'package:dropbucket_flutter/constants.dart';
 
 // class UserService extends ChangeNotifier {
 class UserService extends ChangeNotifier {
   // final String _baseUrl = 'nestjs:3031/user';
   // final String _baseUrl = 'http://3.239.255.151:3031/user';
   // final String _baseUrl = 'http://asistirensalud.online:3031/user';
-  final String _baseUrl = 'https://dropbucketbk.asistirensalud.online/user';
   // final String _baseUrl = 'http://localhost:3000/user';
+  final String _baseUrl = '${Constants.apiBaseUrl}/user';
   final InterceptorService _httpService;
   final AuthProvider _authProvider;
   final _storage = FlutterSecureStorage();

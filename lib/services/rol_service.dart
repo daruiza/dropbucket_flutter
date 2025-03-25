@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 
-
 import 'package:dropbucket_flutter/models/user_response.dart';
 import 'package:dropbucket_flutter/services/interceptor_service.dart';
+import 'package:dropbucket_flutter/constants.dart';
 
 class RolService extends ChangeNotifier {
-  final String _baseUrl = 'https://dropbucketbk.asistirensalud.online/rol';
+  final String _baseUrl = '${Constants.apiBaseUrl}/rol';
 
   final InterceptorService _httpService;
   // final AuthProvider _authProvider;

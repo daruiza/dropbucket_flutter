@@ -1,17 +1,18 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
+
+import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 import 'package:dropbucket_flutter/models/user_response.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
+import 'package:dropbucket_flutter/constants.dart';
 
 class AuthService extends ChangeNotifier {
   // final String _baseUrl = 'nestjs:3031';
   // final String _baseUrl = 'http://3.239.255.151:3031';
   // final String _baseUrl = 'http://asistirensalud.online:3031';
-  final String _baseUrl = 'https://dropbucketbk.asistirensalud.online';
   // final String _baseUrl = 'http://localhost:3031';
+  final String _baseUrl = Constants.apiBaseUrl;
 
   final _storage = FlutterSecureStorage();
 
@@ -25,7 +26,7 @@ class AuthService extends ChangeNotifier {
     final Map<String, dynamic> authData = {
       'email': email,
       'password': password,
-    };
+    };     
 
     try {
       final Response response = await http.post(
