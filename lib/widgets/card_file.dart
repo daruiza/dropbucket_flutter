@@ -1,9 +1,15 @@
-import 'package:dropbucket_flutter/utils/file_handler.dart';
+import 'dart:io';
 import 'package:flutter/material.dart';
+
+import 'package:dropbucket_flutter/utils/file_handler.dart';
 
 import 'package:dropbucket_flutter/models/bucket_response.dart';
 import 'package:dropbucket_flutter/themes/indigo.dart';
 import 'package:file_icon/file_icon.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:dropbucket_flutter/providers/message_provider.dart';
+import 'package:dropbucket_flutter/utils/message.dart';
 
 class CardFile extends StatefulWidget {
   final FileItem file;
@@ -51,6 +57,36 @@ class _CardFileState extends State<CardFile>
     });
   }
 
+  Future<void> _tapFile(BuildContext context) async {
+    final fileResponse = await FileHandler.onGetFile(
+      context: context,
+      file: widget.file,
+      flipCard: _flipCard,
+    );
+
+    if (fileResponse != null && fileResponse.bodyBytes != null) {
+      // Obtener el directorio temporal para guardar el archivo
+      final directory = await getTemporaryDirectory();
+      final fileName = widget.file.name.split('/').last;
+      final filePath = '${directory.path}/$fileName';
+      final File file = File(filePath);
+      await file.writeAsBytes(fileResponse.bodyBytes);
+
+      final result = await OpenFile.open(filePath);
+      if (result.type != ResultType.done) {
+        if (context.mounted) {
+          MessageProvider.showSnackBarContext(
+            context,
+            Message.fromJson({
+              "error": 'No se pudo abrir el archivo: ${result.message}',
+              "statusCode": 400,
+            }),
+          );
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,7 +131,7 @@ class _CardFileState extends State<CardFile>
           onExit: (_) => setState(() => _isHovering = false),
           cursor: SystemMouseCursors.click,
           child: GestureDetector(
-            onTap: null,
+            onTap: () => _tapFile(context),
             onLongPressUp: _flipCard,
             onSecondaryTap: _flipCard,
             child: FileIcon('.${widget.file.extension}', size: 65),

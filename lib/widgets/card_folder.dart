@@ -113,11 +113,22 @@ class _CardFolderState extends State<CardFolder>
         ),
         Padding(
           padding: const EdgeInsets.only(left: 6.0, right: 6.0),
-          child: Text(
-            name.last,
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
-            style: TextStyle(fontSize: 10.0),
+          child: Tooltip(
+            mouseCursor: SystemMouseCursors.click,
+            decoration: BoxDecoration(
+              color: IndigoTheme.hoverColor,
+              borderRadius: BorderRadius.circular(5.0),
+            ),
+            textStyle: TextStyle(
+              color: IndigoTheme.primaryFullColor, 
+              fontSize: 10.0),
+            message: name.last,
+            child: Text(
+              name.last,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              style: TextStyle(fontSize: 10.0),
+            ),
           ),
         ),
       ],

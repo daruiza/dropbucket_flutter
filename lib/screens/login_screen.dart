@@ -160,7 +160,7 @@ class _LoginForm extends StatelessWidget {
       // Luego de hacer login, bien asignar variables
       await authProvider.checkToken();
 
-      String uri = Uri.base.toString();      
+      String uri = Uri.base.toString();
 
       if (context.mounted) {
         MessageProvider.showSnackBarContext(
@@ -172,13 +172,12 @@ class _LoginForm extends StatelessWidget {
           ),
         );
 
-        if (
-          !uri.contains('login') && 
-          !uri.contains('home') && 
-          uri.contains('/#')
-          ) {          
-          Navigator.pushReplacementNamed(context, uri.split('/#').last);
-          return;          
+        // Solo para rutas web
+        if (uri.contains('http')) {
+          if (!uri.contains('login') && !uri.contains('home')) {
+            Navigator.pushReplacementNamed(context, uri.split('/#').last);
+            return;
+          }
         }
 
         Navigator.pushReplacementNamed(

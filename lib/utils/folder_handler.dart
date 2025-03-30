@@ -360,7 +360,7 @@ class FolderHandler {
   ) async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     String uri =
-        '${Constants.apiBaseUrl}/#request_upload_uri/${RequestUploadQuery.simpleEncryptValue('{"prefix":"${folder.name}","message":"$message","user":"${authProvider.user?.name}"}')}';
+        '${Constants.baseUrl}/#request_upload_uri/${RequestUploadQuery.simpleEncryptValue('{"prefix":"${folder.name}","message":"$message","user":"${authProvider.user?.name}"}')}';
     await Clipboard.setData(ClipboardData(text: uri));
 
     if (context.mounted) {

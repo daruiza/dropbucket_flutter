@@ -272,6 +272,27 @@ class FileHandler {
     }
   }
 
+  // GET FILE
+  static onGetFile({
+    required BuildContext context,
+    required FileItem file,
+    required Function flipCard,
+  }) async {    
+    final bucketService = Provider.of<BucketService>(context, listen: false);
+    try {
+      final response = await bucketService.downloadFile(file: file);           
+      return response;
+    } catch (e) {
+      // context.loaderOverlay.hide();
+      if (context.mounted) {
+        MessageProvider.showSnackBarContext(
+          context,
+          Message.fromJson({"error": e.toString(), "statusCode": 400}),
+        );
+      }
+    }
+  }
+
   // DOWNLOAD FILE
   static onDownloadFile({
     required BuildContext context,
