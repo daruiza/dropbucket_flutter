@@ -64,11 +64,11 @@ class _CardFileState extends State<CardFile>
       flipCard: _flipCard,
     );
 
-    if (fileResponse != null && fileResponse.bodyBytes != null) {
-      // Obtener el directorio temporal para guardar el archivo
-      final directory = await getTemporaryDirectory();
-      final fileName = widget.file.name.split('/').last;
-      final filePath = '${directory.path}/$fileName';
+    if (fileResponse != null && fileResponse.bodyBytes != null) {      
+      final fileName = widget.file.name.split('/').last;      
+      final String filePath = Platform.isAndroid 
+          ? '/storage/emulated/0/Download/$fileName'
+          : '${Directory.systemTemp.path}/$fileName';
       final File file = File(filePath);
       await file.writeAsBytes(fileResponse.bodyBytes);
 
