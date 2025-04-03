@@ -11,9 +11,11 @@ import 'package:dropbucket_flutter/models/bucket_response.dart';
 import 'package:dropbucket_flutter/providers/message_provider.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:desktop_drop/desktop_drop.dart';
+import 'package:open_file/open_file.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:universal_html/html.dart' as html;
 import 'dart:io' show Platform, Directory, File;
+import 'dart:ui_web' as ui;
 
 // import 'package:web/web.dart' as web;
 // import 'package:js/js_util.dart' as js_util;
@@ -96,9 +98,216 @@ class FileHandler {
     }
   }
 
+  // SHOW FILE DIALOG
+  static Future<String?> showFileDialog(
+    BuildContext context, {
+    required FileItem file,
+    required List<String> name,
+  }) async {
+    String iframeViewType =
+        'iframeElement-${DateTime.now().millisecondsSinceEpoch}';
+    late html.IFrameElement iframe;
+    try {
+      final bucketService = Provider.of<BucketService>(context, listen: false);
+      final response = await bucketService.sharedFile(file: file);
+      final String fileUrl = jsonDecode(response.body)['url'];
+      // final String viewerUrl = "https://docs.google.com/gview?embedded=true&url=$fileUrl";
+      final String viewerUrl =
+          "https://view.officeapps.live.com/op/view.aspx?src=$fileUrl";
+
+      ui.platformViewRegistry.registerViewFactory(iframeViewType, (int viewId) {
+        iframe =
+            html.IFrameElement()
+              ..src = viewerUrl
+              ..style.border = 'none'
+              ..style.width = '100%'
+              ..style.height = '100%';
+        return iframe;
+      });
+
+      if (context.mounted) {
+        return showDialog<String>(
+          context: context,
+          builder:
+              (BuildContext context) => StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+                  final width = MediaQuery.of(context).size.width * 0.95;
+                  final height = MediaQuery.of(context).size.height * 0.95;
+                  return AlertDialog(
+                    // title: Align(
+                    //   alignment: Alignment.topRight,
+                    //   child: IconButton(
+                    //     icon: Icon(Icons.close),
+                    //     onPressed: () => Navigator.pop(context),
+                    //   ),
+                    // ),
+                    content: SizedBox(
+                      width: width,
+                      height: height,
+                      child: HtmlElementView(viewType: iframeViewType),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          iframe.remove();
+                          Navigator.pop(context);
+                        },
+                        child: Text('Cerrar'),
+                      ),
+                      // TODO: Descargar y DescargarPDF
+                    ],
+                  );
+                },
+              ),
+        );
+      }
+    } catch (e) {
+      // context.loaderOverlay.hide();
+      if (context.mounted) {
+        MessageProvider.showSnackBarContext(
+          context,
+          Message.fromJson({"error": e.toString(), "statusCode": 400}),
+        );
+      }
+    }
+    return null;
+  }
+
+  static Future<String?> showPDFViewer(
+    BuildContext context, {
+    required FileItem file,
+    required List<String> name,
+  }) async {
+    final String iframeViewType =
+        'iframeElement-${DateTime.now().millisecondsSinceEpoch}';
+    late html.IFrameElement iframe;
+
+    try {
+      final bucketService = Provider.of<BucketService>(context, listen: false);
+      final response = await bucketService.sharedFile(file: file);
+      // Registrar el IFrame en Flutter Web
+      ui.platformViewRegistry.registerViewFactory(iframeViewType, (int viewId) {
+        iframe =
+            html.IFrameElement()
+              ..src = jsonDecode(response.body)['url']
+              ..style.border = 'none'
+              ..style.width = '100%'
+              ..style.height = '100%'
+              ..allowFullscreen = true;
+        return iframe;
+      });
+
+      // Mostrar el visor dentro de un AlertDialog
+      if (context.mounted) {
+        return showDialog(
+          context: context,
+          builder:
+              (BuildContext context) => AlertDialog(
+                titlePadding: EdgeInsets.zero,
+                // title: Align(
+                //   alignment: Alignment.topRight,
+                //   child: IconButton(
+                //     icon: Icon(Icons.close),
+                //     onPressed: () {
+                //       iframe.remove();
+                //       Navigator.pop(context);
+                //     },
+                //   ),
+                // ),
+                content: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.95,
+                  height: MediaQuery.of(context).size.height * 0.95,
+                  child: HtmlElementView(viewType: iframeViewType),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      iframe.remove();
+                      Navigator.pop(context);
+                    },
+                    child: Text('Cerrar'),
+                  ),
+                  // TODO: Descargar y DescargarPDF
+                ],
+              ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        MessageProvider.showSnackBarContext(
+          context,
+          Message.fromJson({"error": e.toString(), "statusCode": 400}),
+        );
+      }
+    }
+    return null;
+  }
+
+  static Future<String?> showImageViewer(
+    BuildContext context, {
+    required FileItem file,
+    required List<String> name,
+  }) async {
+    try {
+      final bucketService = Provider.of<BucketService>(context, listen: false);
+      final response = await bucketService.sharedFile(file: file);
+
+      // Mostrar el visor dentro de un AlertDialog
+      if (context.mounted) {
+        return showDialog(
+          context: context,
+          builder:
+              (BuildContext context) => AlertDialog(
+                titlePadding: EdgeInsets.zero,
+                // title: Align(
+                //   alignment: Alignment.topRight,
+                //   child: IconButton(
+                //     icon: Icon(Icons.close),
+                //     onPressed: () {
+                //       iframe.remove();
+                //       Navigator.pop(context);
+                //     },
+                //   ),
+                // ),
+                content: Container(
+                  width: MediaQuery.of(context).size.width * 0.95,
+                  height: MediaQuery.of(context).size.height * 0.95,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: NetworkImage(jsonDecode(response.body)['url']),
+                      fit:
+                          BoxFit
+                              .contain, // BoxFit.cover para llenar, contain para mantener relación
+                    ),
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text('Cerrar'),
+                  ),
+                  // TODO: Descargar y DescargarPDF
+                ],
+              ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        MessageProvider.showSnackBarContext(
+          context,
+          Message.fromJson({"error": e.toString(), "statusCode": 400}),
+        );
+      }
+    }
+
+    return null;
+  }
+
   // FOLDER FILE RENAME
   static Future<String?> showEditFileDialog(
-    BuildContext context, {    
+    BuildContext context, {
     required FileItem file,
     required List<String> name,
   }) {
@@ -126,8 +335,8 @@ class FileHandler {
     onEdit(BuildContext context, FileItem file, String rename) async {
       await onEditPrefix(context, file, rename);
       if (context.mounted) {
-        Navigator.pop(context, 'done');        
-      }      
+        Navigator.pop(context, 'done');
+      }
     }
 
     return showDialog<String>(
@@ -226,7 +435,7 @@ class FileHandler {
         // context.loaderOverlay.hide();
       } catch (e) {
         // context.loaderOverlay.hide();
-        
+
         if (context.mounted) {
           MessageProvider.showSnackBarContext(
             context,
@@ -277,10 +486,10 @@ class FileHandler {
     required BuildContext context,
     required FileItem file,
     required Function flipCard,
-  }) async {    
+  }) async {
     final bucketService = Provider.of<BucketService>(context, listen: false);
     try {
-      final response = await bucketService.downloadFile(file: file);           
+      final response = await bucketService.downloadFile(file: file);
       return response;
     } catch (e) {
       // context.loaderOverlay.hide();
@@ -289,6 +498,63 @@ class FileHandler {
           context,
           Message.fromJson({"error": e.toString(), "statusCode": 400}),
         );
+      }
+    }
+  }
+
+  static onGetFilePDF({
+    required BuildContext context,
+    required FileItem file,
+    required Function flipCard,
+  }) async {
+    List<String> name = file.name.split('/');
+    final bucketService = Provider.of<BucketService>(context, listen: false);
+    try {
+      final response = await bucketService.downloadFilePDF(file: file);
+      await downloadFile(response.bodyBytes, 'name.pdf');
+      // return response;
+    } catch (e) {
+      // context.loaderOverlay.hide();
+      if (context.mounted) {
+        MessageProvider.showSnackBarContext(
+          context,
+          Message.fromJson({"error": e.toString(), "statusCode": 400}),
+        );
+      }
+    }
+  }
+
+  static onOpenFile({
+    required BuildContext context,
+    required FileItem fileItem,
+    required Function flipCard,
+  }) async {
+    final fileResponse = await FileHandler.onGetFile(
+      context: context,
+      file: fileItem,
+      flipCard: flipCard,
+    );
+
+    if (fileResponse != null && fileResponse.bodyBytes != null) {
+      final fileName = fileItem.name.split('/').last;
+      final String filePath =
+          Platform.isAndroid
+              ? '/storage/emulated/0/Download/$fileName'
+              : '${Directory.systemTemp.path}/$fileName';
+      final File file = File(filePath);
+      await file.writeAsBytes(fileResponse.bodyBytes);
+
+      final result = await OpenFile.open(filePath);
+      if (result.type != ResultType.done) {
+        if (context.mounted) {
+          MessageProvider.showSnackBarContext(
+            context,
+            Message.fromJson({
+              "error": 'No se pudo abrir el archivo: ${result.message}',
+              "statusCode": 400,
+            }),
+          );
+        }
       }
     }
   }
@@ -361,7 +627,7 @@ class FileHandler {
   static Future<String?> showDeleteDialog(
     BuildContext context,
     FileItem file,
-    List<String> name    
+    List<String> name,
   ) {
     return showDialog<String>(
       context: context,
@@ -381,7 +647,7 @@ class FileHandler {
                 child: const Text('Cancel'),
               ),
               TextButton(
-                onPressed: () {                  
+                onPressed: () {
                   onDeleteFile(context, file);
                   Navigator.pop(context, 'OK');
                 },

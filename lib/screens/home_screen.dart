@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:dropbucket_flutter/providers/auth_provider.dart';
 import 'package:dropbucket_flutter/app_bar_menu.dart';
 import 'package:dropbucket_flutter/services/services.dart';
 import 'package:dropbucket_flutter/widgets/breadcrumb.dart';
@@ -7,6 +8,7 @@ import 'package:dropbucket_flutter/widgets/card_file.dart';
 import 'package:dropbucket_flutter/widgets/card_folder.dart';
 import 'package:dropbucket_flutter/utils/file_handler.dart';
 import 'package:dropbucket_flutter/utils/folder_handler.dart';
+import 'package:dropbucket_flutter/enums/enum_option.dart';
 import 'package:dropbucket_flutter/themes/indigo.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 
@@ -31,10 +33,20 @@ class HomeScreen extends StatelessWidget {
           return const Center(child: Text('Error loading data.'));
         }
         // Variables iniciales
+        final authProvider = Provider.of<AuthProvider>(context, listen: false);
         final files = bucketService.items.files;
         final folders = bucketService.items.folders;
         final isDesktop = MediaQuery.of(context).size.width >= 600;
         final crossAxisCount = isDesktop ? 12 : 3;
+
+        final optionCreateFolder = EnumOption.hasOption(
+          authProvider.user?.options ?? [],
+          'folder_create',
+        );
+        final optionUploadFile = EnumOption.hasOption(
+          authProvider.user?.options ?? [],
+          'file_upload',
+        );
 
         return Scaffold(
           appBar: AppBarMenu(
@@ -85,23 +97,25 @@ class HomeScreen extends StatelessWidget {
           floatingActionButton: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              FloatingActionButton(
-                heroTag: 'upload_file_button', // Tag único
-                child: Icon(
-                  Icons.upload_file,
-                  color: IndigoTheme.texContrastColor,
+              if (optionUploadFile)
+                FloatingActionButton(
+                  heroTag: 'upload_file_button', // Tag único
+                  child: Icon(
+                    Icons.upload_file,
+                    color: IndigoTheme.texContrastColor,
+                  ),
+                  onPressed: () => FileHandler.onUploadFiles(context),
                 ),
-                onPressed: () => FileHandler.onUploadFiles(context),
-              ),
-              const SizedBox(height: 16), // Espacio entre los botones
-              FloatingActionButton(
-                heroTag: 'create_folder_button',
-                child: Icon(
-                  Icons.create_new_folder,
-                  color: IndigoTheme.texContrastColor,
+              const SizedBox(height: 16),
+              if (optionCreateFolder) // Espacio entre los botones
+                FloatingActionButton(
+                  heroTag: 'create_folder_button',
+                  child: Icon(
+                    Icons.create_new_folder,
+                    color: IndigoTheme.texContrastColor,
+                  ),
+                  onPressed: () => FolderHandler.showNewFolderDialog(context),
                 ),
-                onPressed: () => FolderHandler.showNewFolderDialog(context),
-              ),
             ],
           ),
         );

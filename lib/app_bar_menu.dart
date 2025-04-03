@@ -4,6 +4,7 @@ import 'package:dropbucket_flutter/route.dart';
 import 'package:dropbucket_flutter/services/services.dart';
 import 'package:dropbucket_flutter/themes/indigo.dart';
 import 'package:dropbucket_flutter/utils/message.dart';
+import 'package:dropbucket_flutter/enums/enum_option.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -35,6 +36,11 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
     final prefixcurrent = authProvider.user?.prefixcurrent ?? '';
     final String currentRoute = ModalRoute.of(context)?.settings.name ?? '';
 
+    final optionUser = EnumOption.hasOption(
+      authProvider.user?.options ?? [],
+      'users',
+    );    
+
     return AppBar(
       title: Text(authProvider.user?.name ?? title),
       actions: [
@@ -56,7 +62,7 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
             icon: Icon(Icons.home, color: IndigoTheme.texContrastColor),
           ),
         ...actions ?? [],
-        if (currentRoute != Routes.users)
+        if (currentRoute != Routes.users && optionUser)
           IconButton(
             icon: Icon(
               Icons.workspaces_rounded,

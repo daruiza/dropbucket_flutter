@@ -1,15 +1,13 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'package:dropbucket_flutter/utils/file_handler.dart';
-
+import 'package:dropbucket_flutter/providers/auth_provider.dart';
 import 'package:dropbucket_flutter/models/bucket_response.dart';
+import 'package:dropbucket_flutter/enums/enum_option.dart';
 import 'package:dropbucket_flutter/themes/indigo.dart';
 import 'package:file_icon/file_icon.dart';
-import 'package:open_file/open_file.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:dropbucket_flutter/providers/message_provider.dart';
-import 'package:dropbucket_flutter/utils/message.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class CardFile extends StatefulWidget {
   final FileItem file;
@@ -58,29 +56,71 @@ class _CardFileState extends State<CardFile>
   }
 
   Future<void> _tapFile(BuildContext context) async {
-    final fileResponse = await FileHandler.onGetFile(
-      context: context,
-      file: widget.file,
-      flipCard: _flipCard,
-    );
+    // Nativo Android y Windowa
+    if (!kIsWeb) {
+      if (context.mounted) {
+        await FileHandler.onOpenFile(
+          context: context,
+          fileItem: widget.file,
+          flipCard: _flipCard,
+        );
+      }
+    }
 
-    if (fileResponse != null && fileResponse.bodyBytes != null) {      
-      final fileName = widget.file.name.split('/').last;      
-      final String filePath = Platform.isAndroid 
-          ? '/storage/emulated/0/Download/$fileName'
-          : '${Directory.systemTemp.path}/$fileName';
-      final File file = File(filePath);
-      await file.writeAsBytes(fileResponse.bodyBytes);
+    if (kIsWeb) {
+      bool isImage = [
+        'jpg',
+        'jpeg',
+        'png',
+        'gif',
+        'webp',
+        'bmp',
+      ].contains(widget.file.extension);
+      bool isWord = [
+        // Word
+        'doc', 'docx', 'docm', 'dot', 'dotx', 'dotm', 'rtf', 'odt',
+        // Excel
+        'xls', 'xlsx', 'xlsm', 'xlt', 'xltx', 'xltm', 'xlsb', 'csv', 'ods',
+        // PowerPoint
+        'ppt',
+        'pptx',
+        'pptm',
+        'pot',
+        'potx',
+        'potm',
+        'pps',
+        'ppsx',
+        'ppsm',
+        'odp',
+        // Otros formatos de Office
+        'one', 'pub', 'vsd', 'vsdx', 'mpp',
+      ].contains(widget.file.extension);
 
-      final result = await OpenFile.open(filePath);
-      if (result.type != ResultType.done) {
+      if (isWord) {
         if (context.mounted) {
-          MessageProvider.showSnackBarContext(
+          await FileHandler.showFileDialog(
             context,
-            Message.fromJson({
-              "error": 'No se pudo abrir el archivo: ${result.message}',
-              "statusCode": 400,
-            }),
+            file: widget.file,
+            name: widget.file.name.split('/'),
+          );
+        }
+      }
+      if (widget.file.extension == 'pdf') {
+        if (context.mounted) {
+          await FileHandler.showPDFViewer(
+            context,
+            file: widget.file,
+            name: widget.file.name.split('/'),
+          );
+        }
+      }
+
+      if (isImage) {
+        if (context.mounted) {
+          await FileHandler.showImageViewer(
+            context,
+            file: widget.file,
+            name: widget.file.name.split('/'),
           );
         }
       }
@@ -151,7 +191,25 @@ class _CardFileState extends State<CardFile>
   }
 
   Widget _buildBack() {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
     List<String> name = widget.file.name.split('/');
+
+    final bool optionEditFile = EnumOption.hasOption(
+      authProvider.user?.options,
+      'file_edit',
+    );
+    final bool optionShareFile = EnumOption.hasOption(
+      authProvider.user?.options,
+      'file_share',
+    );
+    final bool optionDeleteFile = EnumOption.hasOption(
+      authProvider.user?.options,
+      'file_delete',
+    );
+    final bool optionDownloadFile = EnumOption.hasOption(
+      authProvider.user?.options,
+      'file_download',
+    );
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -167,77 +225,79 @@ class _CardFileState extends State<CardFile>
               icon: const Icon(Icons.arrow_back, size: 20.0),
               onPressed: _flipCard, // Regresa al frente
             ),
-
-            IconButton(
-              color: IndigoTheme.primaryColor,
-              iconSize: 20.0,
-              padding: EdgeInsets.all(0.0),
-              constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
-              icon: const Icon(Icons.edit, size: 20.0),
-              onPressed:
-                  () => FileHandler.showEditFileDialog(
-                    context,
-                    file: widget.file,
-                    name: name,
-                  ).then((_) {
-                    // No necesita el FlipCard, hay un refresh
-                    // _flipCard();
-                  }),
-            ),
+            if (optionEditFile)
+              IconButton(
+                color: IndigoTheme.primaryColor,
+                iconSize: 20.0,
+                padding: EdgeInsets.all(0.0),
+                constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+                icon: const Icon(Icons.edit, size: 20.0),
+                onPressed:
+                    () => FileHandler.showEditFileDialog(
+                      context,
+                      file: widget.file,
+                      name: name,
+                    ).then((_) {
+                      // No necesita el FlipCard, hay un refresh
+                      // _flipCard();
+                    }),
+              ),
           ],
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            IconButton(
-              color: IndigoTheme.primaryColor,
-              iconSize: 20.0,
-              padding: EdgeInsets.all(0.0),
-              constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
-              icon: const Icon(Icons.share, size: 20.0),
-              onPressed: () {
-                FileHandler.onShared(
-                  context: context,
-                  file: widget.file,
-                  flipCard: _flipCard,
-                );
-              },
-            ),
-
-            IconButton(
-              color: IndigoTheme.primaryColor,
-              iconSize: 20.0,
-              padding: EdgeInsets.all(0.0),
-              constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
-              icon: const Icon(Icons.delete, size: 20.0),
-              onPressed:
-                  () => FileHandler.showDeleteDialog(
-                    context,
-                    widget.file,
-                    name,
-                  ).then((_) {
-                    // No necesita el FlipCard, hay un refresh
-                    // _flipCard();
-                  }), // Regresa al frente
-            ),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            IconButton(
-              color: IndigoTheme.primaryColor,
-              iconSize: 20.0,
-              padding: EdgeInsets.all(0.0),
-              constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
-              icon: const Icon(Icons.download, size: 20.0),
-              onPressed:
-                  () => FileHandler.onDownloadFile(
+            if (optionShareFile)
+              IconButton(
+                color: IndigoTheme.primaryColor,
+                iconSize: 20.0,
+                padding: EdgeInsets.all(0.0),
+                constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+                icon: const Icon(Icons.share, size: 20.0),
+                onPressed: () {
+                  FileHandler.onShared(
                     context: context,
                     file: widget.file,
                     flipCard: _flipCard,
-                  ),
-            ),
+                  );
+                },
+              ),
+            if (optionDeleteFile)
+              IconButton(
+                color: IndigoTheme.primaryColor,
+                iconSize: 20.0,
+                padding: EdgeInsets.all(0.0),
+                constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+                icon: const Icon(Icons.delete, size: 20.0),
+                onPressed:
+                    () => FileHandler.showDeleteDialog(
+                      context,
+                      widget.file,
+                      name,
+                    ).then((_) {
+                      // No necesita el FlipCard, hay un refresh
+                      // _flipCard();
+                    }), // Regresa al frente
+              ),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            if (optionDownloadFile)
+              IconButton(
+                color: IndigoTheme.primaryColor,
+                iconSize: 20.0,
+                padding: EdgeInsets.all(0.0),
+                constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+                icon: const Icon(Icons.download, size: 20.0),
+                onPressed:
+                    () => FileHandler.onDownloadFile(
+                      context: context,
+                      file: widget.file,
+                      flipCard: _flipCard,
+                    ),
+              ),
           ],
         ),
       ],

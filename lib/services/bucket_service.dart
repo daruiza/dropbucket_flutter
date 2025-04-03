@@ -256,6 +256,24 @@ class BucketService extends ChangeNotifier {
     }
   }
 
+  Future<Response> downloadFilePDF({required FileItem file}) async {
+    final url = '$_baseUrl/view/pdf';
+    try {
+      final response = await _httpService.get(
+        url,
+        queryParams: {'key': file.name},
+      );
+
+      if (response.statusCode == 200) {
+        return response;
+      } else {
+        throw Exception(response);
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<Response> sharedFile({required FileItem file}) async {
     final url = '$_baseUrl/url';
     try {

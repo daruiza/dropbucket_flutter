@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../themes/indigo.dart';
-import 'package:dropbucket_flutter/models/bucket_response.dart';
 import 'package:dropbucket_flutter/providers/auth_provider.dart';
 import 'package:dropbucket_flutter/services/bucket_service.dart';
+import 'package:dropbucket_flutter/models/bucket_response.dart';
+import 'package:dropbucket_flutter/enums/enum_option.dart';
 import 'package:dropbucket_flutter/utils/folder_handler.dart';
 
 class CardFolder extends StatefulWidget {
@@ -120,8 +121,9 @@ class _CardFolderState extends State<CardFolder>
               borderRadius: BorderRadius.circular(5.0),
             ),
             textStyle: TextStyle(
-              color: IndigoTheme.primaryFullColor, 
-              fontSize: 10.0),
+              color: IndigoTheme.primaryFullColor,
+              fontSize: 10.0,
+            ),
             message: name.last,
             child: Text(
               name.last,
@@ -136,7 +138,22 @@ class _CardFolderState extends State<CardFolder>
   }
 
   Widget _buildBack() {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
     List<String> name = widget.folder.name.split('/');
+
+    final bool optionEditFolder = EnumOption.hasOption(
+      authProvider.user?.options,
+      'folder_edit',
+    );
+    final bool optionDeleteFolder = EnumOption.hasOption(
+      authProvider.user?.options,
+      'folder_delete',
+    );
+    final bool optionRequestUpload = EnumOption.hasOption(
+      authProvider.user?.options,
+      'folder_request_upload',
+    );
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -151,51 +168,54 @@ class _CardFolderState extends State<CardFolder>
               icon: const Icon(Icons.arrow_back, size: 20.0),
               onPressed: _flipCard, // Regresa al frente
             ),
-
-            IconButton(
-              iconSize: 20.0,
-              padding: EdgeInsets.all(0.0),
-              constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
-              icon: const Icon(Icons.edit, size: 20.0),
-              onPressed:
-                  () => FolderHandler.showEditFolderDialog(
-                    context,
-                    folder: widget.folder,
-                    name: name,
-                  ).then((_) {
-                    // No necesita el FlipCard, hay un refresh
-                    // _flipCard();
-                  }), // Regresa al frente
-            ),
+            if (optionEditFolder)
+              IconButton(
+                iconSize: 20.0,
+                padding: EdgeInsets.all(0.0),
+                constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+                icon: const Icon(Icons.edit, size: 20.0),
+                onPressed:
+                    () => FolderHandler.showEditFolderDialog(
+                      context,
+                      folder: widget.folder,
+                      name: name,
+                    ).then((_) {
+                      // No necesita el FlipCard, hay un refresh
+                      // _flipCard();
+                    }), // Regresa al frente
+              ),
           ],
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            IconButton(
-              iconSize: 20.0,
-              padding: EdgeInsets.all(0.0),
-              constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
-              icon: const Icon(Icons.upload, size: 20.0),
-              onPressed:
-                  () => FolderHandler.showRequestFilesDialog(
-                    context,
-                    name,
-                    _flipCard,
-                    widget.folder,
-                  ), // Regresa al frente
-            ),
-            IconButton(
-              iconSize: 20.0,
-              padding: EdgeInsets.all(0.0),
-              constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
-              icon: const Icon(Icons.delete, size: 20.0),
-              onPressed:
-                  () => FolderHandler.showDeleteDialog(context, name).then((_) {
-                    // No necesita el FlipCard, hay un refresh
-                    // _flipCard();
-                  }), // Regresa al frente
-            ),
+            if (optionRequestUpload)
+              IconButton(
+                iconSize: 20.0,
+                padding: EdgeInsets.all(0.0),
+                constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+                icon: const Icon(Icons.upload, size: 20.0),
+                onPressed:
+                    () => FolderHandler.showRequestFilesDialog(
+                      context,
+                      name,
+                      _flipCard,
+                      widget.folder,
+                    ), // Regresa al frente
+              ),
+            if (optionDeleteFolder)
+              IconButton(
+                iconSize: 20.0,
+                padding: EdgeInsets.all(0.0),
+                constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+                icon: const Icon(Icons.delete, size: 20.0),
+                onPressed:
+                    () =>
+                        FolderHandler.showDeleteDialog(context, name).then((_) {
+                          // No necesita el FlipCard, hay un refresh
+                          // _flipCard();
+                        }), // Regresa al frente
+              ),
           ],
         ),
         Row(
