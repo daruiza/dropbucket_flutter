@@ -97,9 +97,11 @@ class _CardFolderState extends State<CardFolder>
           onExit: (_) => setState(() => _isHovering = false),
           cursor: SystemMouseCursors.click,
           child: GestureDetector(
-            onTap: () {
-              onGo(context);
-            },
+            onTap:
+                () => FolderHandler.onGo(context, name: name).then((_) {
+                  // No necesita el FlipCard, hay un refresh
+                  // _flipCard();
+                }),
             onLongPressUp: _flipCard,
             onSecondaryTap: _flipCard,
             child: Icon(
@@ -162,6 +164,7 @@ class _CardFolderState extends State<CardFolder>
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             IconButton(
+              color: IndigoTheme.primaryColor,
               iconSize: 20.0,
               padding: EdgeInsets.all(0.0),
               constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
@@ -170,6 +173,7 @@ class _CardFolderState extends State<CardFolder>
             ),
             if (optionEditFolder)
               IconButton(
+                color: IndigoTheme.primaryColor,
                 iconSize: 20.0,
                 padding: EdgeInsets.all(0.0),
                 constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
@@ -191,6 +195,7 @@ class _CardFolderState extends State<CardFolder>
           children: [
             if (optionRequestUpload)
               IconButton(
+                color: IndigoTheme.primaryColor,
                 iconSize: 20.0,
                 padding: EdgeInsets.all(0.0),
                 constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
@@ -205,6 +210,7 @@ class _CardFolderState extends State<CardFolder>
               ),
             if (optionDeleteFolder)
               IconButton(
+                color: IndigoTheme.primaryColor,
                 iconSize: 20.0,
                 padding: EdgeInsets.all(0.0),
                 constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
@@ -239,21 +245,5 @@ class _CardFolderState extends State<CardFolder>
         ),
       ],
     );
-  }
-
-  Future<void> onGo(BuildContext context) async {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final bucketService = Provider.of<BucketService>(context, listen: false);
-    List<String> name = widget.folder.name.split('/');
-    if (name.isEmpty) return;
-    try {
-      // context.loaderOverlay.show();
-      if (context.mounted) {
-        await authProvider.setUserPrefix(context, name.last);
-      }
-      bucketService.itemsList();
-    } finally {
-      // if (mounted) context.loaderOverlay.hide();
-    }
-  }
+  } 
 }

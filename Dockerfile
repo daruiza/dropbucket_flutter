@@ -13,8 +13,8 @@ COPY build/web /usr/share/nginx/html
 # COPY /asistirensalud.online/fullchain.pem /etc/letsencrypt/live/www.asistirensalud.online/fullchain.pem
 # COPY /asistirensalud.online/private.key /etc/letsencrypt/live/www.asistirensalud.online/privkey.pem
 
-# EXPOSE 80 443
-EXPOSE 8031
+# EXPOSE 8831 443
+EXPOSE 8831
 # CMD ["/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
 
@@ -32,7 +32,7 @@ CMD ["nginx", "-g", "daemon off;"]
 #flutter build apk --release --no-tree-shake-icons
 
 
-#Para producción
+#Para producción ssl https certificados
 #docker exec -it dropbucket_flutter certbot --nginx -d www.asistirensalud.online --non-interactive --agree-tos -m daruiza@gmail.com
 #cada 3 meses
 #docker exec -it dropbucket_flutter certbot renew

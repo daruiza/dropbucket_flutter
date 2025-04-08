@@ -305,6 +305,83 @@ class FileHandler {
     return null;
   }
 
+  // FILE SHOW VIEW
+  static Future<void> tapFile(
+    BuildContext context, {
+    required FileItem file,
+    required Function flipCard,
+  }) async {
+    // Nativo Android y Windowa
+    if (!kIsWeb) {
+      if (context.mounted) {
+        await FileHandler.onOpenFile(
+          context: context,
+          fileItem: file,
+          flipCard: flipCard,
+        );
+      }
+    }
+
+    if (kIsWeb) {
+      bool isImage = [
+        'jpg',
+        'jpeg',
+        'png',
+        'gif',
+        'webp',
+        'bmp',
+      ].contains(file.extension);
+      bool isWord = [
+        // Word
+        'doc', 'docx', 'docm', 'dot', 'dotx', 'dotm', 'rtf', 'odt',
+        // Excel
+        'xls', 'xlsx', 'xlsm', 'xlt', 'xltx', 'xltm', 'xlsb', 'csv', 'ods',
+        // PowerPoint
+        'ppt',
+        'pptx',
+        'pptm',
+        'pot',
+        'potx',
+        'potm',
+        'pps',
+        'ppsx',
+        'ppsm',
+        'odp',
+        // Otros formatos de Office
+        'one', 'pub', 'vsd', 'vsdx', 'mpp',
+      ].contains(file.extension);
+
+      if (isWord) {
+        if (context.mounted) {
+          await FileHandler.showFileDialog(
+            context,
+            file: file,
+            name: file.name.split('/'),
+          );
+        }
+      }
+      if (file.extension == 'pdf') {
+        if (context.mounted) {
+          await FileHandler.showPDFViewer(
+            context,
+            file: file,
+            name: file.name.split('/'),
+          );
+        }
+      }
+
+      if (isImage) {
+        if (context.mounted) {
+          await FileHandler.showImageViewer(
+            context,
+            file: file,
+            name: file.name.split('/'),
+          );
+        }
+      }
+    }
+  }
+
   // FOLDER FILE RENAME
   static Future<String?> showEditFileDialog(
     BuildContext context, {

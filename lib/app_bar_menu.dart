@@ -1,12 +1,16 @@
-import 'package:dropbucket_flutter/enums/http_status_code.dart';
-import 'package:dropbucket_flutter/providers/providers.dart';
-import 'package:dropbucket_flutter/route.dart';
-import 'package:dropbucket_flutter/services/services.dart';
-import 'package:dropbucket_flutter/themes/indigo.dart';
-import 'package:dropbucket_flutter/utils/message.dart';
-import 'package:dropbucket_flutter/enums/enum_option.dart';
+import 'dart:ui_web';
+
+import 'package:dropbucket_flutter/providers/table_view_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:dropbucket_flutter/route.dart';
+import 'package:dropbucket_flutter/widgets/breadcrumb.dart';
+import 'package:dropbucket_flutter/providers/providers.dart';
+import 'package:dropbucket_flutter/services/services.dart';
+import 'package:dropbucket_flutter/enums/http_status_code.dart';
+import 'package:dropbucket_flutter/enums/enum_option.dart';
+import 'package:dropbucket_flutter/themes/indigo.dart';
+import 'package:dropbucket_flutter/utils/message.dart';
 
 class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -32,6 +36,11 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
     final authService = Provider.of<AuthService>(context, listen: false);
     final bucketService = Provider.of<BucketService>(context, listen: false);
 
+    final tableViewProvider = Provider.of<TableViewProvider>(
+      context,
+      listen: false,
+    );
+
     final prefix = authProvider.user?.prefix ?? '';
     final prefixcurrent = authProvider.user?.prefixcurrent ?? '';
     final String currentRoute = ModalRoute.of(context)?.settings.name ?? '';
@@ -39,10 +48,26 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
     final optionUser = EnumOption.hasOption(
       authProvider.user?.options ?? [],
       'users',
-    );    
+    );
 
     return AppBar(
-      title: Text(authProvider.user?.name ?? title),
+      title: Row(
+        children: [
+          Text(authProvider.user?.name ?? title),
+          SizedBox(width: 20),
+          Expanded(
+            child: Breadcrumb(
+              fetchItemsList: () {
+                bucketService.itemsList();
+              },
+              primaryColor: IndigoTheme.texContrastColor ?? Colors.blue,
+              hoverColor: IndigoTheme.primaryFullColor ?? Colors.blueAccent,
+              iconColor: IndigoTheme.texContrastColor ?? Colors.blueAccent,
+              fontSize: 14.0,
+            ),
+          ),
+        ],
+      ),
       actions: [
         // FolderReturn
         if (prefixcurrent.length > prefix.length && currentRoute == Routes.home)
@@ -62,6 +87,20 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
             icon: Icon(Icons.home, color: IndigoTheme.texContrastColor),
           ),
         ...actions ?? [],
+        if (currentRoute == Routes.home)
+          IconButton(
+            icon: Icon(
+              Icons.format_line_spacing_outlined,
+              color: IndigoTheme.texContrastColor,
+            ),
+            onPressed: () {
+              final TableView view =
+                  tableViewProvider.view == TableView.grid
+                      ? TableView.list
+                      : TableView.grid;
+              tableViewProvider.view = view;
+            },
+          ),
         if (currentRoute != Routes.users && optionUser)
           IconButton(
             icon: Icon(

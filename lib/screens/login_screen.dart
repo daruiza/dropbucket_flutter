@@ -44,7 +44,10 @@ class LoginScreen extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         SizedBox(
-                          width: constraints.maxWidth * 0.16,
+                          width:
+                              constraints.maxWidth > 600
+                                  ? constraints.maxWidth * 0.16
+                                  : constraints.maxWidth * 0.6,
                           child: Image.network(
                             'https://dropbucket-asistir.s3.amazonaws.com/images/logoasistirpng.png',
                           ),

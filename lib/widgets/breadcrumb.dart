@@ -10,12 +10,20 @@ class Breadcrumb extends StatefulWidget {
   // final List<String> path;
   // final Function(int)? onPathItemTap;
   final Function fetchItemsList;
+  final Color primaryColor;
+  final Color hoverColor;
+  final Color iconColor;
+  final double fontSize;
 
   const Breadcrumb({
     super.key,
     // required this.path,
     // this.onPathItemTap
     required this.fetchItemsList,
+    required this.primaryColor,
+    required this.hoverColor,
+    required this.iconColor,
+    required this.fontSize,
   });
 
   @override
@@ -83,30 +91,32 @@ class _BreadcrumbState extends State<Breadcrumb> {
                           index == 0
                               ? Icon(
                                 Icons.home,
+                                size: widget.fontSize + 8,
                                 color:
                                     isHovering[index]
-                                        ? IndigoTheme.primaryFullColor
-                                        : IndigoTheme.primaryColor,
+                                        ? widget.hoverColor
+                                        : widget.primaryColor,
                               )
                               : Text(
                                 prefixCurrent[index],
                                 style: TextStyle(
                                   color:
                                       isHovering[index]
-                                          ? IndigoTheme.primaryFullColor
-                                          : IndigoTheme.primaryColor,
-                                  fontWeight: FontWeight.normal,
+                                          ? widget.hoverColor
+                                          : widget.primaryColor,
+                                  // fontWeight: FontWeight.normal,
+                                  fontSize: widget.fontSize,
                                 ),
                               ),
                     ),
                   ),
                   if (!isLast)
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 2.0),
                       child: Icon(
                         Icons.chevron_right,
-                        size: 18,
-                        color: IndigoTheme.primaryColor,
+                        size: widget.fontSize + 8,
+                        color: widget.iconColor,
                       ),
                     ),
                 ],

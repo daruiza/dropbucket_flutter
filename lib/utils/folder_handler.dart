@@ -408,4 +408,24 @@ class FolderHandler {
       }
     }
   }
+
+  static Future<void> onGo(
+    BuildContext context, {
+    required List<String> name,
+  }) async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final bucketService = Provider.of<BucketService>(context, listen: false);    
+    if (name.isEmpty) return;
+    try {
+      // context.loaderOverlay.show();
+      if (context.mounted) {
+        await authProvider.setUserPrefix(context, name.last);
+      }
+      bucketService.itemsList();
+    } finally {
+      // if (mounted) context.loaderOverlay.hide();
+    }
+  }
 }
+
+// ONGO

@@ -1,3 +1,4 @@
+import 'package:dropbucket_flutter/providers/table_view_provider.dart';
 import 'package:dropbucket_flutter/route.dart';
 import 'package:dropbucket_flutter/services/services.dart';
 import 'package:dropbucket_flutter/themes/indigo.dart';
@@ -24,6 +25,7 @@ class AppState extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthService()),
         ChangeNotifierProvider(create: (context) => BucketService(context)),
         ChangeNotifierProvider(create: (context) => UserService(context)),
+        ChangeNotifierProvider(create: (context) => TableViewProvider()),
       ],
       child: MyApp(),
     );

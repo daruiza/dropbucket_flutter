@@ -20,7 +20,7 @@ class CardFile extends StatefulWidget {
 
 class _CardFileState extends State<CardFile>
     with SingleTickerProviderStateMixin {
-  bool _isHovering = false;
+  // bool _isHovering = false;
   bool _isFlipped = false;
   late AnimationController _controller;
   late Animation<double> _animation;
@@ -54,78 +54,7 @@ class _CardFileState extends State<CardFile>
       }
     });
   }
-
-  Future<void> _tapFile(BuildContext context) async {
-    // Nativo Android y Windowa
-    if (!kIsWeb) {
-      if (context.mounted) {
-        await FileHandler.onOpenFile(
-          context: context,
-          fileItem: widget.file,
-          flipCard: _flipCard,
-        );
-      }
-    }
-
-    if (kIsWeb) {
-      bool isImage = [
-        'jpg',
-        'jpeg',
-        'png',
-        'gif',
-        'webp',
-        'bmp',
-      ].contains(widget.file.extension);
-      bool isWord = [
-        // Word
-        'doc', 'docx', 'docm', 'dot', 'dotx', 'dotm', 'rtf', 'odt',
-        // Excel
-        'xls', 'xlsx', 'xlsm', 'xlt', 'xltx', 'xltm', 'xlsb', 'csv', 'ods',
-        // PowerPoint
-        'ppt',
-        'pptx',
-        'pptm',
-        'pot',
-        'potx',
-        'potm',
-        'pps',
-        'ppsx',
-        'ppsm',
-        'odp',
-        // Otros formatos de Office
-        'one', 'pub', 'vsd', 'vsdx', 'mpp',
-      ].contains(widget.file.extension);
-
-      if (isWord) {
-        if (context.mounted) {
-          await FileHandler.showFileDialog(
-            context,
-            file: widget.file,
-            name: widget.file.name.split('/'),
-          );
-        }
-      }
-      if (widget.file.extension == 'pdf') {
-        if (context.mounted) {
-          await FileHandler.showPDFViewer(
-            context,
-            file: widget.file,
-            name: widget.file.name.split('/'),
-          );
-        }
-      }
-
-      if (isImage) {
-        if (context.mounted) {
-          await FileHandler.showImageViewer(
-            context,
-            file: widget.file,
-            name: widget.file.name.split('/'),
-          );
-        }
-      }
-    }
-  }
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -167,11 +96,17 @@ class _CardFileState extends State<CardFile>
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         MouseRegion(
-          onEnter: (_) => setState(() => _isHovering = true),
-          onExit: (_) => setState(() => _isHovering = false),
+          // onEnter: (_) => setState(() => _isHovering = true),
+          // onExit: (_) => setState(() => _isHovering = false),
           cursor: SystemMouseCursors.click,
           child: GestureDetector(
-            onTap: () => _tapFile(context),
+            // onTap: () => _tapFile(context),
+            onTap:
+                () => FileHandler.tapFile(
+                  context,
+                  file: widget.file,
+                  flipCard: _flipCard,
+                ),
             onLongPressUp: _flipCard,
             onSecondaryTap: _flipCard,
             child: FileIcon('.${widget.file.extension}', size: 65),
