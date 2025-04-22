@@ -8,7 +8,7 @@ enum TableView {
 class TableViewProvider extends ChangeNotifier {
   TableView _view;
 
-  TableViewProvider({TableView initialView = TableView.grid}) : _view = initialView;
+  TableViewProvider({TableView initialView = TableView.list}) : _view = initialView;
 
   TableView get stateView => _view;
 

@@ -20,7 +20,7 @@ class RequestUploadScreen extends StatelessWidget {
                 ? Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('SOLICITUD CARGA DE ARCHIVOS'),
+                    Text('SOLICITUD CARGA DE ARCHIVOS'),                    
                     Text('Carpeta: ${query.prefix?.split('/').last}'),
                     const SizedBox(height: 20),
                     Text(query.message ?? ''),

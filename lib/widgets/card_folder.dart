@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../themes/indigo.dart';
 import 'package:dropbucket_flutter/providers/auth_provider.dart';
-import 'package:dropbucket_flutter/services/bucket_service.dart';
 import 'package:dropbucket_flutter/models/bucket_response.dart';
 import 'package:dropbucket_flutter/enums/enum_option.dart';
 import 'package:dropbucket_flutter/utils/folder_handler.dart';

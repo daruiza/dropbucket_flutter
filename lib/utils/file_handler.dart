@@ -584,7 +584,7 @@ class FileHandler {
     required FileItem file,
     required Function flipCard,
   }) async {
-    List<String> name = file.name.split('/');
+    
     final bucketService = Provider.of<BucketService>(context, listen: false);
     try {
       final response = await bucketService.downloadFilePDF(file: file);

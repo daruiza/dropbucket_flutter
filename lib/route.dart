@@ -64,28 +64,40 @@ class Routes {
       return MaterialPageRoute(
         builder: (context) {
           return FutureBuilder<bool>(
-            future:
-                Provider.of<AuthProvider>(
-                  context,
-                  listen: false,
-                ).chieckIsAutenticate(),
+            future: Provider.of<AuthProvider>(
+              context,
+              listen: false,
+            ).chieckIsAutorizeDate02(prefix),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
+                // Descomposición de prefix en prefix mensaje y usuario
+                RequestUploadQuery auxquery = RequestUploadQuery.fromJson(
+                  jsonDecode(RequestUploadQuery.simppleDecryptValue(prefix)),
+                );
                 if (snapshot.data == true) {
-                  // Descomposición de prefix en prefix mensaje y usuario
-                  RequestUploadQuery auxquery = RequestUploadQuery.fromJson(
-                    jsonDecode(RequestUploadQuery.simppleDecryptValue(prefix)),
-                  );
-
                   return RequestUploadScreen(
                     query: RequestUploadQuery(
                       auxquery.prefix,
                       auxquery.message,
                       auxquery.user,
+                      auxquery.date,
                     ),
                   );
                 } else {
-                  return LoginScreen();
+                  return Scaffold(
+                    body: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'El acceso ya no es valido',
+                            style: TextStyle(fontSize: 16.0),
+                          ),
+                          Text('Comunicate con el administrador'),
+                        ],
+                      ),
+                    ),
+                  );
                 }
               }
               return Center(child: CircularProgressIndicator());
@@ -100,11 +112,10 @@ class Routes {
       return MaterialPageRoute(
         builder: (context) {
           return FutureBuilder<bool>(
-            future:
-                Provider.of<AuthProvider>(
-                  context,
-                  listen: false,
-                ).chieckIsAutenticate(),
+            future: Provider.of<AuthProvider>(
+              context,
+              listen: false,
+            ).chieckIsAutorizeDate(args),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.data == true) {
@@ -113,10 +124,23 @@ class Routes {
                       args['prefix'],
                       args['message'],
                       args['user'],
+                      args['date'],
                     ),
                   );
                 } else {
-                  return LoginScreen();
+                  return Scaffold(
+                    body: Center(
+                      child: Column(
+                        children: [
+                          Text(
+                            'El acceso ya no es valido',
+                            style: TextStyle(fontSize: 16.0),
+                          ),
+                          Text('Comunicate con el administrador'),
+                        ],
+                      ),
+                    ),
+                  );
                 }
               }
               return Center(child: CircularProgressIndicator());

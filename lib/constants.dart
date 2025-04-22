@@ -1,8 +1,10 @@
 /// Environment variables and shared app constants.
 abstract class Constants {
+  
   static const String apiBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
     defaultValue: 'https://dropbucketbk.asistirensalud.online',
+    // defaultValue: 'http://localhost:3031',
   );
 
   static const String baseUrl = String.fromEnvironment(
@@ -14,5 +16,10 @@ abstract class Constants {
   static const bool isDebugMode = bool.fromEnvironment(
     'DEBUG_MODE',
     defaultValue: false,
+  );
+
+  static const int limitDateValid = int.fromEnvironment(
+    'LIMIT_DATE_VALID',
+    defaultValue: 24,
   );
 }

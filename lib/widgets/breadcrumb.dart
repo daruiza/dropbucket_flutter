@@ -2,7 +2,6 @@
 import 'package:dropbucket_flutter/models/user_response.dart';
 import 'package:dropbucket_flutter/providers/auth_provider.dart';
 
-import '../../themes/indigo.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

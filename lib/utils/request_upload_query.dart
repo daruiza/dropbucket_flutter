@@ -5,15 +5,20 @@ class RequestUploadQuery {
   final String? prefix;
   final String? message;
   final String? user;
+  final String? date;
 
-  RequestUploadQuery(this.prefix, this.message, this.user);
+  RequestUploadQuery(this.prefix, this.message, this.user, this.date);
 
   static final key = encrypt.Key.fromUtf8('my32lengthsupersecretnooneknows1');
   static final iv = encrypt.IV.fromLength(16);
 
   factory RequestUploadQuery.fromJson(Map<String, dynamic> json) {
     return RequestUploadQuery(
-        json['prefix'] ?? '', json['message'] ?? '', json['user'] ?? '');
+      json['prefix'] ?? '',
+      json['message'] ?? '',
+      json['user'] ?? '',
+      json['date'] ?? '',
+    );
   }
 
   static String encryptValue(String value) {

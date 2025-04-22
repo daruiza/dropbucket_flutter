@@ -7,7 +7,6 @@ import 'package:dropbucket_flutter/models/bucket_response.dart';
 import 'package:dropbucket_flutter/enums/enum_option.dart';
 import 'package:dropbucket_flutter/themes/indigo.dart';
 import 'package:file_icon/file_icon.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 
 class CardFile extends StatefulWidget {
   final FileItem file;

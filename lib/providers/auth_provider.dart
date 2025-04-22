@@ -1,9 +1,12 @@
-import 'dart:convert';
+import 'package:dropbucket_flutter/utils/request_upload_query.dart';
+import 'package:flutter/material.dart';
 
+import 'dart:convert';
+import 'package:dropbucket_flutter/constants.dart';
 import 'package:dropbucket_flutter/models/user_response.dart';
 import 'package:dropbucket_flutter/screens/login_screen.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:dropbucket_flutter/utils/data_utils.dart';
 
 class AuthProvider extends ChangeNotifier {
   // BuildContext context;
@@ -34,6 +37,25 @@ class AuthProvider extends ChangeNotifier {
   // AuthProvider(this.context) {
   AuthProvider() {
     checkToken();
+  }
+
+  Future<bool> chieckIsAutorizeDate(Map<String, String> args) async {
+    return !DateUtilsLocal.limitDate(
+      Constants.limitDateValid,
+      DateTime.parse(args['date'] ?? ''),
+      DateTime.now(),
+    );
+  }
+
+  Future<bool> chieckIsAutorizeDate02(String prefix) async {
+    RequestUploadQuery auxquery = RequestUploadQuery.fromJson(
+      jsonDecode(RequestUploadQuery.simppleDecryptValue(prefix)),
+    );
+    return !DateUtilsLocal.limitDate(
+      Constants.limitDateValid,
+      DateTime.parse(auxquery.date ?? ''),
+      DateTime.now(),
+    );
   }
 
   Future<bool> chieckIsAutenticate() async {

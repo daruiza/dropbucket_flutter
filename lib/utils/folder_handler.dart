@@ -360,7 +360,7 @@ class FolderHandler {
   ) async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     String uri =
-        '${Constants.baseUrl}/#request_upload_uri/${RequestUploadQuery.simpleEncryptValue('{"prefix":"${folder.name}","message":"$message","user":"${authProvider.user?.name}"}')}';
+        '${Constants.baseUrl}/#request_upload_uri/${RequestUploadQuery.simpleEncryptValue('{"prefix":"${folder.name}","message":"$message","user":"${authProvider.user?.name}","date":"${DateTime.now()}"}')}';
     await Clipboard.setData(ClipboardData(text: uri));
 
     if (context.mounted) {
@@ -414,7 +414,7 @@ class FolderHandler {
     required List<String> name,
   }) async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final bucketService = Provider.of<BucketService>(context, listen: false);    
+    final bucketService = Provider.of<BucketService>(context, listen: false);
     if (name.isEmpty) return;
     try {
       // context.loaderOverlay.show();

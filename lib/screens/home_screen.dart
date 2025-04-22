@@ -102,6 +102,7 @@ class HomeScreen extends StatelessWidget {
                                 )
                                 : tableViewProvider.view == TableView.list
                                 ? ListView.builder(
+                                  padding: const EdgeInsets.only(bottom: 160),
                                   itemCount: folders.length + files.length,
                                   itemBuilder: (
                                     BuildContext context,
