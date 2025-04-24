@@ -19,6 +19,7 @@ class _CardFolderState extends State<CardFolder>
     with SingleTickerProviderStateMixin {
   bool _isHovering = false;
   bool _isFlipped = false;
+  bool _isProcessingTap = false;
   late AnimationController _controller;
   late Animation<double> _animation;
 
@@ -96,11 +97,17 @@ class _CardFolderState extends State<CardFolder>
           onExit: (_) => setState(() => _isHovering = false),
           cursor: SystemMouseCursors.click,
           child: GestureDetector(
-            onTap:
-                () => FolderHandler.onGo(context, name: name).then((_) {
-                  // No necesita el FlipCard, hay un refresh
-                  // _flipCard();
-                }),
+            onTap: () async {
+              if (_isProcessingTap) {
+                return; // Evita la ejecución si ya se está procesando un tap
+              }
+              _isProcessingTap = true;
+              FolderHandler.onGo(context, name: name).then((_) {
+                // No necesita el FlipCard, hay un refresh
+                // _flipCard();
+                // _isProcessingTap = false;
+              });
+            },
             onLongPressUp: _flipCard,
             onSecondaryTap: _flipCard,
             child: Icon(
@@ -244,5 +251,5 @@ class _CardFolderState extends State<CardFolder>
         ),
       ],
     );
-  } 
+  }
 }

@@ -153,23 +153,35 @@ class ItemListFolder extends StatelessWidget {
   }
 }
 
-class TitleFolder extends StatelessWidget {
+class TitleFolder extends StatefulWidget {
   const TitleFolder({super.key, required this.folder});
 
   final FolderItem folder;
+
+  @override
+  State<TitleFolder> createState() => _TitleFolderState();
+}
+
+class _TitleFolderState extends State<TitleFolder> {
+  bool _isProcessingTap = false;
 
   @override
   Widget build(BuildContext context) {
     final stateBoolProvider = Provider.of<StateBoolProvider>(context);
 
     return GestureDetector(
-      onTap:
-          () => FolderHandler.onGo(context, name: folder.name.split('/')).then((
-            _,
-          ) {
-            // No necesita el FlipCard, hay un refresh
-            // _flipCard();
-          }),
+      onTap: () async {
+        if (_isProcessingTap) {
+          return; // Evita la ejecución si ya se está procesando un tap
+        }
+        _isProcessingTap = true;
+        await FolderHandler.onGo(
+          context,
+          name: widget.folder.name.split('/'),
+        ).then((_) {          
+          // _isProcessingTap = false;
+        });
+      },
       child: Row(
         children: [
           Icon(
@@ -179,9 +191,9 @@ class TitleFolder extends StatelessWidget {
                     ? IndigoTheme.primaryColor
                     : IndigoTheme.hoverColor,
           ),
-          SizedBox(width: 5),
+          const SizedBox(width: 5),
           Text(
-            folder.name.split('/').last,
+            widget.folder.name.split('/').last,
             style: TextStyle(
               color:
                   stateBoolProvider.stateBool
