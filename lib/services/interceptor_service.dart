@@ -386,6 +386,71 @@ class InterceptorService {
     }
   }
 
+
+  Future<http.Response> uploadMultipleFilesPublic(
+    String path, {
+    required List<PlatformFile> files,
+    Map<String, String>? fields,
+    Map<String, String>? queryParams,
+  }) async {
+    try {
+      final uri = Uri.parse(path).replace(queryParameters: queryParams);
+
+      final request = http.MultipartRequest('POST', uri);      
+
+      // Agregar campos adicionales si existen
+      if (fields != null) {
+        request.fields.addAll(fields);
+      }
+
+      for (var file in files) {
+        final fileExt = file.name.split('.').last;
+        final mimeType = getMimeType(fileExt).split('/');
+
+        http.MultipartFile multipartFile;
+        // Verificar si tenemos bytes o necesitamos leer desde el archivo
+        if (file.bytes != null) {
+          multipartFile = http.MultipartFile.fromBytes(
+            'files', // Este es el nombre esperado por el backend
+            file.bytes!,
+            filename: file.name,
+            contentType: MediaType(mimeType[0], mimeType[1]),
+          );
+        } else if (file.path != null) {
+          // Leer desde el archivo (funcionará en desktop)
+          // final fileStream = File(file.path!).openRead();
+          multipartFile = await http.MultipartFile.fromPath(
+            'files',
+            file.path!,
+            contentType: MediaType(mimeType[0], mimeType[1]),
+          );
+        } else {
+          throw Exception(
+            'No se pueden obtener los datos del archivo ${file.name}',
+          );
+        }
+        request.files.add(multipartFile);
+      }
+
+      // Enviar la petición
+      final streamedResponse = await request.send();
+
+      // Convertir StreamedResponse a Response
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 401) {
+        if (context.mounted) {
+          _authProvider.handleUnauthorized(context);
+        }
+        throw Exception(response.body);
+      }
+
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   String getMimeType(String extension) {
     switch (extension.toLowerCase()) {
       case 'png':

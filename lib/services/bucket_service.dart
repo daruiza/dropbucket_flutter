@@ -163,7 +163,7 @@ class BucketService extends ChangeNotifier {
   }) async {
     final url = '$_baseUrl/upload-multiple-public';
     try {
-      final response = await _httpService.uploadMultipleFiles(
+      final response = await _httpService.uploadMultipleFilesPublic(
         url,
         files: files,
         fields: {'prefix': prefix ?? _authProvider.user?.prefixcurrent ?? ''},
