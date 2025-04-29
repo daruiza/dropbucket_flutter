@@ -157,6 +157,28 @@ class BucketService extends ChangeNotifier {
     }
   }
 
+  Future<Response> storeFilesPublic({
+    required List<PlatformFile> files,
+    String? prefix,
+  }) async {
+    final url = '$_baseUrl/upload-multiple-public';
+    try {
+      final response = await _httpService.uploadMultipleFiles(
+        url,
+        files: files,
+        fields: {'prefix': prefix ?? _authProvider.user?.prefixcurrent ?? ''},
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return response;
+      } else {
+        throw Exception(response);
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<Response> storeBlobFiles({
     required List<DropItem> files,
     String? prefix,

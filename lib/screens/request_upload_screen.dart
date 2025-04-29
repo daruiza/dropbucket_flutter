@@ -49,7 +49,7 @@ class RequestUploadScreen extends StatelessWidget {
       // Mostrar el indicador de carga
       // context.loaderOverlay.show();
       try {
-        await bucketService.storeFiles(
+        await bucketService.storeFilesPublic(
           files: result.files,
           prefix: query.prefix,
         );
