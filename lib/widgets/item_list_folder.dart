@@ -1,6 +1,5 @@
-import 'dart:js_interop';
-
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'package:dropbucket_flutter/models/bucket_response.dart';
 import 'package:dropbucket_flutter/providers/state_bool.dart';
@@ -8,7 +7,6 @@ import 'package:dropbucket_flutter/utils/folder_handler.dart';
 import 'package:dropbucket_flutter/providers/auth_provider.dart';
 import 'package:dropbucket_flutter/enums/enum_option.dart';
 import 'package:dropbucket_flutter/themes/indigo.dart';
-import 'package:provider/provider.dart';
 
 class ItemListFolder extends StatelessWidget {
   final FolderItem folder;
@@ -37,11 +35,7 @@ class ItemListFolder extends StatelessWidget {
         builder: (context) {
           final stateBoolProvider = Provider.of<StateBoolProvider>(context);
           return DragTarget(
-            onAcceptWithDetails: (DragTargetDetails<dynamic> details) {
-              print(details.data);
-              print(details.data is FolderItem);
-              print(details.data is FileItem);
-            },
+            onAcceptWithDetails: onAcceptWithDetailsFolder,
             builder: (
               BuildContext context,
               List<dynamic> accepted,
@@ -98,6 +92,11 @@ class ItemListFolder extends StatelessWidget {
       ),
     );
   }
+
+  void onAcceptWithDetailsFolder(DragTargetDetails<dynamic> details) {
+      print(details.data.name);      
+      print(folder.name);
+    }
 }
 
 class DraggableFolderFeedback extends StatelessWidget {
@@ -120,7 +119,7 @@ class DraggableFolderFeedback extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: Row(
         children: [
-          Icon(Icons.folder, color: IndigoTheme.hoverColor),
+          Icon(Icons.folder, color: IndigoTheme.primaryFullColor),
           const SizedBox(width: 5),
           Text(
             folder.name.split('/').last,

@@ -474,8 +474,9 @@ class FileHandler {
   static onEditPrefix(
     BuildContext context,
     FileItem file,
-    String rename,
-  ) async {
+    String rename, {
+    String arrdirectory = '',
+  }) async {
     if (context.mounted) {
       final bucketService = Provider.of<BucketService>(context, listen: false);
       // context.loaderOverlay.show();
@@ -486,7 +487,9 @@ class FileHandler {
       // 2. si no la tiene, colocarla
       final String oldname = file.name;
       String directory =
-          oldname.contains('/')
+          arrdirectory != ''
+              ? arrdirectory
+              : oldname.contains('/')
               ? oldname.substring(0, oldname.lastIndexOf('/') + 1)
               : oldname.substring(0, oldname.lastIndexOf('/') + 1);
       final String extension = oldname.split('.').last;
@@ -584,7 +587,6 @@ class FileHandler {
     required FileItem file,
     required Function flipCard,
   }) async {
-    
     final bucketService = Provider.of<BucketService>(context, listen: false);
     try {
       final response = await bucketService.downloadFilePDF(file: file);
