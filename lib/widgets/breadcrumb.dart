@@ -128,25 +128,17 @@ class _BreadcrumbState extends State<Breadcrumb> {
   }
 }
 
-List<String> getPrefixList(UserResponse? user) {
-  // Si el usuario o prefixcurrent es null o está vacío, retorna lista vacía
+List<String> getPrefixList(UserResponse? user) {  
   if (user?.prefixcurrent == null || user?.prefixcurrent == '') {
     return [];
   }
-  String currentPrefix = user?.prefixcurrent ?? '';
-  // Si el prefix del usuario es null, usa espacio en blanco como valor por defecto
+  String currentPrefix = user?.prefixcurrent ?? '';  
   String userPrefix = user?.prefix ?? ' ';
-  try {
-    // // Luego removemos el prefix del usuario
-    // String withoutPrefix = withoutLastChar.replaceAll(userPrefix, '');
-    String withoutPrefix = currentPrefix.replaceAll(userPrefix, '');
-    // Finalmente hacemos trim y split
-    List<String> result = withoutPrefix.trim().split('/');
-    // Se puede usar cualquier return
-    // result.removeWhere((element) => element.isEmpty);
+  try {    
+    String withoutPrefix = currentPrefix.replaceAll(userPrefix, '');    
+    List<String> result = withoutPrefix.trim().split('/');    
     return result.where((element) => element.isNotEmpty).toList();
-  } catch (e) {
-    // En caso de cualquier error, retornamos lista vacía
+  } catch (e) {    
     return [];
   }
 }

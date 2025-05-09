@@ -40,120 +40,178 @@ class ItemListFile extends StatelessWidget {
       child: Builder(
         builder: (context) {
           final stateBoolProvider = Provider.of<StateBoolProvider>(context);
-          return MouseRegion(
-            onEnter: (_) => stateBoolProvider.stateBool = true,
-            onExit: (_) => stateBoolProvider.stateBool = false,
-            cursor: SystemMouseCursors.click,
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(
-                    right: 24.0,
-                    left: 24.0,
-                    top: 6.0,
-                  ),
-                  child: Container(
-                    color:
-                        stateBoolProvider.stateBool
-                            ? IndigoTheme.hoverColor
-                            : null,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        TitleFile(file: file),
-                        Row(
-                          children: [
-                            if (optionEditFile)
-                              IconButton(
-                                color: IndigoTheme.primaryColor,
-                                iconSize: 20.0,
-                                padding: EdgeInsets.all(0.0),
-                                constraints: BoxConstraints(
-                                  minWidth: 32.0,
-                                  minHeight: 32.0,
-                                ),
-                                icon: const Icon(Icons.edit, size: 20.0),
-                                onPressed:
-                                    () => FileHandler.showEditFileDialog(
-                                      context,
-                                      file: file,
-                                      name: file.name.split('/'),
-                                    ).then((_) {
-                                      // No necesita el FlipCard, hay un refresh
-                                      // _flipCard();
-                                    }),
-                              ),
-                            if (optionDownloadFile)
-                              IconButton(
-                                color: IndigoTheme.primaryColor,
-                                iconSize: 20.0,
-                                padding: EdgeInsets.all(0.0),
-                                constraints: BoxConstraints(
-                                  minWidth: 32.0,
-                                  minHeight: 32.0,
-                                ),
-                                icon: const Icon(Icons.download, size: 20.0),
-                                onPressed:
-                                    () => FileHandler.onDownloadFile(
-                                      context: context,
-                                      file: file,
-                                      flipCard: () => {},
-                                    ),
-                              ),
-                            if (optionDeleteFile)
-                              IconButton(
-                                color: IndigoTheme.primaryColor,
-                                iconSize: 20.0,
-                                padding: EdgeInsets.all(0.0),
-                                constraints: BoxConstraints(
-                                  minWidth: 32.0,
-                                  minHeight: 32.0,
-                                ),
-                                icon: const Icon(Icons.delete, size: 20.0),
-                                onPressed:
-                                    () => FileHandler.showDeleteDialog(
-                                      context,
-                                      file,
-                                      file.name.split('/'),
-                                    ).then((_) {
-                                      // No necesita el FlipCard, hay un refresh
-                                      // _flipCard();
-                                    }), // Regresa al frente
-                              ),
-                            if (optionShareFile)
-                              IconButton(
-                                color: IndigoTheme.primaryColor,
-                                iconSize: 20.0,
-                                padding: EdgeInsets.all(0.0),
-                                constraints: BoxConstraints(
-                                  minWidth: 32.0,
-                                  minHeight: 32.0,
-                                ),
-                                icon: const Icon(Icons.share, size: 20.0),
-                                onPressed: () {
-                                  FileHandler.onShared(
-                                    context: context,
-                                    file: file,
-                                    flipCard: () => {},
-                                  );
-                                },
-                              ),
-                          ],
-                        ),
-                      ],
+          return Draggable(
+            data: file,
+            feedback: DraggableFileFeeback(file: file),
+            child: MouseRegion(
+              onEnter: (_) => stateBoolProvider.stateBool = true,
+              onExit: (_) => stateBoolProvider.stateBool = false,
+              cursor: SystemMouseCursors.click,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      right: 24.0,
+                      left: 24.0,
+                      top: 6.0,
+                    ),
+                    child: Container(
+                      color:
+                          stateBoolProvider.stateBool
+                              ? IndigoTheme.hoverColor
+                              : null,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          TitleFile(file: file),
+                          OptionsFile(
+                            optionEditFile: optionEditFile,
+                            file: file,
+                            optionDownloadFile: optionDownloadFile,
+                            optionDeleteFile: optionDeleteFile,
+                            optionShareFile: optionShareFile,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                Divider(
-                  color: IndigoTheme.primaryLowColor,
-                  thickness: 1.0,
-                  indent: 16.0,
-                  endIndent: 16.0,
-                ),
-              ],
+                  Divider(
+                    color: IndigoTheme.primaryLowColor,
+                    thickness: 1.0,
+                    indent: 16.0,
+                    endIndent: 16.0,
+                  ),
+                ],
+              ),
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class OptionsFile extends StatelessWidget {
+  const OptionsFile({
+    super.key,
+    required this.optionEditFile,
+    required this.file,
+    required this.optionDownloadFile,
+    required this.optionDeleteFile,
+    required this.optionShareFile,
+  });
+
+  final bool optionEditFile;
+  final FileItem file;
+  final bool optionDownloadFile;
+  final bool optionDeleteFile;
+  final bool optionShareFile;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        if (optionEditFile)
+          IconButton(
+            color: IndigoTheme.primaryColor,
+            iconSize: 20.0,
+            padding: EdgeInsets.all(0.0),
+            constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+            icon: const Icon(Icons.edit, size: 20.0),
+            onPressed:
+                () => FileHandler.showEditFileDialog(
+                  context,
+                  file: file,
+                  name: file.name.split('/'),
+                ).then((_) {
+                  // No necesita el FlipCard, hay un refresh
+                  // _flipCard();
+                }),
+          ),
+        if (optionDownloadFile)
+          IconButton(
+            color: IndigoTheme.primaryColor,
+            iconSize: 20.0,
+            padding: EdgeInsets.all(0.0),
+            constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+            icon: const Icon(Icons.download, size: 20.0),
+            onPressed:
+                () => FileHandler.onDownloadFile(
+                  context: context,
+                  file: file,
+                  flipCard: () => {},
+                ),
+          ),
+        if (optionDeleteFile)
+          IconButton(
+            color: IndigoTheme.primaryColor,
+            iconSize: 20.0,
+            padding: EdgeInsets.all(0.0),
+            constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+            icon: const Icon(Icons.delete, size: 20.0),
+            onPressed:
+                () => FileHandler.showDeleteDialog(
+                  context,
+                  file,
+                  file.name.split('/'),
+                ).then((_) {
+                  // No necesita el FlipCard, hay un refresh
+                  // _flipCard();
+                }), // Regresa al frente
+          ),
+        if (optionShareFile)
+          IconButton(
+            color: IndigoTheme.primaryColor,
+            iconSize: 20.0,
+            padding: EdgeInsets.all(0.0),
+            constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+            icon: const Icon(Icons.share, size: 20.0),
+            onPressed: () {
+              FileHandler.onShared(
+                context: context,
+                file: file,
+                flipCard: () => {},
+              );
+            },
+          ),
+      ],
+    );
+  }
+}
+
+class DraggableFileFeeback extends StatelessWidget {
+  const DraggableFileFeeback({super.key, required this.file});
+
+  final FileItem file;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: IndigoTheme.primaryColor ?? Colors.grey,
+          width: 1.0,
+        ),
+        borderRadius: BorderRadius.circular(
+          5.0,
+        ), // Opcional: para bordes redondeados
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Row(
+        children: [
+          FileIcon('.${file.extension}', size: 26),
+          SizedBox(width: 5),
+          Text(
+            file.name.split('/').last,
+            style: TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.normal,
+              color: IndigoTheme.primaryColor,
+              fontStyle: FontStyle.normal,
+              decoration: TextDecoration.none,
+            ),
+          ),
+        ],
       ),
     );
   }
