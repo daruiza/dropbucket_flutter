@@ -35,8 +35,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarMenu(
-        // TODO: colocar el Breadcrumb aqui en el medio
+      appBar: AppBarMenu(        
         title: 'Profile',
         actions: [
           Transform.scale(

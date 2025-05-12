@@ -15,7 +15,8 @@ class ItemListFolder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-
+    // TODO: Se repite en el Widget: TitleFolder - la idea seria pasarcelo como parametro
+    bool isProcessingTap = false;
     final bool optionEditFolder = EnumOption.hasOption(
       authProvider.user?.options,
       'folder_edit',
@@ -27,6 +28,11 @@ class ItemListFolder extends StatelessWidget {
     final bool optionRequestUpload = EnumOption.hasOption(
       authProvider.user?.options,
       'folder_request_upload',
+    );
+
+    final bool optionShareFolder = EnumOption.hasOption(
+      authProvider.user?.options,
+      'folder_share',
     );
 
     return ChangeNotifierProvider(
@@ -49,15 +55,28 @@ class ItemListFolder extends StatelessWidget {
                   onExit: (_) => stateBoolProvider.stateBool = false,
                   cursor: SystemMouseCursors.click,
 
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          right: 24.0,
-                          left: 24.0,
-                          top: 6.0,
-                        ),
-                        child: Container(
+                  child: GestureDetector(
+                    onTap: () async {
+                      if (isProcessingTap) {
+                        return; // Evita la ejecución si ya se está procesando un tap
+                      }
+                      isProcessingTap = true;
+                      await FolderHandler.onGo(
+                        context,
+                        name: folder.name.split('/'),
+                      ).then((_) {
+                        // _isProcessingTap = false;
+                      });
+                    },
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.only(
+                            right: 16.0,
+                            left: 16.0,
+                            top: 6.0,
+                            bottom: 6.0,
+                          ),
                           color:
                               stateBoolProvider.stateBool
                                   ? IndigoTheme.hoverColor
@@ -71,18 +90,18 @@ class ItemListFolder extends StatelessWidget {
                                 folder: folder,
                                 optionRequestUpload: optionRequestUpload,
                                 optionDeleteFolder: optionDeleteFolder,
+                                optionShareFolder: optionShareFolder,
                               ),
                             ],
                           ),
                         ),
-                      ),
-                      Divider(
-                        color: IndigoTheme.primaryLowColor,
-                        thickness: 1.0,
-                        indent: 16.0,
-                        endIndent: 16.0,
-                      ),
-                    ],
+                        Divider(
+                          color: IndigoTheme.primaryLowColor,
+                          thickness: 0.5,
+                          height: 1,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -94,9 +113,9 @@ class ItemListFolder extends StatelessWidget {
   }
 
   void onAcceptWithDetailsFolder(DragTargetDetails<dynamic> details) {
-      print(details.data.name);      
-      print(folder.name);
-    }
+    print(details.data.name);
+    print(folder.name);
+  }
 }
 
 class DraggableFolderFeedback extends StatelessWidget {
@@ -144,12 +163,14 @@ class OptionsFolder extends StatelessWidget {
     required this.folder,
     required this.optionRequestUpload,
     required this.optionDeleteFolder,
+    required this.optionShareFolder,
   });
 
   final bool optionEditFolder;
   final FolderItem folder;
   final bool optionRequestUpload;
   final bool optionDeleteFolder;
+  final bool optionShareFolder;
 
   @override
   Widget build(BuildContext context) {
@@ -203,20 +224,21 @@ class OptionsFolder extends StatelessWidget {
                   // _flipCard();
                 }), // Regresa al frente
           ),
-        IconButton(
-          color: IndigoTheme.primaryColor,
-          iconSize: 20.0,
-          padding: EdgeInsets.all(0.0),
-          constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
-          icon: const Icon(Icons.share, size: 20.0),
-          onPressed: () {
-            FolderHandler.onShared(
-              context: context,
-              folder: folder,
-              flipCard: () => {},
-            );
-          },
-        ),
+        if (optionShareFolder)
+          IconButton(
+            color: IndigoTheme.primaryColor,
+            iconSize: 20.0,
+            padding: EdgeInsets.all(0.0),
+            constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+            icon: const Icon(Icons.share, size: 20.0),
+            onPressed: () {
+              FolderHandler.onShared(
+                context: context,
+                folder: folder,
+                flipCard: () => {},
+              );
+            },
+          ),
       ],
     );
   }

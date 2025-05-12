@@ -47,15 +47,22 @@ class ItemListFile extends StatelessWidget {
               onEnter: (_) => stateBoolProvider.stateBool = true,
               onExit: (_) => stateBoolProvider.stateBool = false,
               cursor: SystemMouseCursors.click,
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      right: 24.0,
-                      left: 24.0,
-                      top: 6.0,
+              child: GestureDetector(
+                onTap:
+                    () => FileHandler.tapFile(
+                      context,
+                      file: file,
+                      flipCard: () => {},
                     ),
-                    child: Container(
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.only(
+                        right: 16.0,
+                        left: 16.0,
+                        top: 6.0,
+                        bottom: 6.0,
+                      ),
                       color:
                           stateBoolProvider.stateBool
                               ? IndigoTheme.hoverColor
@@ -74,14 +81,14 @@ class ItemListFile extends StatelessWidget {
                         ],
                       ),
                     ),
-                  ),
-                  Divider(
-                    color: IndigoTheme.primaryLowColor,
-                    thickness: 1.0,
-                    indent: 16.0,
-                    endIndent: 16.0,
-                  ),
-                ],
+
+                    Divider(
+                      color: IndigoTheme.primaryLowColor,
+                      thickness: 0.5,
+                      height: 1,
+                    ),
+                  ],
+                ),
               ),
             ),
           );
