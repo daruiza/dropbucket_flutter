@@ -85,12 +85,12 @@ class ItemListFolder extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               TitleFolder(folder: folder),
-                              OptionsFolder(
-                                optionEditFolder: optionEditFolder,
-                                folder: folder,
-                                optionRequestUpload: optionRequestUpload,
-                                optionDeleteFolder: optionDeleteFolder,
-                                optionShareFolder: optionShareFolder,
+                              optionsFolderRow(
+                                optionEditFolder,
+                                context,
+                                optionRequestUpload,
+                                optionDeleteFolder,
+                                optionShareFolder,
                               ),
                             ],
                           ),
@@ -109,6 +109,82 @@ class ItemListFolder extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+
+  Row optionsFolderRow(
+    bool optionEditFolder,
+    BuildContext context,
+    bool optionRequestUpload,
+    bool optionDeleteFolder,
+    bool optionShareFolder,
+  ) {
+    return Row(
+      children: [
+        if (optionEditFolder)
+          IconButton(
+            color: IndigoTheme.primaryColor,
+            iconSize: 20.0,
+            padding: EdgeInsets.all(0.0),
+            constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+            icon: const Icon(Icons.edit, size: 20.0),
+            onPressed:
+                () => FolderHandler.showEditFolderDialog(
+                  context,
+                  folder: folder,
+                  name: folder.name.split('/'),
+                ).then((_) {
+                  // No necesita el FlipCard, hay un refresh
+                  // _flipCard();
+                }), // Regresa al frente
+          ),
+        if (optionRequestUpload)
+          IconButton(
+            color: IndigoTheme.primaryColor,
+            iconSize: 20.0,
+            padding: EdgeInsets.all(0.0),
+            constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+            icon: const Icon(Icons.upload, size: 20.0),
+            onPressed:
+                () => FolderHandler.showRequestFilesDialog(
+                  context,
+                  folder.name.split('/'),
+                  () => {},
+                  folder,
+                ),
+          ),
+        if (optionDeleteFolder)
+          IconButton(
+            color: IndigoTheme.primaryColor,
+            iconSize: 20.0,
+            padding: EdgeInsets.all(0.0),
+            constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+            icon: const Icon(Icons.delete, size: 20.0),
+            onPressed:
+                () => FolderHandler.showDeleteDialog(
+                  context,
+                  folder.name.split('/'),
+                ).then((_) {
+                  // No necesita el FlipCard, hay un refresh
+                  // _flipCard();
+                }), // Regresa al frente
+          ),
+        if (optionShareFolder)
+          IconButton(
+            color: IndigoTheme.primaryColor,
+            iconSize: 20.0,
+            padding: EdgeInsets.all(0.0),
+            constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+            icon: const Icon(Icons.share, size: 20.0),
+            onPressed: () {
+              FolderHandler.onShared(
+                context: context,
+                folder: folder,
+                flipCard: () => {},
+              );
+            },
+          ),
+      ],
     );
   }
 

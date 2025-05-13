@@ -86,7 +86,7 @@ class _UserFormState extends State<_UserForm> {
             child: const CircularProgressIndicator(),
           ); // Indicador de carga
         } else if (snapshot.hasError) {
-          return const Center(child: Text('Error loading data.'));
+          return const Center(child: Text('Error loading data user dialog.'));
         }
 
         List<Rol>? rols = snapshot.data['rols'] ?? [];

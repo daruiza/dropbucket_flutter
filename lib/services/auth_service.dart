@@ -19,8 +19,9 @@ class AuthService extends ChangeNotifier {
   Future<void> loginUser(String email, String password) async {
     final url = Uri.parse('$_baseUrl/auth/login');
     final headers = {
-      "Content-Type": "application/json",
-      "Accept": "application/json",
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+      "Content-Type": "application/json;charset=utf-8",
+      "Accept": "application/json;charset=utf-8",
     };
 
     final Map<String, dynamic> authData = {

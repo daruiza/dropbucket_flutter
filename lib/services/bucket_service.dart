@@ -14,7 +14,7 @@ class BucketService extends ChangeNotifier {
   // final String _baseUrl = 'nestjs:3031/bucket';
   // final String _baseUrl = 'http://3.239.255.151:3031/bucket';
   // final String _baseUrl = 'http://asistirensalud.online:3031/bucket';
-  // final String _baseUrl = 'http://localhost:3000/bucket';
+  // final String _baseUrl = 'http://localhost:3031/bucket';
   final String _baseUrl = '${Constants.apiBaseUrl}/bucket';  
   final InterceptorService _httpService;
   final AuthProvider _authProvider;

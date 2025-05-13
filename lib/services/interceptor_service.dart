@@ -30,7 +30,7 @@ class InterceptorService {
         uri,
         headers: {
           'Authorization': 'Bearer ${_authProvider.token}',
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json;charset=utf-8',
         },
       );
 
@@ -63,7 +63,7 @@ class InterceptorService {
         uri,
         headers: {
           'Authorization': 'Bearer ${_authProvider.token}',
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json;charset=utf-8',
         },
         body: body != null ? jsonEncode(body) : null,
       );
@@ -97,7 +97,7 @@ class InterceptorService {
         uri,
         headers: {
           'Authorization': 'Bearer ${_authProvider.token}',
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json;charset=utf-8',
         },
         body: body != null ? jsonEncode(body) : null,
       );
@@ -130,7 +130,7 @@ class InterceptorService {
         uri,
         headers: {
           'Authorization': 'Bearer ${_authProvider.token}',
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json;charset=utf-8',
         },
       );
 
@@ -467,7 +467,7 @@ class InterceptorService {
       case 'zip':
         return 'application/zip';
       case 'json':
-        return 'application/json';
+        return 'application/json;charset=utf-8';
       default:
         return 'application/octet-stream'; // Por defecto
     }

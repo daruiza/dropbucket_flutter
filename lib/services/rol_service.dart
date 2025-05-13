@@ -6,6 +6,7 @@ import 'package:dropbucket_flutter/services/interceptor_service.dart';
 import 'package:dropbucket_flutter/constants.dart';
 
 class RolService extends ChangeNotifier {
+  // final String _baseUrl = 'http://localhost:3031/rol';
   final String _baseUrl = '${Constants.apiBaseUrl}/rol';
 
   final InterceptorService _httpService;

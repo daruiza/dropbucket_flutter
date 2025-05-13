@@ -71,12 +71,12 @@ class ItemListFile extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           TitleFile(file: file),
-                          OptionsFile(
-                            optionEditFile: optionEditFile,
-                            file: file,
-                            optionDownloadFile: optionDownloadFile,
-                            optionDeleteFile: optionDeleteFile,
-                            optionShareFile: optionShareFile,
+                          optionsFileRow(
+                            context,
+                            optionEditFile,
+                            optionDownloadFile,
+                            optionDeleteFile,
+                            optionShareFile,
                           ),
                         ],
                       ),
@@ -94,6 +94,82 @@ class ItemListFile extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+
+  Row optionsFileRow(
+    BuildContext context,
+    bool optionEditFile,
+    bool optionDownloadFile,
+    bool optionDeleteFile,
+    bool optionShareFile,
+  ) {
+    return Row(
+      children: [
+        if (optionEditFile)
+          IconButton(
+            color: IndigoTheme.primaryColor,
+            iconSize: 20.0,
+            padding: EdgeInsets.all(0.0),
+            constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+            icon: const Icon(Icons.edit, size: 20.0),
+            onPressed:
+                () => FileHandler.showEditFileDialog(
+                  context,
+                  file: file,
+                  name: file.name.split('/'),
+                ).then((_) {
+                  // No necesita el FlipCard, hay un refresh
+                  // _flipCard();
+                }),
+          ),
+        if (optionDownloadFile)
+          IconButton(
+            color: IndigoTheme.primaryColor,
+            iconSize: 20.0,
+            padding: EdgeInsets.all(0.0),
+            constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+            icon: const Icon(Icons.download, size: 20.0),
+            onPressed:
+                () => FileHandler.onDownloadFile(
+                  context: context,
+                  file: file,
+                  flipCard: () => {},
+                ),
+          ),
+        if (optionDeleteFile)
+          IconButton(
+            color: IndigoTheme.primaryColor,
+            iconSize: 20.0,
+            padding: EdgeInsets.all(0.0),
+            constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+            icon: const Icon(Icons.delete, size: 20.0),
+            onPressed:
+                () => FileHandler.showDeleteDialog(
+                  context,
+                  file,
+                  file.name.split('/'),
+                ).then((_) {
+                  // No necesita el FlipCard, hay un refresh
+                  // _flipCard();
+                }), // Regresa al frente
+          ),
+        if (optionShareFile)
+          IconButton(
+            color: IndigoTheme.primaryColor,
+            iconSize: 20.0,
+            padding: EdgeInsets.all(0.0),
+            constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+            icon: const Icon(Icons.share, size: 20.0),
+            onPressed: () {
+              FileHandler.onShared(
+                context: context,
+                file: file,
+                flipCard: () => {},
+              );
+            },
+          ),
+      ],
     );
   }
 }

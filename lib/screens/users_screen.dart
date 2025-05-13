@@ -20,7 +20,7 @@ class UsersScreen extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
-          return const Center(child: Text('Error loading data.'));
+          return const Center(child: Text('Error loading data users.'));
         }
 
         final users = userService.items;

@@ -89,7 +89,7 @@ class _ProfileForm extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator(); // Indicador de carga
         } else if (snapshot.hasError) {
-          return const Center(child: Text('Error loading data.'));
+          return const Center(child: Text('Error loading data profile.'));
         }
 
         profileForm.photoExists.text = snapshot.data ? 'true' : 'false';
