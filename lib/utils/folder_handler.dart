@@ -210,7 +210,7 @@ class FolderHandler {
           ),
         );
       }
-      bucketService.itemsList();
+      await bucketService.itemsList();
       // await fileState.loadFileList(context);
       // context.loaderOverlay.hide();
     } catch (e) {
@@ -244,7 +244,7 @@ class FolderHandler {
             ),
           );
         }
-        bucketService.itemsList();
+        await bucketService.itemsList();
         // await bucketService.itemsListFuture();
         // context.loaderOverlay.hide();
       }
@@ -313,7 +313,7 @@ class FolderHandler {
             ),
           );
         }
-        bucketService.itemsList();
+        await bucketService.itemsList();
         // await bucketService.itemsListFuture();
         // context.loaderOverlay.hide();
       }
@@ -421,7 +421,7 @@ class FolderHandler {
       if (context.mounted) {
         await authProvider.setUserPrefix(context, name.last);
       }
-      bucketService.itemsList();
+      await bucketService.itemsList();
     } finally {
       // if (mounted) context.loaderOverlay.hide();
     }

@@ -45,7 +45,7 @@ class FileHandler {
           );
         }
 
-        bucketService.itemsList();
+        await bucketService.itemsList();
       } on Exception catch (e) {
         // Manejo de errores
         if (context.mounted) {
@@ -83,7 +83,7 @@ class FileHandler {
         );
       }
 
-      bucketService.itemsList();
+      await bucketService.itemsList();
     } on Exception catch (e) {
       // Manejo de errores
       if (context.mounted) {
@@ -305,6 +305,38 @@ class FileHandler {
     return null;
   }
 
+  static Future<String?> showTxtDialog(
+    BuildContext context, {
+    required FileItem file,
+    required List<String> name,
+  }) async {
+    try {
+      if (context.mounted) {
+        return showDialog(
+          context: context,
+          builder:
+              (BuildContext context) => AlertDialog(
+                titlePadding: EdgeInsets.zero,
+                content: Container(
+                  width: MediaQuery.of(context).size.width * 0.95,
+                  height: MediaQuery.of(context).size.height * 0.95,
+                  child: Text('hello'),
+                ),
+              ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        MessageProvider.showSnackBarContext(
+          context,
+          Message.fromJson({"error": e.toString(), "statusCode": 400}),
+        );
+      }
+    }
+
+    return null;
+  }
+
   // FILE SHOW VIEW
   static Future<void> tapFile(
     BuildContext context, {
@@ -331,6 +363,7 @@ class FileHandler {
         'webp',
         'bmp',
       ].contains(file.extension);
+
       bool isWord = [
         // Word
         'doc', 'docx', 'docm', 'dot', 'dotx', 'dotm', 'rtf', 'odt',
@@ -373,6 +406,16 @@ class FileHandler {
       if (isImage) {
         if (context.mounted) {
           await FileHandler.showImageViewer(
+            context,
+            file: file,
+            name: file.name.split('/'),
+          );
+        }
+      }
+
+      if (file.extension == 'txt') {
+        if (context.mounted) {
+          await FileHandler.showTxtDialog(
             context,
             file: file,
             name: file.name.split('/'),
@@ -509,7 +552,7 @@ class FileHandler {
               messages: ['Archivo editado correctamente: $oldname!'],
             ),
           );
-          bucketService.itemsList();
+          await bucketService.itemsList();
         }
         // await fileState.loadFileList(context);
         // context.loaderOverlay.hide();
@@ -753,7 +796,7 @@ class FileHandler {
           ),
         );
       }
-      bucketService.itemsList();
+      await bucketService.itemsList();
       // context.loaderOverlay.hide();
     } catch (e) {
       // context.loaderOverlay.hide();

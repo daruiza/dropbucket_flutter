@@ -22,6 +22,7 @@ class AppState extends StatelessWidget {
           lazy: false,
         ),
         ChangeNotifierProvider(create: (_) => AuthService()),
+        //ChangeNotifierProvider(create: (context) => AuthService(context)),
         ChangeNotifierProvider(create: (context) => BucketService(context)),
         ChangeNotifierProvider(create: (context) => UserService(context)),
         ChangeNotifierProvider(create: (context) => TableViewProvider()),

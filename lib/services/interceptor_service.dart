@@ -7,7 +7,9 @@ import 'package:file_picker/file_picker.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:dropbucket_flutter/providers/auth_provider.dart';
 import 'package:http/http.dart' as http;
-// import 'dart:io' show File;
+// import 'package:logger/logger.dart';
+
+// final logger = Logger(); // Inicializa el logger
 
 class InterceptorService {
   final BuildContext context;
@@ -19,6 +21,7 @@ class InterceptorService {
   Future<http.Response> get(
     String path, {
     Map<String, String>? queryParams,
+    bool isDownload = false,
   }) async {
     try {
       final uri = Uri.parse(path).replace(queryParameters: queryParams);
@@ -26,19 +29,23 @@ class InterceptorService {
         throw Exception('No authentication token found');
       }
 
+      final headers = <String, String>{
+        'Authorization': 'Bearer ${_authProvider.token}',
+      };
+      if (!isDownload) {
+        headers['Content-Type'] = 'application/json;charset=utf-8';
+      }
+
       final response = await http.get(
         uri,
-        headers: {
-          'Authorization': 'Bearer ${_authProvider.token}',
-          'Content-Type': 'application/json;charset=utf-8',
-        },
+        headers: headers,
       );
 
       if (response.statusCode == 401) {
         if (context.mounted) {
           _authProvider.handleUnauthorized(context);
         }
-        throw Exception(response.body);
+        throw Exception('Unauthorized');
       }
 
       return response;
@@ -51,20 +58,26 @@ class InterceptorService {
     String path, {
     Map<String, String>? queryParams,
     dynamic body,
+    bool isLogin = false,
   }) async {
     try {
       final uri = Uri.parse(path).replace(queryParameters: queryParams);
 
-      if (_authProvider.token == '') {
+      if (_authProvider.token == '' && !isLogin) {
         throw Exception('No authentication token found');
       }
 
+      //todas las peticions son json
+      final headers = <String, String>{
+          'Content-Type': 'application/json;charset=utf-8',
+      };
+      if (!isLogin) {
+        headers['Authorization'] = 'Bearer ${_authProvider.token}';
+      }      
+
       final response = await http.post(
         uri,
-        headers: {
-          'Authorization': 'Bearer ${_authProvider.token}',
-          'Content-Type': 'application/json;charset=utf-8',
-        },
+        headers: headers,
         body: body != null ? jsonEncode(body) : null,
       );
 
@@ -72,7 +85,7 @@ class InterceptorService {
         if (context.mounted) {
           _authProvider.handleUnauthorized(context);
         }
-        throw Exception(response.body);
+        throw Exception('Unauthorized');
       }
 
       return response;
@@ -106,7 +119,7 @@ class InterceptorService {
         if (context.mounted) {
           _authProvider.handleUnauthorized(context);
         }
-        throw Exception(response.body);
+        throw Exception('Unauthorized');
       }
 
       return response;
@@ -138,7 +151,7 @@ class InterceptorService {
         if (context.mounted) {
           _authProvider.handleUnauthorized(context);
         }
-        throw Exception(response.body);
+        throw Exception('Unauthorized');
       }
 
       return response;
@@ -191,7 +204,7 @@ class InterceptorService {
         if (context.mounted) {
           _authProvider.handleUnauthorized(context);
         }
-        throw Exception(response.body);
+        throw Exception('Unauthorized');
       }
 
       return response;
@@ -247,7 +260,7 @@ class InterceptorService {
         if (context.mounted) {
           _authProvider.handleUnauthorized(context);
         }
-        throw Exception(response.body);
+        throw Exception('Unauthorized');
       }
 
       return response;
@@ -307,7 +320,7 @@ class InterceptorService {
         if (context.mounted) {
           _authProvider.handleUnauthorized(context);
         }
-        throw Exception(response.body);
+        throw Exception('Unauthorized');
       }
 
       return response;
@@ -377,7 +390,7 @@ class InterceptorService {
         if (context.mounted) {
           _authProvider.handleUnauthorized(context);
         }
-        throw Exception(response.body);
+        throw Exception('Unauthorized');
       }
 
       return response;
@@ -442,7 +455,7 @@ class InterceptorService {
         if (context.mounted) {
           _authProvider.handleUnauthorized(context);
         }
-        throw Exception(response.body);
+        throw Exception('Unauthorized');
       }
 
       return response;

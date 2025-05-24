@@ -10,12 +10,8 @@ import 'package:dropbucket_flutter/providers/auth_provider.dart';
 import 'package:dropbucket_flutter/services/interceptor_service.dart';
 import 'package:dropbucket_flutter/constants.dart';
 
-class BucketService extends ChangeNotifier {
-  // final String _baseUrl = 'nestjs:3031/bucket';
-  // final String _baseUrl = 'http://3.239.255.151:3031/bucket';
-  // final String _baseUrl = 'http://asistirensalud.online:3031/bucket';
-  // final String _baseUrl = 'http://localhost:3031/bucket';
-  final String _baseUrl = '${Constants.apiBaseUrl}/bucket';  
+class BucketService extends ChangeNotifier {  
+  final String _baseUrl = '${Constants.apiBaseUrl}/bucket';
   final InterceptorService _httpService;
   final AuthProvider _authProvider;
 
@@ -51,9 +47,9 @@ class BucketService extends ChangeNotifier {
   //   }
   // }
 
-  void itemsList() async {
+  Future<void> itemsList() async {
     try {
-      items = await fetchItemsList();
+      items = await fetchItemsList();      
     } catch (e) {
       // TODO: necesitamos impimir en caso de error
       rethrow;
@@ -64,12 +60,13 @@ class BucketService extends ChangeNotifier {
 
   Future<void> itemsListFuture() async {
     try {
-      items = await fetchItemsList();
+      //items = await fetchItemsList();
+      //items = ApiResponse(files: [], folders: []);
     } catch (e) {
       // TODO: necesitamos impimir en caso de error
       rethrow;
     } finally {}
-  }
+  }  
 
   Future<ApiResponse> fetchItemsList() async {
     final url = '$_baseUrl/list';
@@ -150,7 +147,7 @@ class BucketService extends ChangeNotifier {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return response;
       } else {
-        throw Exception(response);
+        throw Exception(response.body);
       }
     } catch (e) {
       rethrow;
@@ -266,6 +263,7 @@ class BucketService extends ChangeNotifier {
       final response = await _httpService.get(
         url,
         queryParams: {'key': file.name},
+        isDownload: true
       );
 
       if (response.statusCode == 200) {
@@ -284,6 +282,7 @@ class BucketService extends ChangeNotifier {
       final response = await _httpService.get(
         url,
         queryParams: {'key': file.name},
+        isDownload: true
       );
 
       if (response.statusCode == 200) {

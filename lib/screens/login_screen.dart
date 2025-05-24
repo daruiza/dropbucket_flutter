@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+import 'package:dropbucket_flutter/services/bucket_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -150,6 +152,7 @@ class _LoginForm extends StatelessWidget {
 
     final authService = Provider.of<AuthService>(context, listen: false);
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final bucketService = Provider.of<BucketService>(context, listen: false);
 
     if (!loginForm.isValidForm()) {
       return;
@@ -175,6 +178,8 @@ class _LoginForm extends StatelessWidget {
           ),
         );
 
+        await bucketService.itemsList();
+
         // Solo para rutas web
         if (uri.contains('http')) {
           if (!uri.contains('login') && !uri.contains('home')) {
@@ -182,29 +187,21 @@ class _LoginForm extends StatelessWidget {
             return;
           }
         }
-
+        
         Navigator.pushReplacementNamed(
           context,
           'home',
           // arguments: {'welcome': true},
         );
-        return;
-
-        // Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-        //   MaterialPageRoute(
-        //     builder: (BuildContext context) {
-        //       return const HomeScreen();
-        //     },
-        //   ),
-        //   (_) => false,
-        // );
+        return;       
       }
-    } on Exception catch (e) {
+    } on DioException catch (e) {
       try {
-        if (context.mounted) {
+        if (context.mounted) {          
           MessageProvider.showSnackBarContext(
             context,
-            Message.fromJson({"error": e.toString(), "statusCode": 400}),
+            Message.fromJson(e.response?.data),
+            //Message.fromString(e.toString()),
           );
         }
 

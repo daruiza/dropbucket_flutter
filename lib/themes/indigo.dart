@@ -78,14 +78,14 @@ class IndigoTheme {
     //   )
     // ),
     textButtonTheme: TextButtonThemeData(style: TextButton.styleFrom()),
-
-    dialogTheme: DialogTheme(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          bottomRight: Radius.circular(10),
-          topLeft: Radius.circular(10),
-        ),
-      ),
-    ),
+    //  TODO: dialogTheme, volver a reacer esta parte
+    // dialogTheme: DialogTheme(
+    //   shape: RoundedRectangleBorder(
+    //     borderRadius: BorderRadius.only(
+    //       bottomRight: Radius.circular(10),
+    //       topLeft: Radius.circular(10),
+    //     ),
+    //   ),
+    // ),
   );
 }

@@ -63,11 +63,10 @@ class AuthProvider extends ChangeNotifier {
     return token != null && token != '';
   }
 
+  
+
   checkToken() async {
-    final token = await _storage.read(key: 'token');
-    this.token = '';
-    isAuthenticated = false;
-    user = null;
+    final token = await _storage.read(key: 'token');    
     if (token != null && token != '') {
       try {
         String payload = utf8.decode(
@@ -144,5 +143,14 @@ class AuthProvider extends ChangeNotifier {
       ),
       (_) => false,
     );
+  }
+
+  Future<void> logout() async {
+    await _storage.delete(key: 'token');
+    await _storage.delete(key: 'user_data');
+    token = '';
+    isAuthenticated = false;
+    user = null;
+    notifyListeners();
   }
 }

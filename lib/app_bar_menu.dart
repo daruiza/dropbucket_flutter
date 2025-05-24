@@ -133,6 +133,7 @@ class AppBarMenu extends StatelessWidget implements PreferredSizeWidget {
     AuthProvider authProvider,
   ) async {
     await authService.logoutUser();
+    await authProvider.logout();
     await authProvider.checkToken();
 
     if (context.mounted) {
