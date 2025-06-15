@@ -4,7 +4,7 @@
 #define MyAppName "DropBucket"
 #define MyAppVersion "1.0.1"
 #define MyAppPublisher "AsistirEnSalud"
-#define MyAppURL "https://asistirensalud.com/lander"
+#define MyAppURL "https://dropbucket.asistirensalud.com/lander"
 #define MyAppExeName "dropbucket_flutter.exe"
 
 [Setup]

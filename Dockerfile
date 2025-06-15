@@ -10,8 +10,8 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY build/web /usr/share/nginx/html
 
 # Script de entrada para generar certificados al iniciar
-# COPY /asistirensalud.online/fullchain.pem /etc/letsencrypt/live/www.asistirensalud.online/fullchain.pem
-# COPY /asistirensalud.online/private.key /etc/letsencrypt/live/www.asistirensalud.online/privkey.pem
+# COPY /asistirensalud.space/fullchain.pem /etc/letsencrypt/live/www.asistirensalud.space/fullchain.pem
+# COPY /asistirensalud.space/private.key /etc/letsencrypt/live/www.asistirensalud.space/privkey.pem
 
 # EXPOSE 8831 443
 EXPOSE 8831
@@ -33,7 +33,7 @@ CMD ["nginx", "-g", "daemon off;"]
 
 
 #Para producción ssl https certificados
-#docker exec -it dropbucket_flutter certbot --nginx -d www.asistirensalud.online --non-interactive --agree-tos -m daruiza@gmail.com
+#docker exec -it dropbucket_flutter certbot --nginx -d www.asistirensalud.space --non-interactive --agree-tos -m daruiza@gmail.com
 #cada 3 meses
 #docker exec -it dropbucket_flutter certbot renew
 

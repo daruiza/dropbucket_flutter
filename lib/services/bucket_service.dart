@@ -10,7 +10,7 @@ import 'package:dropbucket_flutter/providers/auth_provider.dart';
 import 'package:dropbucket_flutter/services/interceptor_service.dart';
 import 'package:dropbucket_flutter/constants.dart';
 
-class BucketService extends ChangeNotifier {  
+class BucketService extends ChangeNotifier {
   final String _baseUrl = '${Constants.apiBaseUrl}/bucket';
   final InterceptorService _httpService;
   final AuthProvider _authProvider;
@@ -49,7 +49,7 @@ class BucketService extends ChangeNotifier {
 
   Future<void> itemsList() async {
     try {
-      items = await fetchItemsList();      
+      items = await fetchItemsList();
     } catch (e) {
       // TODO: necesitamos impimir en caso de error
       rethrow;
@@ -66,7 +66,7 @@ class BucketService extends ChangeNotifier {
       // TODO: necesitamos impimir en caso de error
       rethrow;
     } finally {}
-  }  
+  }
 
   Future<ApiResponse> fetchItemsList() async {
     final url = '$_baseUrl/list';
@@ -263,7 +263,7 @@ class BucketService extends ChangeNotifier {
       final response = await _httpService.get(
         url,
         queryParams: {'key': file.name},
-        isDownload: true
+        isDownload: true,
       );
 
       if (response.statusCode == 200) {
@@ -282,7 +282,7 @@ class BucketService extends ChangeNotifier {
       final response = await _httpService.get(
         url,
         queryParams: {'key': file.name},
-        isDownload: true
+        isDownload: true,
       );
 
       if (response.statusCode == 200) {

@@ -36,22 +36,20 @@ class LoginScreen extends StatelessWidget {
                   Container(
                     width: double.infinity,
                     constraints: BoxConstraints(
-                      maxWidth:
-                          constraints.maxWidth > 600
-                              ? 400
-                              : constraints.maxWidth * 0.8,
+                      maxWidth: constraints.maxWidth > 600
+                          ? 400
+                          : constraints.maxWidth * 0.8,
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         SizedBox(
-                          width:
-                              constraints.maxWidth > 600
-                                  ? constraints.maxWidth * 0.16
-                                  : constraints.maxWidth * 0.6,
+                          width: constraints.maxWidth > 600
+                              ? constraints.maxWidth * 0.16
+                              : constraints.maxWidth * 0.6,
                           child: Image.network(
-                            'https://dropbucket-asistir.s3.amazonaws.com/images/logoasistirpng.png',
+                            'https://dropbucket-asistir-aws.s3.amazonaws.com/images/logoasistirpng.png',
                           ),
                         ),
                         const SizedBox(height: 40),
@@ -129,12 +127,11 @@ class _LoginForm extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           ElevatedButton(
-            onPressed:
-                loginForm.isLoading
-                    ? null
-                    : () {
-                      _login(context, loginForm);
-                    },
+            onPressed: loginForm.isLoading
+                ? null
+                : () {
+                    _login(context, loginForm);
+                  },
             child: SizedBox(
               width: double.infinity,
               child: Center(
@@ -187,17 +184,17 @@ class _LoginForm extends StatelessWidget {
             return;
           }
         }
-        
+
         Navigator.pushReplacementNamed(
           context,
           'home',
           // arguments: {'welcome': true},
         );
-        return;       
+        return;
       }
     } on DioException catch (e) {
       try {
-        if (context.mounted) {          
+        if (context.mounted) {
           MessageProvider.showSnackBarContext(
             context,
             Message.fromJson(e.response?.data),

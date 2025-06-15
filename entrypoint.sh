@@ -1,6 +1,6 @@
 #!/bin/sh
 
-DOMAIN="www.asistirensalud.online"
+DOMAIN="www.asistirensalud.space"
 EMAIL="daruiza@gmail.com"
 
 # Verificar si el certificado ya existe
