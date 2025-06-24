@@ -692,7 +692,7 @@ class _UserFormState extends State<_UserForm> {
         theme: userForm.theme.text,
         prefix: userForm.prefix.text,
         photo: userForm.photo.text,
-        rolId: userForm.rol.value?.id ?? 1,
+        rolId: userForm.rol.value?.id ?? '1',
       );
 
       userService.userPost(userCreate);
@@ -712,7 +712,7 @@ class _UserFormState extends State<_UserForm> {
     try {
       if (handlePassword) {
         final userPatch = UserPatch(
-          id: widget.user?.id ?? 0,
+          id: widget.user?.id ?? '0',
           email: userForm.email.text,
           name: userForm.name.text,
           password: userForm.password.text,
@@ -722,10 +722,10 @@ class _UserFormState extends State<_UserForm> {
           theme: userForm.theme.text,
           prefix: userForm.prefix.text,
           photo: userForm.photo.text,
-          rolId: userForm.rol.value?.id ?? 1,
+          rolId: userForm.rol.value?.id ?? '1',
           rol:
               userForm.rol.value ??
-              Rol(id: 5, name: 'espectador', description: 'espectador'),
+              Rol(id: '5', name: 'espectador', description: 'espectador'),
           options: widget.user?.options ?? [],
           token: widget.user?.token ?? '',
         );
@@ -733,7 +733,7 @@ class _UserFormState extends State<_UserForm> {
         userService.userPatchPassword(userPatch);
       } else {
         final userCreate = UserResponse(
-          id: widget.user?.id ?? 0,
+          id: widget.user?.id ?? '0',
           email: userForm.email.text,
           name: userForm.name.text,
           names: userForm.names.text,
@@ -742,10 +742,10 @@ class _UserFormState extends State<_UserForm> {
           theme: userForm.theme.text,
           prefix: userForm.prefix.text,
           photo: userForm.photo.text,
-          rolId: userForm.rol.value?.id ?? 1,
+          rolId: userForm.rol.value?.id ?? '1',
           rol:
               userForm.rol.value ??
-              Rol(id: 5, name: 'espectador', description: 'espectador'),
+              Rol(id: '5', name: 'espectador', description: 'espectador'),
           options: widget.user?.options ?? [],
           token: widget.user?.token ?? '',
         );

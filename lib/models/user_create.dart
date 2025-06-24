@@ -8,7 +8,7 @@ class UserCreate {
   final String? theme;
   final String? prefix;
   final String? photo;
-  final int rolId;
+  final String rolId;
 
   UserCreate({
     required this.email,

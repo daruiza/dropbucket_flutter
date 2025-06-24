@@ -1,6 +1,6 @@
 // lib/data/models/login_response.dart
-class UserResponse {
-  final int id;
+class UserResponse {  
+  final String id;
   final String email;
   final String name;
   final String? names;
@@ -10,7 +10,7 @@ class UserResponse {
   final String? prefix;
   final String? prefixcurrent;
   final String? photo;
-  final int rolId;
+  final String rolId;
   final Rol rol;
   final List<Option> options;
   final String token;
@@ -44,7 +44,7 @@ class UserResponse {
       }
 
       return UserResponse(
-        id: json['user']['id'] ?? 1,
+        id: json['user']['id'].toString(),
         email: json['user']['email'] ?? '',
         name: json['user']['name'] ?? '',
         names: json['user']['names'] ?? '',
@@ -54,11 +54,11 @@ class UserResponse {
         prefix: json['user']['prefix'] ?? '',
         prefixcurrent: json['user']['prefixcurrent'] ?? json['user']['prefix'],
         photo: json['user']['photo'] ?? '',
-        rolId: json['user']['rolId'] ?? 1,
+        rolId: json['user']['rolId'].toString(),
         rol:
             json['user']?['rol'] != null
                 ? Rol.fromJson(json['user']['rol'])
-                : Rol(id: 1, name: '', description: ''),
+                : Rol(id: '1', name: '', description: ''),
         options: userOptions,
         token: json['token'] ?? '',
       );
@@ -91,14 +91,14 @@ class UserResponse {
 }
 
 class Rol {
-  final int id;
+  final String id;
   final String name;
   final String description;
   Rol({required this.id, required this.name, required this.description});
 
   factory Rol.fromJson(Map<String, dynamic> json) {
     return Rol(
-      id: json['id'] ?? 1,
+      id: json['id'].toString(),
       name: json['name'] ?? '',
       description: json['description'] ?? '',
     );

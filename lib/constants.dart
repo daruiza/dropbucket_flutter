@@ -2,9 +2,10 @@
 abstract class Constants {
   static const String apiBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'https://dropbucketbk.asistirensalud.space',
-    // defaultValue: 'http://localhost:3031',
+    //defaultValue: 'https://dropbucketbk.asistirensalud.space',
+    //defaultValue: 'http://localhost:3031',
     //defaultValue: 'http://44.203.46.54:3031',
+    defaultValue: 'http://localhost:8080',
   );
 
   static const String baseUrl = String.fromEnvironment(

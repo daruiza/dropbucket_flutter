@@ -2,7 +2,7 @@
 import 'package:dropbucket_flutter/models/user_response.dart';
 
 class UserPatch {
-  final int id;
+  final String id;
   final String email;
   final String name;
   final String? password;
@@ -13,7 +13,7 @@ class UserPatch {
   final String? prefix;
   final String? prefixcurrent;
   final String? photo;
-  final int rolId;
+  final String rolId;
   final Rol rol;
   final List<Option> options;
   final String token;
@@ -60,7 +60,7 @@ class UserPatch {
       rolId: json['user']['rolId'],
       rol: json['user']?['rol'] != null
           ? Rol.fromJson(json['user']?['rol'])
-          : Rol(id: 0, name: '', description: ''),
+          : Rol(id: '0', name: '', description: ''),
       options: userOptions,
       token: json['token'] ?? '',
     );
