@@ -71,14 +71,12 @@ class _BreadcrumbState extends State<Breadcrumb> {
               return Row(
                 children: [
                   MouseRegion(
-                    onEnter:
-                        (_) => setState(() {
-                          isHovering[index] = true;
-                        }),
-                    onExit:
-                        (_) => setState(() {
-                          isHovering[index] = false;
-                        }),
+                    onEnter: (_) => setState(() {
+                      isHovering[index] = true;
+                    }),
+                    onExit: (_) => setState(() {
+                      isHovering[index] = false;
+                    }),
                     cursor: SystemMouseCursors.click,
                     child: GestureDetector(
                       onTap: () {
@@ -86,27 +84,24 @@ class _BreadcrumbState extends State<Breadcrumb> {
                           widget.fetchItemsList.call();
                         });
                       },
-                      child:
-                          index == 0
-                              ? Icon(
-                                Icons.home,
-                                size: widget.fontSize + 8,
-                                color:
-                                    isHovering[index]
-                                        ? widget.hoverColor
-                                        : widget.primaryColor,
-                              )
-                              : Text(
-                                prefixCurrent[index],
-                                style: TextStyle(
-                                  color:
-                                      isHovering[index]
-                                          ? widget.hoverColor
-                                          : widget.primaryColor,
-                                  // fontWeight: FontWeight.normal,
-                                  fontSize: widget.fontSize,
-                                ),
+                      child: index == 0
+                          ? Icon(
+                              Icons.home,
+                              size: widget.fontSize + 8,
+                              color: isHovering[index]
+                                  ? widget.hoverColor
+                                  : widget.primaryColor,
+                            )
+                          : Text(
+                              prefixCurrent[index],
+                              style: TextStyle(
+                                color: isHovering[index]
+                                    ? widget.hoverColor
+                                    : widget.primaryColor,
+                                // fontWeight: FontWeight.normal,
+                                fontSize: widget.fontSize,
                               ),
+                            ),
                     ),
                   ),
                   if (!isLast)
@@ -128,17 +123,17 @@ class _BreadcrumbState extends State<Breadcrumb> {
   }
 }
 
-List<String> getPrefixList(UserResponse? user) {  
+List<String> getPrefixList(UserResponse? user) {
   if (user?.prefixcurrent == null || user?.prefixcurrent == '') {
     return [];
   }
-  String currentPrefix = user?.prefixcurrent ?? '';  
+  String currentPrefix = user?.prefixcurrent ?? '';
   String userPrefix = user?.prefix ?? ' ';
-  try {    
-    String withoutPrefix = currentPrefix.replaceAll(userPrefix, '');    
-    List<String> result = withoutPrefix.trim().split('/');    
+  try {
+    String withoutPrefix = currentPrefix.replaceAll(userPrefix, '');
+    List<String> result = withoutPrefix.trim().split('/');
     return result.where((element) => element.isNotEmpty).toList();
-  } catch (e) {    
+  } catch (e) {
     return [];
   }
 }
@@ -164,13 +159,15 @@ onGoPrefix(BuildContext context, prefix, Function fetchItemsList) async {
     final currentPrefix = user.prefixcurrent?.replaceAll(userprefix, '');
     if (currentPrefix == null) return;
 
+    // este if es para evitar qe se realice una llamda al fina del breadcrumb
+    // lo que afecta ante un refresco de página dado que se pierde la información
     if ('$resultado/' != currentPrefix && resultado != currentPrefix) {
-      await authProvider.setUserPrefix(
-        context,
-        resultado.isEmpty ? userprefix : '$userprefix$resultado/',
-        true,
-      );
-      await fetchItemsList();
+    await authProvider.setUserPrefix(
+      context,
+      resultado.isEmpty ? userprefix : '$userprefix$resultado/',
+      true,
+    );
+    await fetchItemsList();
     }
   } finally {}
 }

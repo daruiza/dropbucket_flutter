@@ -49,7 +49,7 @@ class LoginScreen extends StatelessWidget {
                               ? constraints.maxWidth * 0.16
                               : constraints.maxWidth * 0.6,
                           child: Image.network(
-                            'https://dropbucket-asistir-aws.s3.amazonaws.com/images/logoasistirpng.png',
+                            'https://dropbucket-asistir-aws.s3.us-east-1.amazonaws.com/images/logoasistirpng.png',
                           ),
                         ),
                         const SizedBox(height: 40),

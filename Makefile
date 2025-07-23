@@ -19,3 +19,7 @@ docker_build_image_aws:
 	
 
 
+# OJO RESOLVER ESTO
+# DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+#             Install the buildx component to build images with BuildKit:
+#             https://docs.docker.com/go/buildx/

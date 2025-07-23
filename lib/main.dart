@@ -26,6 +26,7 @@ class AppState extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => BucketService(context)),
         ChangeNotifierProvider(create: (context) => UserService(context)),
         ChangeNotifierProvider(create: (context) => TableViewProvider()),
+        ChangeNotifierProvider(create: (context) => ProfileFormProvider()),
       ],
       child: MyApp(),
     );

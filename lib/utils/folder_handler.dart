@@ -42,14 +42,13 @@ class FolderHandler {
                     controller: textFieldController,
                     decoration: InputDecoration(
                       hintText: "Nombre de directorio",
-                      errorText:
-                          textFieldController.text.isEmpty
-                              ? null
-                              : RegExp(
-                                r'^[a-zA-Z0-9_-\s]+$',
-                              ).hasMatch(textFieldController.text)
-                              ? null
-                              : 'Solo letras y números',
+                      errorText: textFieldController.text.isEmpty
+                          ? null
+                          : RegExp(
+                              r'^[a-zA-Z0-9_-\s]+$',
+                            ).hasMatch(textFieldController.text)
+                          ? null
+                          : 'Solo letras y números',
                     ),
                     onChanged: (text) {
                       setState(() {
@@ -71,18 +70,17 @@ class FolderHandler {
                   child: const Text('Cancelar'),
                 ),
                 TextButton(
-                  onPressed:
-                      isButtonEnabled
-                          ? () async {
-                            await onCreateFolder(
-                              context,
-                              textFieldController.text,
-                            );
-                            if (context.mounted) {
-                              Navigator.pop(context, textFieldController.text);
-                            }
+                  onPressed: isButtonEnabled
+                      ? () async {
+                          await onCreateFolder(
+                            context,
+                            textFieldController.text,
+                          );
+                          if (context.mounted) {
+                            Navigator.pop(context, textFieldController.text);
                           }
-                          : null,
+                        }
+                      : null,
                   child: const Text('Crear'),
                 ),
               ],
@@ -130,57 +128,54 @@ class FolderHandler {
 
     return showDialog<String>(
       context: context,
-      builder:
-          (BuildContext context) => StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-              return AlertDialog(
-                title: Text(
-                  'Editar ${name.last}',
-                  style: TextStyle(fontSize: 17.0),
-                ),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextField(
-                      controller: textFieldController,
-                      decoration: InputDecoration(
-                        hintText: "Nombre de carpeta",
-                        errorText:
-                            textFieldController.text.isEmpty
-                                ? null
-                                : RegExp(
-                                  r'^[a-zA-Z0-9_-\s]+$',
-                                  // r'^[a-zA-Z0-9][-_a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ\s]{0,63}(?<![-_. ])\.?[a-zA-Z0-9]{0,8}$',
-                                ).hasMatch(textFieldController.text)
-                                ? null
-                                : 'Solo letras y números',
-                      ),
-                      onChanged: (text) {
-                        setState(() {
-                          validateInput(text);
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () => Navigator.pop(context, 'Cancel'),
-                    child: const Text('Cancelar'),
+      builder: (BuildContext context) => StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return AlertDialog(
+            title: Text(
+              'Editar ${name.last}',
+              style: TextStyle(fontSize: 17.0),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: textFieldController,
+                  decoration: InputDecoration(
+                    hintText: "Nombre de carpeta",
+                    errorText: textFieldController.text.isEmpty
+                        ? null
+                        : RegExp(
+                            r'^[a-zA-Z0-9_-\s]+$',
+                            // r'^[a-zA-Z0-9][-_a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ\s]{0,63}(?<![-_. ])\.?[a-zA-Z0-9]{0,8}$',
+                          ).hasMatch(textFieldController.text)
+                        ? null
+                        : 'Solo letras y números',
                   ),
-                  TextButton(
-                    onPressed:
-                        isButtonEnabled
-                            ? () {
-                              onEdit(folder, textFieldController.text.trim());
-                            }
-                            : null,
-                    child: const Text('Editar'),
-                  ),
-                ],
-              );
-            },
-          ),
+                  onChanged: (text) {
+                    setState(() {
+                      validateInput(text);
+                    });
+                  },
+                ),
+              ],
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'Cancel'),
+                child: const Text('Cancelar'),
+              ),
+              TextButton(
+                onPressed: isButtonEnabled
+                    ? () {
+                        onEdit(folder, textFieldController.text.trim());
+                      }
+                    : null,
+                child: const Text('Editar'),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 
@@ -266,32 +261,31 @@ class FolderHandler {
   ) {
     return showDialog<String>(
       context: context,
-      builder:
-          (BuildContext context) => AlertDialog(
-            title: const Text('Confirmación', style: TextStyle(fontSize: 17.0)),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('¿Seguro que desea borrar el directorio?'),
-                Text(name.last),
-              ],
-            ),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.pop(context, 'Cancel'),
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () async {
-                  await onDeleteFolder(context, name.last);
-                  if (context.mounted) {
-                    Navigator.pop(context, 'OK');
-                  }
-                },
-                child: const Text('Eliminar'),
-              ),
-            ],
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Confirmación', style: TextStyle(fontSize: 17.0)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('¿Seguro que desea borrar el directorio?'),
+            Text(name.last),
+          ],
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'Cancel'),
+            child: const Text('Cancel'),
           ),
+          TextButton(
+            onPressed: () async {
+              await onDeleteFolder(context, name.last);
+              if (context.mounted) {
+                Navigator.pop(context, 'OK');
+              }
+            },
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
     );
   }
 
@@ -337,11 +331,14 @@ class FolderHandler {
   ) {
     return showDialog(
       context: context,
-      builder:
-          (BuildContext context) => DialogInput(
-            title: 'Solicitud de archivos para ${name.last}',
-            label: 'Mensaje de solicitud',
-          ),
+      builder: (BuildContext context) => DialogInput(
+        title: 'Solicitud de archivos para ${name.last}',
+        label: 'Mensaje de solicitud',
+        validateInput: (String input) {
+          final isValid = RegExp(r'^[a-zA-Z0-9\s@$!%*?&_#]*$').hasMatch(input);          
+          return isValid && input.isNotEmpty;
+        },
+      ),
     ).then((option) {
       flipCard();
       if (option['option'] == 'done') {

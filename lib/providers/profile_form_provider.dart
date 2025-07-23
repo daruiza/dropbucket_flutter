@@ -18,7 +18,12 @@ class ProfileFormProvider extends ChangeNotifier {
   TextEditingController prefix = TextEditingController();
   TextEditingController photo = TextEditingController();
 
-  TextEditingController photoExists = TextEditingController();
+  bool _photoExists = false;
+  bool get photoExists => _photoExists;
+  set photoExists(bool value) {
+    _photoExists = value;
+    notifyListeners();
+  }
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;

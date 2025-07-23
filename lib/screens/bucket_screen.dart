@@ -18,8 +18,10 @@ class BucketScreen extends StatelessWidget {
     final tableViewProvider = Provider.of<TableViewProvider>(context);
 
     return FutureBuilder(
-      future:
-          Provider.of<BucketService>(context, listen: false).itemsListFuture(),
+      future: Provider.of<BucketService>(
+        context,
+        listen: false,
+      ).itemsListFuture(),
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         if (bucketService.isLoading) {
           return const Center(child: CircularProgressIndicator());
@@ -30,12 +32,15 @@ class BucketScreen extends StatelessWidget {
           return const Center(child: Text('Error loading data bucket.'));
         }
 
-        // Variables iniciales        
+        // Variables iniciales
         final files = bucketService.items.files;
         final folders = bucketService.items.folders;
         final isDesktop = MediaQuery.of(context).size.width >= 600;
         final crossAxisCount = isDesktop ? 12 : 3;
-        
+
+        //TODO:
+        //Si la variables son nulas - realizaremos un reintento dado un F5 por parte del usuario
+        //debemos midificar y usar el isLoading
 
         return Stack(
           children: [
@@ -58,40 +63,40 @@ class BucketScreen extends StatelessWidget {
                         //   context: context,
                         //   child:
                         tableViewProvider.view == TableView.grid
-                            ? GridView.builder(
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: crossAxisCount,
-                                    crossAxisSpacing: 10,
-                                    mainAxisSpacing: 10,
-                                    mainAxisExtent: 120,
-                                  ),
-                              itemCount: folders.length + files.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                if (index < folders.length) {
-                                  return CardFolder(folder: folders[index]);
-                                } else {
-                                  return CardFile(
-                                    file: files[index - folders.length],
-                                  );
-                                }
-                              },
-                            )
-                            : tableViewProvider.view == TableView.list
-                            ? ListView.builder(
-                              padding: const EdgeInsets.only(bottom: 160),
-                              itemCount: folders.length + files.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                if (index < folders.length) {
-                                  return ItemListFolder(folder: folders[index]);
-                                } else {
-                                  return ItemListFile(
-                                    file: files[index - folders.length],
-                                  );
-                                }
-                              },
-                            )
-                            : Container(),
+                        ? GridView.builder(
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: crossAxisCount,
+                                  crossAxisSpacing: 10,
+                                  mainAxisSpacing: 10,
+                                  mainAxisExtent: 120,
+                                ),
+                            itemCount: folders.length + files.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              if (index < folders.length) {
+                                return CardFolder(folder: folders[index]);
+                              } else {
+                                return CardFile(
+                                  file: files[index - folders.length],
+                                );
+                              }
+                            },
+                          )
+                        : tableViewProvider.view == TableView.list
+                        ? ListView.builder(
+                            padding: const EdgeInsets.only(bottom: 160),
+                            itemCount: folders.length + files.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              if (index < folders.length) {
+                                return ItemListFolder(folder: folders[index]);
+                              } else {
+                                return ItemListFile(
+                                  file: files[index - folders.length],
+                                );
+                              }
+                            },
+                          )
+                        : Container(),
                     // ),
                   ),
                 ),

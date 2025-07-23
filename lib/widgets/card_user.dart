@@ -47,8 +47,10 @@ class _CardUserState extends State<CardUser>
       final existFile = await bucketService.existFile(
         widget.user.photo?.split('.com/')[1] ?? '',
       );
-      _imageDonload = jsonDecode(existFile.body)['exist'] ?? false;
-      setState(() {});
+      if (mounted) {
+        _imageDonload = jsonDecode(existFile.body)['exist'] ?? false;
+        setState(() {});
+      }
     }
   }
 
@@ -86,14 +88,13 @@ class _CardUserState extends State<CardUser>
                   _animation.value * 3.141592653589793,
                 ),
                 alignment: Alignment.center,
-                child:
-                    isFront
-                        ? _buildFront()
-                        : Transform(
-                          transform: Matrix4.rotationY(3.141592653589793),
-                          alignment: Alignment.center,
-                          child: _buildBack(),
-                        ),
+                child: isFront
+                    ? _buildFront()
+                    : Transform(
+                        transform: Matrix4.rotationY(3.141592653589793),
+                        alignment: Alignment.center,
+                        child: _buildBack(),
+                      ),
               ),
             );
           },
@@ -121,35 +122,35 @@ class _CardUserState extends State<CardUser>
               children: [
                 _imageDonload
                     ? Stack(
-                      children: [
-                        CircleAvatar(
-                          maxRadius: 36,
-                          backgroundColor: IndigoTheme.primaryColor,
-                          backgroundImage: NetworkImage(
-                            widget.user.photo ?? '',
-                          ),
-                        ),
-                        if (!_isHovered)
-                          Positioned.fill(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Color(0x80909090),
-                              ),
+                        children: [
+                          CircleAvatar(
+                            maxRadius: 36,
+                            backgroundColor: IndigoTheme.primaryColor,
+                            backgroundImage: NetworkImage(
+                              widget.user.photo ?? '',
                             ),
                           ),
-                      ],
-                    )
+                          if (!_isHovered)
+                            Positioned.fill(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Color(0x80909090),
+                                ),
+                              ),
+                            ),
+                        ],
+                      )
                     : SizedBox(
-                      width: 72,
-                      child: FittedBox(
-                        fit: BoxFit.contain,
-                        child: Icon(
-                          Icons.person,
-                          color: IndigoTheme.primaryColor,
+                        width: 72,
+                        child: FittedBox(
+                          fit: BoxFit.contain,
+                          child: Icon(
+                            Icons.person,
+                            color: IndigoTheme.primaryColor,
+                          ),
                         ),
                       ),
-                    ),
 
                 Center(child: Text(widget.user.name)),
               ],
@@ -199,10 +200,9 @@ class _CardUserState extends State<CardUser>
               constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
               icon: const Icon(Icons.delete, size: 20.0),
               // onPressed: () => showDeleteDialog(),
-              onPressed:
-                  widget.user.rolId != Role.superadministrador.id
-                      ? () => UserHandler.showDeleteDialog(context, widget.user)
-                      : null,
+              onPressed: widget.user.rolId != Role.superadministrador.id
+                  ? () => UserHandler.showDeleteDialog(context, widget.user)
+                  : null,
             ),
           ],
         ),

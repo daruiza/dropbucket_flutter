@@ -76,6 +76,7 @@ class BucketService extends ChangeNotifier {
         queryParams: {
           'prefix': _authProvider.user?.prefixcurrent ?? '',
           'size': 'false',
+          'delimiter': '/',
           'sort': '{"by": "date", "order": "asc"}',
         },
       );
@@ -91,6 +92,7 @@ class BucketService extends ChangeNotifier {
   }
 
   Future<Response> existFile(String prefix) async {
+    
     final url = '$_baseUrl/exists';
     try {
       final response = await _httpService.get(

@@ -28,13 +28,13 @@ class UserCreate {
       email: json['user']['email'],
       name: json['user']['name'],
       password: json['user']['password'],
-      names: json['user']['names'],
-      lastnames: json['user']['lastnames'],
-      phone: json['user']['phone'],
-      theme: json['user']['theme'],
-      prefix: json['user']['prefix'],
-      photo: json['user']['photo'],
-      rolId: json['user']['rolId'],
+      names: json['user']['names'] ?? "",
+      lastnames: json['user']['lastnames'] ?? "",
+      phone: json['user']['phone'] ?? "",
+      theme: json['user']['theme'] ?? "",
+      prefix: json['user']['prefix'] ?? "",
+      photo: json['user']['photo'] ?? "",
+      rolId: json['user']['rolId'].toString(),
     );
   }
 

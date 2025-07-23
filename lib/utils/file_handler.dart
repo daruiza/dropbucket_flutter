@@ -189,7 +189,7 @@ class FileHandler {
       ui.platformViewRegistry.registerViewFactory(iframeViewType, (int viewId) {
         iframe =
             html.IFrameElement()
-              ..src = jsonDecode(response.body)['url']
+              ..src = 'https://docs.google.com/gview?url=${jsonDecode(response.body)['url']}&embedded=true'
               ..style.border = 'none'
               ..style.width = '100%'
               ..style.height = '100%'
@@ -317,7 +317,7 @@ class FileHandler {
           builder:
               (BuildContext context) => AlertDialog(
                 titlePadding: EdgeInsets.zero,
-                content: Container(
+                content: SizedBox(
                   width: MediaQuery.of(context).size.width * 0.95,
                   height: MediaQuery.of(context).size.height * 0.95,
                   child: Text('hello'),
@@ -344,6 +344,7 @@ class FileHandler {
     required Function flipCard,
   }) async {
     // Nativo Android y Windowa
+
     if (!kIsWeb) {
       if (context.mounted) {
         await FileHandler.onOpenFile(
@@ -362,7 +363,7 @@ class FileHandler {
         'gif',
         'webp',
         'bmp',
-      ].contains(file.extension);
+      ].contains(file.extension.replaceFirst('.', ''));
 
       bool isWord = [
         // Word
@@ -382,7 +383,7 @@ class FileHandler {
         'odp',
         // Otros formatos de Office
         'one', 'pub', 'vsd', 'vsdx', 'mpp',
-      ].contains(file.extension);
+      ].contains(file.extension.replaceFirst('.', ''));
 
       if (isWord) {
         if (context.mounted) {
@@ -393,7 +394,7 @@ class FileHandler {
           );
         }
       }
-      if (file.extension == 'pdf') {
+      if (file.extension.replaceFirst('.', '') == 'pdf') {
         if (context.mounted) {
           await FileHandler.showPDFViewer(
             context,

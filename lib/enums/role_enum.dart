@@ -1,11 +1,11 @@
 enum Role {
-  superadministrador(1, 'superadministrador'),
-  administrador(2, 'administrador'),
-  cliente(3, 'cliente'),
-  agente(4, 'agente'),
-  espectador(5, 'espectador');
+  superadministrador("6845b197a766ccdceee6f3aa", 'superadministrador'),
+  administrador("68672d63fe06d6226603c626", 'administrador'),
+  cliente("68672e95fe06d6226603c627", 'cliente'),
+  agente("68672f9efe06d6226603c628", 'agente'),
+  espectador("68673105fe06d6226603c629", 'espectador');
 
-  final int id;
+  final String id;
   final String name;
 
   const Role(this.id, this.name);
