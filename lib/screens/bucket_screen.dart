@@ -5,6 +5,9 @@ import 'package:dropbucket_flutter/widgets/card_file.dart';
 import 'package:dropbucket_flutter/widgets/card_folder.dart';
 import 'package:dropbucket_flutter/widgets/item_list_file.dart';
 import 'package:dropbucket_flutter/widgets/item_list_folder.dart';
+import 'package:dropbucket_flutter/utils/file_handler.dart';
+
+import 'package:desktop_drop/desktop_drop.dart';
 
 import '../services/services.dart' show BucketService;
 import 'package:dropbucket_flutter/providers/providers.dart';
@@ -58,11 +61,9 @@ class BucketScreen extends StatelessWidget {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child:
-                        // buildDropzone(
-                        //   context: context,
-                        //   child:
-                        tableViewProvider.view == TableView.grid
+                    // child: buildDropzone(
+                    //   context: context,
+                    child: tableViewProvider.view == TableView.grid
                         ? GridView.builder(
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
@@ -97,14 +98,37 @@ class BucketScreen extends StatelessWidget {
                             },
                           )
                         : Container(),
-                    // ),
                   ),
+                  // ),
                 ),
               ],
             ),
           ],
         );
       },
+    );
+  }
+
+  Widget buildDropzone({required BuildContext context, required Widget child}) {
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: DropTarget(
+            onDragDone: (DropDoneDetails detail) {
+              List<DropItem> files = detail.files;
+              FileHandler.onUploadBlobFiles(context, files: files);
+            },
+            onDragEntered: (detail) {
+              print('onDragEntered');
+            },
+            onDragExited: (detail) {
+              print('Goodbay');
+            },
+            child: child,
+          ),
+        ),
+        // child,
+      ],
     );
   }
 }

@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:dropbucket_flutter/models/bucket_response.dart';
 import 'package:dropbucket_flutter/providers/state_bool.dart';
 import 'package:dropbucket_flutter/utils/folder_handler.dart';
+import 'package:dropbucket_flutter/utils/file_handler.dart';
 import 'package:dropbucket_flutter/providers/auth_provider.dart';
 import 'package:dropbucket_flutter/enums/enum_option.dart';
 import 'package:dropbucket_flutter/themes/indigo.dart';
@@ -41,71 +44,73 @@ class ItemListFolder extends StatelessWidget {
         builder: (context) {
           final stateBoolProvider = Provider.of<StateBoolProvider>(context);
           return DragTarget(
-            onAcceptWithDetails: onAcceptWithDetailsFolder,
-            builder: (
-              BuildContext context,
-              List<dynamic> accepted,
-              List<dynamic> rejected,
-            ) {
-              return Draggable(
-                data: folder,
-                feedback: DraggableFolderFeedback(folder: folder),
-                child: MouseRegion(
-                  onEnter: (_) => stateBoolProvider.stateBool = true,
-                  onExit: (_) => stateBoolProvider.stateBool = false,
-                  cursor: SystemMouseCursors.click,
+            onAcceptWithDetails: (details) =>
+                onAcceptWithDetailsFolder(details, context),
+            builder:
+                (
+                  BuildContext context,
+                  List<dynamic> accepted,
+                  List<dynamic> rejected,
+                ) {
+                  return Draggable(
+                    data: folder,
+                    feedback: DraggableFolderFeedback(folder: folder),
+                    child: MouseRegion(
+                      onEnter: (_) => stateBoolProvider.stateBool = true,
+                      onExit: (_) => stateBoolProvider.stateBool = false,
+                      cursor: SystemMouseCursors.click,
 
-                  child: GestureDetector(
-                    onTap: () async {
-                      if (isProcessingTap) {
-                        return; // Evita la ejecución si ya se está procesando un tap
-                      }
-                      isProcessingTap = true;
-                      await FolderHandler.onGo(
-                        context,
-                        name: folder.name.split('/'),
-                      ).then((_) {
-                        // _isProcessingTap = false;
-                      });
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.only(
-                            right: 16.0,
-                            left: 16.0,
-                            top: 6.0,
-                            bottom: 6.0,
-                          ),
-                          color:
-                              stateBoolProvider.stateBool
+                      child: GestureDetector(
+                        onTap: () async {
+                          if (isProcessingTap) {
+                            return; // Evita la ejecución si ya se está procesando un tap
+                          }
+                          isProcessingTap = true;
+                          await FolderHandler.onGo(
+                            context,
+                            name: folder.name.split('/'),
+                          ).then((_) {
+                            // _isProcessingTap = false;
+                          });
+                        },
+                        child: Column(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.only(
+                                right: 16.0,
+                                left: 16.0,
+                                top: 6.0,
+                                bottom: 6.0,
+                              ),
+                              color: stateBoolProvider.stateBool
                                   ? IndigoTheme.hoverColor
                                   : null,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              TitleFolder(folder: folder),
-                              optionsFolderRow(
-                                optionEditFolder,
-                                context,
-                                optionRequestUpload,
-                                optionDeleteFolder,
-                                optionShareFolder,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  TitleFolder(folder: folder),
+                                  optionsFolderRow(
+                                    optionEditFolder,
+                                    context,
+                                    optionRequestUpload,
+                                    optionDeleteFolder,
+                                    optionShareFolder,
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                            Divider(
+                              color: IndigoTheme.primaryLowColor,
+                              thickness: 0.5,
+                              height: 1,
+                            ),
+                          ],
                         ),
-                        Divider(
-                          color: IndigoTheme.primaryLowColor,
-                          thickness: 0.5,
-                          height: 1,
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
-              );
-            },
+                  );
+                },
           );
         },
       ),
@@ -128,8 +133,8 @@ class ItemListFolder extends StatelessWidget {
             padding: EdgeInsets.all(0.0),
             constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
             icon: const Icon(Icons.edit, size: 20.0),
-            onPressed:
-                () => FolderHandler.showEditFolderDialog(
+            onPressed: () =>
+                FolderHandler.showEditFolderDialog(
                   context,
                   folder: folder,
                   name: folder.name.split('/'),
@@ -145,13 +150,12 @@ class ItemListFolder extends StatelessWidget {
             padding: EdgeInsets.all(0.0),
             constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
             icon: const Icon(Icons.upload, size: 20.0),
-            onPressed:
-                () => FolderHandler.showRequestFilesDialog(
-                  context,
-                  folder.name.split('/'),
-                  () => {},
-                  folder,
-                ),
+            onPressed: () => FolderHandler.showRequestFilesDialog(
+              context,
+              folder.name.split('/'),
+              () => {},
+              folder,
+            ),
           ),
         if (optionDeleteFolder)
           IconButton(
@@ -160,8 +164,8 @@ class ItemListFolder extends StatelessWidget {
             padding: EdgeInsets.all(0.0),
             constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
             icon: const Icon(Icons.delete, size: 20.0),
-            onPressed:
-                () => FolderHandler.showDeleteDialog(
+            onPressed: () =>
+                FolderHandler.showDeleteDialog(
                   context,
                   folder.name.split('/'),
                 ).then((_) {
@@ -188,9 +192,59 @@ class ItemListFolder extends StatelessWidget {
     );
   }
 
-  void onAcceptWithDetailsFolder(DragTargetDetails<dynamic> details) {
-    print(details.data.name);
-    print(folder.name);
+  Future<void> onAcceptWithDetailsFolder(
+    DragTargetDetails<dynamic> details,
+    BuildContext context,
+  ) async {
+    List<String> homeRepo = folder.name
+        .split('/')
+        .sublist(0, folder.name.split('/').length - 1);
+
+    if (details.data != null &&
+        details.data.name != null &&
+        details.data.name != "") {
+      final elementName = details.data.name.split('/').last;
+      //File or Folder
+      if (details.data.name.contains('.')) {
+        //Es un archivo
+        final rename = elementName.split('.')[0];
+
+        final file = FileItem(
+          name: details.data.name,
+          extension: details.data.name.split('.').last,
+          lastModified: DateTime.now(),
+          size: 0,
+        );
+
+        // change name of details
+        await FileHandler.onEditPrefix(
+          context,
+          file,
+          rename,
+          arrdirectory: '${folder.name}/',
+        );
+      } else {
+        //Es un directorio
+        final folderinit = FolderItem(name: details.data.name);
+        await FolderHandler.onEditPrefix(
+          context,
+          folderinit,
+          elementName,
+          arrdirectory: '${folder.name}/',
+        );
+      }
+    }
+
+    // refresh
+    if (context.mounted) {
+      await FolderHandler.onGo(
+        context,
+        name: homeRepo,
+        setUserPrefix: false,
+      ).then((_) {
+        print('Refresh after drag');
+      });
+    }
   }
 }
 
@@ -259,8 +313,8 @@ class OptionsFolder extends StatelessWidget {
             padding: EdgeInsets.all(0.0),
             constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
             icon: const Icon(Icons.edit, size: 20.0),
-            onPressed:
-                () => FolderHandler.showEditFolderDialog(
+            onPressed: () =>
+                FolderHandler.showEditFolderDialog(
                   context,
                   folder: folder,
                   name: folder.name.split('/'),
@@ -276,13 +330,12 @@ class OptionsFolder extends StatelessWidget {
             padding: EdgeInsets.all(0.0),
             constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
             icon: const Icon(Icons.upload, size: 20.0),
-            onPressed:
-                () => FolderHandler.showRequestFilesDialog(
-                  context,
-                  folder.name.split('/'),
-                  () => {},
-                  folder,
-                ),
+            onPressed: () => FolderHandler.showRequestFilesDialog(
+              context,
+              folder.name.split('/'),
+              () => {},
+              folder,
+            ),
           ),
         if (optionDeleteFolder)
           IconButton(
@@ -291,8 +344,8 @@ class OptionsFolder extends StatelessWidget {
             padding: EdgeInsets.all(0.0),
             constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
             icon: const Icon(Icons.delete, size: 20.0),
-            onPressed:
-                () => FolderHandler.showDeleteDialog(
+            onPressed: () =>
+                FolderHandler.showDeleteDialog(
                   context,
                   folder.name.split('/'),
                 ).then((_) {
@@ -353,19 +406,17 @@ class _TitleFolderState extends State<TitleFolder> {
         children: [
           Icon(
             Icons.folder,
-            color:
-                stateBoolProvider.stateBool
-                    ? IndigoTheme.primaryColor
-                    : IndigoTheme.hoverColor,
+            color: stateBoolProvider.stateBool
+                ? IndigoTheme.primaryColor
+                : IndigoTheme.hoverColor,
           ),
           const SizedBox(width: 5),
           Text(
             widget.folder.name.split('/').last,
             style: TextStyle(
-              color:
-                  stateBoolProvider.stateBool
-                      ? IndigoTheme.primaryFullColor
-                      : IndigoTheme.primaryColor,
+              color: stateBoolProvider.stateBool
+                  ? IndigoTheme.primaryFullColor
+                  : IndigoTheme.primaryColor,
             ),
           ),
         ],

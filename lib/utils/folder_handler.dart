@@ -182,11 +182,15 @@ class FolderHandler {
   static onEditPrefix(
     BuildContext context,
     FolderItem folder,
-    String rename,
-  ) async {
+    String rename, {
+    String arrdirectory = '',
+  }) async {
     final bucketService = Provider.of<BucketService>(context, listen: false);
     final String oldname = folder.name;
-    String directory = oldname.substring(0, oldname.lastIndexOf('/') + 1);
+    String directory = arrdirectory != ''
+        ? arrdirectory
+        : oldname.substring(0, oldname.lastIndexOf('/') + 1);
+    // String directory = oldname.substring(0, oldname.lastIndexOf('/') + 1);
 
     try {
       // context.loaderOverlay.show();
@@ -335,7 +339,7 @@ class FolderHandler {
         title: 'Solicitud de archivos para ${name.last}',
         label: 'Mensaje de solicitud',
         validateInput: (String input) {
-          final isValid = RegExp(r'^[a-zA-Z0-9\s@$!%*?&_#]*$').hasMatch(input);          
+          final isValid = RegExp(r'^[a-zA-Z0-9\s@$!%*?&_#]*$').hasMatch(input);
           return isValid && input.isNotEmpty;
         },
       ),
@@ -409,14 +413,17 @@ class FolderHandler {
   static Future<void> onGo(
     BuildContext context, {
     required List<String> name,
+    bool setUserPrefix = true,
   }) async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final bucketService = Provider.of<BucketService>(context, listen: false);
     if (name.isEmpty) return;
     try {
       // context.loaderOverlay.show();
-      if (context.mounted) {
-        await authProvider.setUserPrefix(context, name.last);
+      if (setUserPrefix) {
+        if (context.mounted) {
+          await authProvider.setUserPrefix(context, name.last);
+        }
       }
       await bucketService.itemsList();
     } finally {

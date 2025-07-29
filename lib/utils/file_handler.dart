@@ -536,8 +536,9 @@ class FileHandler {
               : oldname.contains('/')
               ? oldname.substring(0, oldname.lastIndexOf('/') + 1)
               : oldname.substring(0, oldname.lastIndexOf('/') + 1);
-      final String extension = oldname.split('.').last;
 
+      final String extension = oldname.split('.').last;
+     
       try {
         await bucketService.renameFile(
           name: oldname,
