@@ -241,9 +241,7 @@ class ItemListFolder extends StatelessWidget {
         context,
         name: homeRepo,
         setUserPrefix: false,
-      ).then((_) {
-        print('Refresh after drag');
-      });
+      ).then((_) {});
     }
   }
 }
