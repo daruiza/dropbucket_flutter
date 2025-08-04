@@ -1,3 +1,5 @@
+import 'package:dropbucket_flutter/constants.dart';
+import 'package:dropbucket_flutter/utils/request_upload_query.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';
@@ -116,49 +118,47 @@ class FileHandler {
           "https://view.officeapps.live.com/op/view.aspx?src=$fileUrl";
 
       ui.platformViewRegistry.registerViewFactory(iframeViewType, (int viewId) {
-        iframe =
-            html.IFrameElement()
-              ..src = viewerUrl
-              ..style.border = 'none'
-              ..style.width = '100%'
-              ..style.height = '100%';
+        iframe = html.IFrameElement()
+          ..src = viewerUrl
+          ..style.border = 'none'
+          ..style.width = '100%'
+          ..style.height = '100%';
         return iframe;
       });
 
       if (context.mounted) {
         return showDialog<String>(
           context: context,
-          builder:
-              (BuildContext context) => StatefulBuilder(
-                builder: (BuildContext context, StateSetter setState) {
-                  final width = MediaQuery.of(context).size.width * 0.95;
-                  final height = MediaQuery.of(context).size.height * 0.95;
-                  return AlertDialog(
-                    // title: Align(
-                    //   alignment: Alignment.topRight,
-                    //   child: IconButton(
-                    //     icon: Icon(Icons.close),
-                    //     onPressed: () => Navigator.pop(context),
-                    //   ),
-                    // ),
-                    content: SizedBox(
-                      width: width,
-                      height: height,
-                      child: HtmlElementView(viewType: iframeViewType),
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          iframe.remove();
-                          Navigator.pop(context);
-                        },
-                        child: Text('Cerrar'),
-                      ),
-                      // TODO: Descargar y DescargarPDF
-                    ],
-                  );
-                },
-              ),
+          builder: (BuildContext context) => StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              final width = MediaQuery.of(context).size.width * 0.95;
+              final height = MediaQuery.of(context).size.height * 0.95;
+              return AlertDialog(
+                // title: Align(
+                //   alignment: Alignment.topRight,
+                //   child: IconButton(
+                //     icon: Icon(Icons.close),
+                //     onPressed: () => Navigator.pop(context),
+                //   ),
+                // ),
+                content: SizedBox(
+                  width: width,
+                  height: height,
+                  child: HtmlElementView(viewType: iframeViewType),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      iframe.remove();
+                      Navigator.pop(context);
+                    },
+                    child: Text('Cerrar'),
+                  ),
+                  // TODO: Descargar y DescargarPDF
+                ],
+              );
+            },
+          ),
         );
       }
     } catch (e) {
@@ -187,13 +187,13 @@ class FileHandler {
       final response = await bucketService.sharedFile(file: file);
       // Registrar el IFrame en Flutter Web
       ui.platformViewRegistry.registerViewFactory(iframeViewType, (int viewId) {
-        iframe =
-            html.IFrameElement()
-              ..src = 'https://docs.google.com/gview?url=${jsonDecode(response.body)['url']}&embedded=true'
-              ..style.border = 'none'
-              ..style.width = '100%'
-              ..style.height = '100%'
-              ..allowFullscreen = true;
+        iframe = html.IFrameElement()
+          ..src =
+              'https://docs.google.com/gview?url=${jsonDecode(response.body)['url']}&embedded=true'
+          ..style.border = 'none'
+          ..style.width = '100%'
+          ..style.height = '100%'
+          ..allowFullscreen = true;
         return iframe;
       });
 
@@ -201,35 +201,34 @@ class FileHandler {
       if (context.mounted) {
         return showDialog(
           context: context,
-          builder:
-              (BuildContext context) => AlertDialog(
-                titlePadding: EdgeInsets.zero,
-                // title: Align(
-                //   alignment: Alignment.topRight,
-                //   child: IconButton(
-                //     icon: Icon(Icons.close),
-                //     onPressed: () {
-                //       iframe.remove();
-                //       Navigator.pop(context);
-                //     },
-                //   ),
-                // ),
-                content: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.95,
-                  height: MediaQuery.of(context).size.height * 0.95,
-                  child: HtmlElementView(viewType: iframeViewType),
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      iframe.remove();
-                      Navigator.pop(context);
-                    },
-                    child: Text('Cerrar'),
-                  ),
-                  // TODO: Descargar y DescargarPDF
-                ],
+          builder: (BuildContext context) => AlertDialog(
+            titlePadding: EdgeInsets.zero,
+            // title: Align(
+            //   alignment: Alignment.topRight,
+            //   child: IconButton(
+            //     icon: Icon(Icons.close),
+            //     onPressed: () {
+            //       iframe.remove();
+            //       Navigator.pop(context);
+            //     },
+            //   ),
+            // ),
+            content: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.95,
+              height: MediaQuery.of(context).size.height * 0.95,
+              child: HtmlElementView(viewType: iframeViewType),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  iframe.remove();
+                  Navigator.pop(context);
+                },
+                child: Text('Cerrar'),
               ),
+              // TODO: Descargar y DescargarPDF
+            ],
+          ),
         );
       }
     } catch (e) {
@@ -256,41 +255,39 @@ class FileHandler {
       if (context.mounted) {
         return showDialog(
           context: context,
-          builder:
-              (BuildContext context) => AlertDialog(
-                titlePadding: EdgeInsets.zero,
-                // title: Align(
-                //   alignment: Alignment.topRight,
-                //   child: IconButton(
-                //     icon: Icon(Icons.close),
-                //     onPressed: () {
-                //       iframe.remove();
-                //       Navigator.pop(context);
-                //     },
-                //   ),
-                // ),
-                content: Container(
-                  width: MediaQuery.of(context).size.width * 0.95,
-                  height: MediaQuery.of(context).size.height * 0.95,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: NetworkImage(jsonDecode(response.body)['url']),
-                      fit:
-                          BoxFit
-                              .contain, // BoxFit.cover para llenar, contain para mantener relación
-                    ),
-                  ),
+          builder: (BuildContext context) => AlertDialog(
+            titlePadding: EdgeInsets.zero,
+            // title: Align(
+            //   alignment: Alignment.topRight,
+            //   child: IconButton(
+            //     icon: Icon(Icons.close),
+            //     onPressed: () {
+            //       iframe.remove();
+            //       Navigator.pop(context);
+            //     },
+            //   ),
+            // ),
+            content: Container(
+              width: MediaQuery.of(context).size.width * 0.95,
+              height: MediaQuery.of(context).size.height * 0.95,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: NetworkImage(jsonDecode(response.body)['url']),
+                  fit: BoxFit
+                      .contain, // BoxFit.cover para llenar, contain para mantener relación
                 ),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text('Cerrar'),
-                  ),
-                  // TODO: Descargar y DescargarPDF
-                ],
               ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('Cerrar'),
+              ),
+              // TODO: Descargar y DescargarPDF
+            ],
+          ),
         );
       }
     } catch (e) {
@@ -314,15 +311,14 @@ class FileHandler {
       if (context.mounted) {
         return showDialog(
           context: context,
-          builder:
-              (BuildContext context) => AlertDialog(
-                titlePadding: EdgeInsets.zero,
-                content: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.95,
-                  height: MediaQuery.of(context).size.height * 0.95,
-                  child: Text('hello'),
-                ),
-              ),
+          builder: (BuildContext context) => AlertDialog(
+            titlePadding: EdgeInsets.zero,
+            content: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.95,
+              height: MediaQuery.of(context).size.height * 0.95,
+              child: Text('hello'),
+            ),
+          ),
         );
       }
     } catch (e) {
@@ -462,56 +458,53 @@ class FileHandler {
 
     return showDialog<String>(
       context: context,
-      builder:
-          (BuildContext context) => StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-              return AlertDialog(
-                title: Text(
-                  'Editar ${name.last}',
-                  style: TextStyle(fontSize: 17.0),
-                ),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextField(
-                      controller: textFieldController,
-                      decoration: InputDecoration(
-                        hintText: "Nombre de archivo",
-                        errorText:
-                            textFieldController.text.isEmpty
-                                ? null
-                                : RegExp(
-                                  r'^[a-zA-Z0-9][-_a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ\s]{0,63}(?<![-_. ])\.?[a-zA-Z0-9]{0,8}$',
-                                ).hasMatch(textFieldController.text)
-                                ? null
-                                : 'Solo letras y números',
-                      ),
-                      onChanged: (text) {
-                        setState(() {
-                          validateInput(text);
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () => Navigator.pop(context, 'Cancel'),
-                    child: const Text('Cancelar'),
+      builder: (BuildContext context) => StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return AlertDialog(
+            title: Text(
+              'Editar ${name.last}',
+              style: TextStyle(fontSize: 17.0),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: textFieldController,
+                  decoration: InputDecoration(
+                    hintText: "Nombre de archivo",
+                    errorText: textFieldController.text.isEmpty
+                        ? null
+                        : RegExp(
+                            r'^[a-zA-Z0-9][-_a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ\s]{0,63}(?<![-_. ])\.?[a-zA-Z0-9]{0,8}$',
+                          ).hasMatch(textFieldController.text)
+                        ? null
+                        : 'Solo letras y números',
                   ),
-                  TextButton(
-                    onPressed:
-                        isButtonEnabled
-                            ? () {
-                              onEdit(context, file, textFieldController.text);
-                            }
-                            : null,
-                    child: const Text('Editar'),
-                  ),
-                ],
-              );
-            },
-          ),
+                  onChanged: (text) {
+                    setState(() {
+                      validateInput(text);
+                    });
+                  },
+                ),
+              ],
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'Cancel'),
+                child: const Text('Cancelar'),
+              ),
+              TextButton(
+                onPressed: isButtonEnabled
+                    ? () {
+                        onEdit(context, file, textFieldController.text);
+                      }
+                    : null,
+                child: const Text('Editar'),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 
@@ -530,15 +523,14 @@ class FileHandler {
       // 1.2 - no colocarla nuevamente
       // 2. si no la tiene, colocarla
       final String oldname = file.name;
-      String directory =
-          arrdirectory != ''
-              ? arrdirectory
-              : oldname.contains('/')
-              ? oldname.substring(0, oldname.lastIndexOf('/') + 1)
-              : oldname.substring(0, oldname.lastIndexOf('/') + 1);
+      String directory = arrdirectory != ''
+          ? arrdirectory
+          : oldname.contains('/')
+          ? oldname.substring(0, oldname.lastIndexOf('/') + 1)
+          : oldname.substring(0, oldname.lastIndexOf('/') + 1);
 
       final String extension = oldname.split('.').last;
-     
+
       try {
         await bucketService.renameFile(
           name: oldname,
@@ -590,6 +582,40 @@ class FileHandler {
           context,
           Message(
             message: 'Copiado con exito',
+            statusCode: HttpStatusColor.success200.code,
+            messages: ['Archivo: $name!'],
+          ),
+        );
+      }
+    } catch (e) {
+      // context.loaderOverlay.hide();
+      if (context.mounted) {
+        MessageProvider.showSnackBarContext(
+          context,
+          Message.fromJson({"error": e.toString(), "statusCode": 400}),
+        );
+      }
+    }
+  }
+
+  // SHARE FILE
+  static void onHtmlEncript({
+    required BuildContext context,
+    required FileItem file,
+    required Function flipCard,
+  }) async {
+    String name = file.name;
+    try {
+      final encryptedUrl = RequestUploadQuery.simpleEncryptValue(name);
+      await Clipboard.setData(
+        ClipboardData(text: '${Constants.baseUrl}/#web/$encryptedUrl'),
+      );
+      flipCard();
+      if (context.mounted) {
+        MessageProvider.showSnackBarContext(
+          context,
+          Message(
+            message: 'Encriptado con exito',
             statusCode: HttpStatusColor.success200.code,
             messages: ['Archivo: $name!'],
           ),
@@ -661,10 +687,9 @@ class FileHandler {
 
     if (fileResponse != null && fileResponse.bodyBytes != null) {
       final fileName = fileItem.name.split('/').last;
-      final String filePath =
-          Platform.isAndroid
-              ? '/storage/emulated/0/Download/$fileName'
-              : '${Directory.systemTemp.path}/$fileName';
+      final String filePath = Platform.isAndroid
+          ? '/storage/emulated/0/Download/$fileName'
+          : '${Directory.systemTemp.path}/$fileName';
       final File file = File(filePath);
       await file.writeAsBytes(fileResponse.bodyBytes);
 
@@ -755,30 +780,29 @@ class FileHandler {
   ) {
     return showDialog<String>(
       context: context,
-      builder:
-          (BuildContext context) => AlertDialog(
-            title: const Text('Confirmación', style: TextStyle(fontSize: 17.0)),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('¿Seguro que desea borrar el archivo?'),
-                Text(name.last),
-              ],
-            ),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.pop(context, 'Cancel'),
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () {
-                  onDeleteFile(context, file);
-                  Navigator.pop(context, 'OK');
-                },
-                child: const Text('Eliminar'),
-              ),
-            ],
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Confirmación', style: TextStyle(fontSize: 17.0)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('¿Seguro que desea borrar el archivo?'),
+            Text(name.last),
+          ],
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'Cancel'),
+            child: const Text('Cancel'),
           ),
+          TextButton(
+            onPressed: () {
+              onDeleteFile(context, file);
+              Navigator.pop(context, 'OK');
+            },
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
     );
   }
 

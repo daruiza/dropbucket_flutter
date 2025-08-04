@@ -22,24 +22,22 @@ class InterceptorService {
     String path, {
     Map<String, String>? queryParams,
     bool isDownload = false,
+    authentication = true,
   }) async {
     try {
       final uri = Uri.parse(path).replace(queryParameters: queryParams);
-      if (_authProvider.token == '') {
-        throw Exception('No authentication token found');
+      final headers = <String, String>{};
+      if (authentication) {
+        if (_authProvider.token == '') {
+          throw Exception('No authentication token found');
+        }
+        headers['Authorization'] = 'Bearer ${_authProvider.token}';
       }
-
-      final headers = <String, String>{
-        'Authorization': 'Bearer ${_authProvider.token}',
-      };
       if (!isDownload) {
         headers['Content-Type'] = 'application/json;charset=utf-8';
       }
 
-      final response = await http.get(
-        uri,
-        headers: headers,
-      );
+      final response = await http.get(uri, headers: headers);
 
       if (response.statusCode == 401) {
         if (context.mounted) {
@@ -69,11 +67,11 @@ class InterceptorService {
 
       //todas las peticions son json
       final headers = <String, String>{
-          'Content-Type': 'application/json;charset=utf-8',
+        'Content-Type': 'application/json;charset=utf-8',
       };
       if (!isLogin) {
         headers['Authorization'] = 'Bearer ${_authProvider.token}';
-      }      
+      }
 
       final response = await http.post(
         uri,
@@ -399,7 +397,6 @@ class InterceptorService {
     }
   }
 
-
   Future<http.Response> uploadMultipleFilesPublic(
     String path, {
     required List<PlatformFile> files,
@@ -409,7 +406,7 @@ class InterceptorService {
     try {
       final uri = Uri.parse(path).replace(queryParameters: queryParams);
 
-      final request = http.MultipartRequest('POST', uri);      
+      final request = http.MultipartRequest('POST', uri);
 
       // Agregar campos adicionales si existen
       if (fields != null) {

@@ -150,6 +150,20 @@ class Routes {
       );
     }
 
+    if (uri.path.startsWith('web/')) {
+      final encryptedUrl = uri.path.split('/').last;
+      return MaterialPageRoute(
+        builder: (context) {
+          // final encryptedUrl = RequestUploadQuery.simpleEncryptValue('test/catalogo_bolsos.html');
+          // print(encryptedUrl);
+          // aHR0cHM6Ly9kcm9wYnVja2V0LWFzaXN0aXItYXdzLnMzLnVzLWVhc3QtMS5hbWF6b25hd3MuY29tL3Rlc3QvaW5kZXguaHRtbA==
+          //dGVzdC9pbmRleC5odG1s
+          final decriptUrl = RequestUploadQuery.simppleDecryptValue(encryptedUrl);
+          return WebViewScreen(url: decriptUrl);
+        },
+      );
+    }
+
     return null;
   }
 }

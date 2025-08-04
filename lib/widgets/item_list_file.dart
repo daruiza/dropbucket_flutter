@@ -35,6 +35,11 @@ class ItemListFile extends StatelessWidget {
       'file_download',
     );
 
+    final bool optionWeb = EnumOption.hasOption(
+      authProvider.user?.options,
+      'web',
+    );
+
     return ChangeNotifierProvider(
       create: (_) => StateBoolProvider(),
       child: Builder(
@@ -48,12 +53,11 @@ class ItemListFile extends StatelessWidget {
               onExit: (_) => stateBoolProvider.stateBool = false,
               cursor: SystemMouseCursors.click,
               child: GestureDetector(
-                onTap:
-                    () => FileHandler.tapFile(
-                      context,
-                      file: file,
-                      flipCard: () => {},
-                    ),
+                onTap: () => FileHandler.tapFile(
+                  context,
+                  file: file,
+                  flipCard: () => {},
+                ),
                 child: Column(
                   children: [
                     Container(
@@ -63,16 +67,16 @@ class ItemListFile extends StatelessWidget {
                         top: 6.0,
                         bottom: 6.0,
                       ),
-                      color:
-                          stateBoolProvider.stateBool
-                              ? IndigoTheme.hoverColor
-                              : null,
+                      color: stateBoolProvider.stateBool
+                          ? IndigoTheme.hoverColor
+                          : null,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           TitleFile(file: file),
                           optionsFileRow(
                             context,
+                            file.extension == '.html' ? optionWeb : false,
                             optionEditFile,
                             optionDownloadFile,
                             optionDeleteFile,
@@ -99,6 +103,7 @@ class ItemListFile extends StatelessWidget {
 
   Row optionsFileRow(
     BuildContext context,
+    bool optionWeb,
     bool optionEditFile,
     bool optionDownloadFile,
     bool optionDeleteFile,
@@ -106,6 +111,19 @@ class ItemListFile extends StatelessWidget {
   ) {
     return Row(
       children: [
+        if (optionWeb)
+          IconButton(
+            color: IndigoTheme.primaryColor,
+            iconSize: 20.0,
+            padding: EdgeInsets.all(0.0),
+            constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
+            icon: const Icon(Icons.web, size: 20.0),
+            onPressed: () => FileHandler.onHtmlEncript(
+              context: context,
+              file: file,
+              flipCard: () => {},
+            ),
+          ),
         if (optionEditFile)
           IconButton(
             color: IndigoTheme.primaryColor,
@@ -113,8 +131,8 @@ class ItemListFile extends StatelessWidget {
             padding: EdgeInsets.all(0.0),
             constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
             icon: const Icon(Icons.edit, size: 20.0),
-            onPressed:
-                () => FileHandler.showEditFileDialog(
+            onPressed: () =>
+                FileHandler.showEditFileDialog(
                   context,
                   file: file,
                   name: file.name.split('/'),
@@ -130,12 +148,11 @@ class ItemListFile extends StatelessWidget {
             padding: EdgeInsets.all(0.0),
             constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
             icon: const Icon(Icons.download, size: 20.0),
-            onPressed:
-                () => FileHandler.onDownloadFile(
-                  context: context,
-                  file: file,
-                  flipCard: () => {},
-                ),
+            onPressed: () => FileHandler.onDownloadFile(
+              context: context,
+              file: file,
+              flipCard: () => {},
+            ),
           ),
         if (optionDeleteFile)
           IconButton(
@@ -144,8 +161,8 @@ class ItemListFile extends StatelessWidget {
             padding: EdgeInsets.all(0.0),
             constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
             icon: const Icon(Icons.delete, size: 20.0),
-            onPressed:
-                () => FileHandler.showDeleteDialog(
+            onPressed: () =>
+                FileHandler.showDeleteDialog(
                   context,
                   file,
                   file.name.split('/'),
@@ -161,13 +178,11 @@ class ItemListFile extends StatelessWidget {
             padding: EdgeInsets.all(0.0),
             constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
             icon: const Icon(Icons.share, size: 20.0),
-            onPressed: () {
-              FileHandler.onShared(
-                context: context,
-                file: file,
-                flipCard: () => {},
-              );
-            },
+            onPressed: () => FileHandler.onShared(
+              context: context,
+              file: file,
+              flipCard: () => {},
+            ),
           ),
       ],
     );
@@ -201,8 +216,8 @@ class OptionsFile extends StatelessWidget {
             padding: EdgeInsets.all(0.0),
             constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
             icon: const Icon(Icons.edit, size: 20.0),
-            onPressed:
-                () => FileHandler.showEditFileDialog(
+            onPressed: () =>
+                FileHandler.showEditFileDialog(
                   context,
                   file: file,
                   name: file.name.split('/'),
@@ -218,12 +233,11 @@ class OptionsFile extends StatelessWidget {
             padding: EdgeInsets.all(0.0),
             constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
             icon: const Icon(Icons.download, size: 20.0),
-            onPressed:
-                () => FileHandler.onDownloadFile(
-                  context: context,
-                  file: file,
-                  flipCard: () => {},
-                ),
+            onPressed: () => FileHandler.onDownloadFile(
+              context: context,
+              file: file,
+              flipCard: () => {},
+            ),
           ),
         if (optionDeleteFile)
           IconButton(
@@ -232,8 +246,8 @@ class OptionsFile extends StatelessWidget {
             padding: EdgeInsets.all(0.0),
             constraints: BoxConstraints(minWidth: 32.0, minHeight: 32.0),
             icon: const Icon(Icons.delete, size: 20.0),
-            onPressed:
-                () => FileHandler.showDeleteDialog(
+            onPressed: () =>
+                FileHandler.showDeleteDialog(
                   context,
                   file,
                   file.name.split('/'),
@@ -318,10 +332,9 @@ class TitleFile extends StatelessWidget {
           Text(
             file.name.split('/').last,
             style: TextStyle(
-              color:
-                  stateBoolProvider.stateBool
-                      ? IndigoTheme.primaryFullColor
-                      : IndigoTheme.primaryColor,
+              color: stateBoolProvider.stateBool
+                  ? IndigoTheme.primaryFullColor
+                  : IndigoTheme.primaryColor,
             ),
           ),
         ],
