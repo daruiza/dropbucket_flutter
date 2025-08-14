@@ -69,10 +69,10 @@ class HomeScreen extends StatelessWidget {
               FileHandler.onUploadBlobFiles(context, files: files);
             },
             onDragEntered: (detail) {
-              print('onDragEntered');
+              // print('onDragEntered');
             },
             onDragExited: (detail) {
-              print('Goodbay');
+              // print('Goodbay');
             },
             child: child,
           ),

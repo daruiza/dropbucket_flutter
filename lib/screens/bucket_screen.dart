@@ -61,45 +61,45 @@ class BucketScreen extends StatelessWidget {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    // child: buildDropzone(
-                    //   context: context,
-                    child: tableViewProvider.view == TableView.grid
-                        ? GridView.builder(
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: crossAxisCount,
-                                  crossAxisSpacing: 10,
-                                  mainAxisSpacing: 10,
-                                  mainAxisExtent: 120,
-                                ),
-                            itemCount: folders.length + files.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              if (index < folders.length) {
-                                return CardFolder(folder: folders[index]);
-                              } else {
-                                return CardFile(
-                                  file: files[index - folders.length],
-                                );
-                              }
-                            },
-                          )
-                        : tableViewProvider.view == TableView.list
-                        ? ListView.builder(
-                            padding: const EdgeInsets.only(bottom: 160),
-                            itemCount: folders.length + files.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              if (index < folders.length) {
-                                return ItemListFolder(folder: folders[index]);
-                              } else {
-                                return ItemListFile(
-                                  file: files[index - folders.length],
-                                );
-                              }
-                            },
-                          )
-                        : Container(),
+                    child: buildDropzone(
+                      context: context,
+                      child: tableViewProvider.view == TableView.grid
+                          ? GridView.builder(
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: crossAxisCount,
+                                    crossAxisSpacing: 10,
+                                    mainAxisSpacing: 10,
+                                    mainAxisExtent: 120,
+                                  ),
+                              itemCount: folders.length + files.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                if (index < folders.length) {
+                                  return CardFolder(folder: folders[index]);
+                                } else {
+                                  return CardFile(
+                                    file: files[index - folders.length],
+                                  );
+                                }
+                              },
+                            )
+                          : tableViewProvider.view == TableView.list
+                          ? ListView.builder(
+                              padding: const EdgeInsets.only(bottom: 160),
+                              itemCount: folders.length + files.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                if (index < folders.length) {
+                                  return ItemListFolder(folder: folders[index]);
+                                } else {
+                                  return ItemListFile(
+                                    file: files[index - folders.length],
+                                  );
+                                }
+                              },
+                            )
+                          : Container(),
+                    ),
                   ),
-                  // ),
                 ),
               ],
             ),
