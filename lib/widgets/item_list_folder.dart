@@ -42,8 +42,10 @@ class ItemListFolder extends StatelessWidget {
         builder: (context) {
           final stateBoolProvider = Provider.of<StateBoolProvider>(context);
           return DragTarget(
-            onAcceptWithDetails: (details) =>
-                onAcceptWithDetailsFolder(details, context),
+            onAcceptWithDetails: (details) => {},
+            // funcionalidad de arrastrar y soltar.
+            // onAcceptWithDetails: (details) =>
+            //     onAcceptWithDetailsFolder(details, context),
             builder:
                 (
                   BuildContext context,

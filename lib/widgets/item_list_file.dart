@@ -46,7 +46,7 @@ class ItemListFile extends StatelessWidget {
         builder: (context) {
           final stateBoolProvider = Provider.of<StateBoolProvider>(context);
           return Draggable(
-            data: file,
+            data: file,            
             feedback: DraggableFileFeeback(file: file),
             child: MouseRegion(
               onEnter: (_) => stateBoolProvider.stateBool = true,
